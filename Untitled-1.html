@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Outil création doc IZIVIA</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+</head>
+<body>
+    <h1>Outil création doc IZIVIA</h1>
+    <label for="projectType">Sélectionnez le type de projet :</label>
+    <select id="projectType">
+        <option value="borne">Borne Électrique</option>
+        <option value="panneau">Panneau Solaire</option>
+        <option value="audit">Audit</option>
+    </select>
+    <div id="checklist" style="display:none;">
+        <h2>Checklist</h2>
+        <ul>
+            <li>
+                <input type="checkbox" id="item1">
+                <label for="item1">Emplacement futur de borne</label>
+                <input type="file" accept="image/*" capture="camera">
+                <textarea placeholder="Ajouter un commentaire"></textarea>
+            </li>
+            <!-- Ajoute d'autres éléments ici -->
+        </ul>
+        <button id="exportBtn">Exporter</button>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
