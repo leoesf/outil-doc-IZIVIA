@@ -6,6 +6,15 @@
     <title>Borne Électrique</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.4.0/pptxgen.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            if (typeof PptxGenJS !== 'undefined') {
+                console.log("PptxGenJS est chargé correctement.");
+            } else {
+                console.log("PptxGenJS n'est pas chargé.");
+            }
+        });
+    </script>
 </head>
 <body>
     <h1>Borne Électrique</h1>
@@ -97,4 +106,3 @@
     </script>
 </body>
 </html>
-
