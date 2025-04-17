@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Borne Électrique</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1.min.js"></script>
+    <!-- Charger les scripts nécessaires -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.4.0/pptxgen.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -17,7 +18,8 @@
         });
     </script>
 </head>
-<body    <h1>Borne Électrique</h1>
+<body>
+    <h1>Borne Électrique</h1>
     <div id="checklist">
         <h2>Checklist</h2>
         <ul>
@@ -63,6 +65,10 @@
     <script>
         function createPowerPoint() {
             console.log("Début de la création du PowerPoint");
+            if (typeof PptxGenJS === 'undefined') {
+                console.error("PptxGenJS n'est pas chargé.");
+                return;
+            }
             var pptx = new PptxGenJS();
             var items = [
                 { id: 'item1', file: 'file1', comment: 'comment1', title: "Plan d'implantation (image maps, Géoportail)" },
