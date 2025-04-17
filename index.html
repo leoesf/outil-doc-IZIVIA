@@ -7,6 +7,23 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#000000">
+    <script>
+        function redirectToPage() {
+            var projectType = document.getElementById("projectType").value;
+            if (projectType === "borne") {
+                window.location.href = "borneelectrique.html";
+            } else if (projectType === "panneau") {
+                window.location.href = "panneausolaire.html";
+            } else if (projectType === "audit") {
+                window.location.href = "audit.html";
+            }
+        }
+
+        function showChecklist() {
+            var checklist = document.getElementById("checklist");
+            checklist.style.display = "block";
+        }
+    </script>
 </head>
 <body>
     <h1>Outil création doc IZIVIA</h1>
@@ -16,6 +33,7 @@
         <option value="panneau">Panneau Solaire</option>
         <option value="audit">Audit</option>
     </select>
+    <button onclick="showChecklist()">Valider</button>
     <div id="checklist" style="display:none;">
         <h2>Checklist</h2>
         <ul>
@@ -25,20 +43,9 @@
                 <input type="file" accept="image/*" capture="camera">
                 <textarea placeholder="Ajouter un commentaire"></textarea>
             </li>
-            <!-- Ajoute d'autres éléments ici -->
-            
-            function redirectToPage() {
-                var projectType = document.getElementById("projectType").value;
-                if (projectType === "Borne Électrique") {
-                    window.location.href = "borneelectrique.html";
-                if (projectType === "Panneau Solaire") {
-                    window.location.href = "panneausolaire.html";
-                } else if (projectType === "autre_projet") {
-                    window.location.href = "autre_projet.html";
-                }
-
+            <!-- Ajoutez d'autres éléments ici -->
         </ul>
-        <button id="exportBtn">Exporter</button>
+        <button id="exportBtn" onclick="redirectToPage()">Exporter</button>
     </div>
     <script src="script.js"></script>
 </body>
