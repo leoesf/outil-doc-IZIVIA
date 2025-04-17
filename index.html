@@ -18,11 +18,6 @@
                 window.location.href = "audit.html";
             }
         }
-
-        function showChecklist() {
-            var checklist = document.getElementById("checklist");
-            checklist.style.display = "block";
-        }
     </script>
 </head>
 <body>
@@ -33,20 +28,6 @@
         <option value="panneau">Panneau Solaire</option>
         <option value="audit">Audit</option>
     </select>
-    <button onclick="showChecklist()">Valider</button>
-    <div id="checklist" style="display:none;">
-        <h2>Checklist</h2>
-        <ul>
-            <li>
-                <input type="checkbox" id="item1">
-                <label for="item1">Emplacement futur de borne</label>
-                <input type="file" accept="image/*" capture="camera">
-                <textarea placeholder="Ajouter un commentaire"></textarea>
-            </li>
-            <!-- Ajoutez d'autres éléments ici -->
-        </ul>
-        <button id="exportBtn" onclick="redirectToPage()">Exporter</button>
-    </div>
-    <script src="script.js"></script>
+    <button onclick="redirectToPage()">Valider</button>
 </body>
 </html>
