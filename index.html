@@ -26,6 +26,17 @@
                 <textarea placeholder="Ajouter un commentaire"></textarea>
             </li>
             <!-- Ajoute d'autres éléments ici -->
+            
+            function redirectToPage() {
+                var projectType = document.getElementById("projectType").value;
+                if (projectType === "Borne Électrique") {
+                    window.location.href = "borneelectrique.html";
+                if (projectType === "Panneau Solaire") {
+                    window.location.href = "panneausolaire.html";
+                } else if (projectType === "autre_projet") {
+                    window.location.href = "autre_projet.html";
+                }
+
         </ul>
         <button id="exportBtn">Exporter</button>
     </div>
