@@ -10,15 +10,45 @@
     <h1>Borne Électrique</h1>
     <div id="checklist">
         <h2>Checklist</h2>
-        <input type="checkbox" id="item1">
-                <label for="item1">Emplacement futur de borne</label>
+        <ul>
+            <li>
+                <input type="checkbox" id="item1">
+                <label for="item1">Plan d'implantation (image maps, Géoportail)</label>
                 <input type="file" accept="image/*" capture="camera">
                 <textarea placeholder="Ajouter un commentaire"></textarea>
             </li>
-            <!-- Ajoutez d'autres éléments ici -->
+            <li>
+                <input type="checkbox" id="item2">
+                <label for="item2">Places à électrifier</label>
+                <input type="file" accept="image/*" capture="camera">
+                <textarea placeholder="Ajouter un commentaire"></textarea>
+            </li>
+            <li>
+                <input type="checkbox" id="item3">
+                <label for="item3">TGBT + disjoncteur de tête</label>
+                <input type="file" accept="image/*" capture="camera">
+                <textarea placeholder="Ajouter un commentaire"></textarea>
+            </li>
+            <li>
+                <input type="checkbox" id="item4">
+                <label for="item4">Cheminement, prendre des photos du chemin du TGBT jusqu'à l'emplacement des bornes + commentaires des distances</label>
+                <input type="file" accept="image/*" capture="camera">
+                <textarea placeholder="Ajouter un commentaire"></textarea>
+            </li>
+            <li>
+                <input type="checkbox" id="item5">
+                <label for="item5">Plan du site</label>
+                <input type="file" accept="image/*" capture="camera">
+                <textarea placeholder="Ajouter un commentaire"></textarea>
+            </li>
+            <li>
+                <input type="checkbox" id="item6">
+                <label for="item6">Éléments complémentaires</label>
+                <input type="file" accept="image/*" capture="camera">
+                <textarea placeholder="Ajouter un commentaire"></textarea>
+            </li>
         </ul>
         <button id="exportBtn">Exporter</button>
     </div>
 </body>
 </html>
-
