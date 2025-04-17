@@ -63,6 +63,7 @@
                 { id: 'item6', file: 'file6', comment: 'comment6', title: "Éléments complémentaires" }
             ];
 
+            var completed = 0;
             items.forEach(function(item) {
                 var fileInput = document.getElementById(item.file);
                 var comment = document.getElementById(item.comment).value;
@@ -73,14 +74,16 @@
                     reader.onload = function(e) {
                         slide.addImage({ data: e.target.result, x: 0.5, y: 1.5, w: 8, h: 4.5 });
                         slide.addText(comment, { x: 0.5, y: 6, fontSize: 18 });
-                        if (item === items[items.length - 1]) {
+                        completed++;
+                        if (completed === items.length) {
                             pptx.writeFile({ fileName: "Projet_Borne_Electrique.pptx" });
                         }
                     };
                     reader.readAsDataURL(fileInput.files[0]);
                 } else {
                     slide.addText(comment, { x: 0.5, y: 1.5, fontSize: 18 });
-                    if (item === items[items.length - 1]) {
+                    completed++;
+                    if (completed === items.length) {
                         pptx.writeFile({ fileName: "Projet_Borne_Electrique.pptx" });
                     }
                 }
@@ -89,4 +92,3 @@
     </script>
 </body>
 </html>
-
