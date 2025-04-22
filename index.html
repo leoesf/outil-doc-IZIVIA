@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Borne Électrique</title>
+    <title>Choix du Projet</title>
     <link rel="stylesheet" href="styles.css">
     <!-- Charger les scripts nécessaires -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
@@ -16,53 +16,17 @@
                 console.log("PptxGenJS n'est pas chargé.");
             }
         });
-    </script>
-</head>
-<body>
-    <h1>Borne Électrique</h1>
-    <div id="checklist">
-        <h2>Checklist</h2>
-        <ul>
-            <li>
-                <input type="checkbox" id="item1">
-                <label for="item1">Plan d'implantation (image maps, Géoportail)</label>
-                <input type="file" accept="image/*" capture="camera" id="file1">
-                <textarea placeholder="Ajouter un commentaire" id="comment1"></textarea>
-            </li>
-            <li>
-                <input type="checkbox" id="item2">
-                <label for="item2">Places à électrifier</label>
-                <input type="file" accept="image/*" capture="camera" id="file2">
-                <textarea placeholder="Ajouter un commentaire" id="comment2"></textarea>
-            </li>
-            <li>
-                <input type="checkbox" id="item3">
-                <label for="item3">TGBT + disjoncteur de tête</label>
-                <input type="file" accept="image/*" capture="camera" id="file3">
-                <textarea placeholder="Ajouter un commentaire" id="comment3"></textarea>
-            </li>
-            <li>
-                <input type="checkbox" id="item4">
-                <label for="item4">Cheminement, prendre des photos du chemin du TGBT jusqu'à l'emplacement des bornes + commentaires des distances</label>
-                <input type="file" accept="image/*" capture="camera" id="file4">
-                <textarea placeholder="Ajouter un commentaire" id="comment4"></textarea>
-            </li>
-            <li>
-                <input type="checkbox" id="item5">
-                <label for="item5">Plan du site</label>
-                <input type="file" accept="image/*" capture="camera" id="file5">
-                <textarea placeholder="Ajouter un commentaire" id="comment5"></textarea>
-            </li>
-            <li>
-                <input type="checkbox" id="item6">
-                <label for="item6">Éléments complémentaires</label>
-                <input type="file" accept="image/*" capture="camera" id="file6">
-                <textarea placeholder="Ajouter un commentaire" id="comment6"></textarea>
-            </li>
-        </ul>
-        <button id="exportBtn" onclick="createPowerPoint()">Exporter</button>
-    </div>
-    <script>
+
+        function validateProject() {
+            var projectType = document.getElementById("projectType").value;
+            if (projectType === "borneElectrique") {
+                document.getElementById("projectSelection").style.display = "none";
+                document.getElementById("checklist").style.display = "block";
+            } else {
+                alert("Projet non supporté pour le moment.");
+            }
+        }
+
         function createPowerPoint() {
             console.log("Début de la création du PowerPoint");
             if (typeof PptxGenJS === 'undefined') {
@@ -110,6 +74,61 @@
             });
         }
     </script>
+</head>
+<body>
+    <h1>Choisissez votre projet</h1>
+    <div id="projectSelection">
+        <label for="projectType">Type de projet :</label>
+        <select id="projectType">
+            <option value="borneElectrique">Borne Électrique</option>
+            <option value="autreProjet">Autre Projet</option>
+            <!-- Ajoutez d'autres options de projet ici -->
+        </select>
+        <button id="validateBtn" onclick="validateProject()">Valider</button>
+    </div>
+
+    <div id="checklist" style="display:none;">
+        <h2>Checklist</h2>
+        <ul>
+            <li>
+                <input type="checkbox" id="item1">
+                <label for="item1">Plan d'implantation (image maps, Géoportail)</label>
+                <input type="file" accept="image/*" capture="camera" id="file1">
+                <textarea placeholder="Ajouter un commentaire" id="comment1"></textarea>
+            </li>
+            <li>
+                <input type="checkbox" id="item2">
+                <label for="item2">Places à électrifier</label>
+                <input type="file" accept="image/*" capture="camera" id="file2">
+                <textarea placeholder="Ajouter un commentaire" id="comment2"></textarea>
+            </li>
+            <li>
+                <input type="checkbox" id="item3">
+                <label for="item3">TGBT + disjoncteur de tête</label>
+                <input type="file" accept="image/*" capture="camera" id="file3">
+                <textarea placeholder="Ajouter un commentaire" id="comment3"></textarea>
+            </li>
+            <li>
+                <input type="checkbox" id="item4">
+                <label for="item4">Cheminement, prendre des photos du chemin du TGBT jusqu'à l'emplacement des bornes + commentaires des distances</label>
+                <input type="file" accept="image/*" capture="camera" id="file4">
+                <textarea placeholder="Ajouter un commentaire" id="comment4"></textarea>
+            </li>
+            <li>
+                <input type="checkbox" id="item5">
+                <label for="item5">Plan du site</label>
+                <input type="file" accept="image/*" capture="camera" id="file5">
+                <textarea placeholder="Ajouter un commentaire" id="comment5"></textarea>
+            </li>
+            <li>
+                <input type="checkbox" id="item6">
+                <label for="item6">Éléments complémentaires</label>
+                <input type="file" accept="image/*" capture="camera" id="file6">
+                <textarea placeholder="Ajouter un commentaire" id="comment6"></textarea>
+            </li>
+        </ul>
+        <button id="exportBtn" onclick="createPowerPoint()">Exporter</button>
+    </div>
 </body>
 </html>
 
