@@ -5,106 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Choix du Projet</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- Charger les scripts nécessaires -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.4.0/dist/pptxgen.min.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            if (typeof PptxGenJS !== 'undefined') {
-                console.log("PptxGenJS est chargé correctement.");
-            } else {
-                console.log("PptxGenJS n'est pas chargé.");
-            }
-        });
-
-        function validateProject() {
-            var projectType = document.getElementById("projectType").value;
-            document.getElementById("projectSelection").style.display = "none";
-            document.getElementById("borneElectrique").style.display = "none";
-            document.getElementById("photovoltaïque").style.display = "none";
-            document.getElementById("audit").style.display = "none";
-
-            if (projectType === "borneElectrique") {
-                document.getElementById("borneElectrique").style.display = "block";
-            } else if (projectType === "photovoltaïque") {
-                document.getElementById("photovoltaïque").style.display = "block";
-            } else if (projectType === "audit") {
-                document.getElementById("audit").style.display = "block";
-            } else {
-                alert("Projet non supporté pour le moment.");
-                document.getElementById("projectSelection").style.display = "block";
-            }
-        }
-
-        function createPowerPoint(project) {
-            console.log("Début de la création du PowerPoint pour le projet " + project);
-            if (typeof PptxGenJS === 'undefined') {
-                console.error("PptxGenJS n'est pas chargé.");
-                return;
-            }
-            var pptx = new PptxGenJS();
-            var items = [];
-
-            if (project === "borneElectrique") {
-                items = [
-                    { id: 'item1', file: 'file1', comment: 'comment1', title: "Plan d'implantation (image maps, Géoportail)" },
-                    { id: 'item2', file: 'file2', comment: 'comment2', title: "Places à électrifier" },
-                    { id: 'item3', file: 'file3', comment: 'comment3', title: "TGBT + disjoncteur de tête" },
-                    { id: 'item4', file: 'file4', comment: 'comment4', title: "Cheminement" },
-                    { id: 'item5', file: 'file5', comment: 'comment5', title: "Plan du site" },
-                    { id: 'item6', file: 'file6', comment: 'comment6', title: "Éléments complémentaires" }
-                ];
-            } else if (project === "photovoltaïque") {
-                items = [
-                    { id: 'item1', file: 'file1', comment: 'comment1', title: "Plan de toiture" },
-                    { id: 'item2', file: 'file2', comment: 'comment2', title: "Orientation et inclinaison" },
-                    { id: 'item3', file: 'file3', comment: 'comment3', title: "Type de panneaux" },
-                    { id: 'item4', file: 'file4', comment: 'comment4', title: "Estimation de production" },
-                    { id: 'item5', file: 'file5', comment: 'comment5', title: "Plan de câblage" },
-                    { id: 'item6', file: 'file6', comment: 'comment6', title: "Éléments complémentaires" }
-                ];
-            } else if (project === "audit") {
-                items = [
-                    { id: 'item1', file: 'file1', comment: 'comment1', title: "Rapport d'audit" },
-                    { id: 'item2', file: 'file2', comment: 'comment2', title: "Photos des installations" },
-                    { id: 'item3', file: 'file3', comment: 'comment3', title: "Recommandations" },
-                    { id: 'item4', file: 'file4', comment: 'comment4', title: "Plan d'action" },
-                    { id: 'item5', file: 'file5', comment: 'comment5', title: "Suivi des actions" },
-                    { id: 'item6', file: 'file6', comment: 'comment6', title: "Éléments complémentaires" }
-                ];
-            }
-
-            var completed = 0;
-            items.forEach(function(item, index) {
-                var fileInput = document.getElementById(item.file);
-                var comment = document.getElementById(item.comment).value;
-                var slide = pptx.addSlide();
-                slide.addText(item.title, { x: 0.5, y: 0.5, fontSize: 24 });
-                console.log("Traitement de l'élément : " + item.title);
-                if (fileInput.files.length > 0) {
-                    var reader = new FileReader();
-                    reader.onload = function(e) {
-                        console.log("Lecture du fichier : " + fileInput.files[0].name);
-                        slide.addImage({ data: e.target.result, x: 0.5, y: 1.5, w: 8, h: 4.5 });
-                        slide.addText(comment, { x: 0.5, y: 6, fontSize: 18 });
-                        completed++;
-                        if (completed === items.length) {
-                            console.log("Tous les éléments sont traités, génération du fichier PowerPoint");
-                            pptx.writeFile({ fileName: "Projet_" + project + ".pptx" });
-                        }
-                    };
-                    reader.readAsDataURL(fileInput.files[0]);
-                } else {
-                    slide.addText(comment, { x: 0.5, y: 1.5, fontSize: 18 });
-                    completed++;
-                    if (completed === items.length) {
-                        console.log("Tous les éléments sont traités, génération du fichier PowerPoint");
-                        pptx.writeFile({ fileName: "Projet_" + project + ".pptx" });
-                    }
-                }
-            });
-        }
-    </script>
 </head>
 <body>
     <h1>Choisissez votre projet</h1>
@@ -117,39 +17,15 @@
         </select>
         <button id="validateBtn" onclick="validateProject()">Valider</button>
     </div>
-
-    <div id="borneElectrique" style="display:none;">
-        <h2>Checklist Borne Électrique</h2>
-        <ul>
-            <li>
-                <input type="checkbox" id="item1">
-                <label for="item1">Plan d'implantation (image maps, Géoportail)</label>
-                <input type="file" accept="image/*" capture="camera" id="file1">
-                <textarea placeholder="Ajouter un commentaire" id="comment1"></textarea>
-            </li>
-            <li>
-                <input type="checkbox" id="item2">
-                <label for="item2">Places à électrifier</label>
-                <input type="file" accept="image/*" capture="camera" id="file2">
-                <textarea placeholder="Ajouter un commentaire" id="comment2"></textarea>
-            </li>
-            <li>
-                <input type="checkbox" id="item3">
-                <label for="item3">TGBT + disjoncteur de tête</label>
-                <input type="file" accept="image/*" capture="camera" id="file3">
-                <textarea placeholder="Ajouter un commentaire" id="comment3"></textarea>
-            </li>
-            <li>
-                <input type="checkbox" id="item4">
-                <label for="item4">Cheminement, prendre des photos du chemin du TGBT jusqu'à l'emplacement des bornes + commentaires des distances</label>
-                <input type="file" accept="image/*" capture="camera" id="file4">
-                <textarea placeholder="Ajouter un commentaire" id="comment4"></textarea>
-            </li>
-            <li>
-                <input type="checkbox" id="item5">
-                <label for="item5">Plan du site</label>
-                <input type="file" accept="image/*" capture="camera" id="file5">
-                <textarea placeholder="Ajouter un commentaire" id="comment5"></textarea>
-            </li>
-            <li>
-                <input
+    <script>
+        function validateProject() {
+            var projectType = document.getElementById("projectType").value;
+            if (projectType === "borneElectrique") {
+                window.location.href = "borneelectrique.html";
+            } else {
+                alert("Projet non supporté pour le moment.");
+            }
+        }
+    </script>
+</body>
+</html>
