@@ -19,29 +19,60 @@
 
         function validateProject() {
             var projectType = document.getElementById("projectType").value;
+            document.getElementById("projectSelection").style.display = "none";
+            document.getElementById("borneElectrique").style.display = "none";
+            document.getElementById("photovoltaïque").style.display = "none";
+            document.getElementById("audit").style.display = "none";
+
             if (projectType === "borneElectrique") {
-                document.getElementById("projectSelection").style.display = "none";
-                document.getElementById("checklist").style.display = "block";
+                document.getElementById("borneElectrique").style.display = "block";
+            } else if (projectType === "photovoltaïque") {
+                document.getElementById("photovoltaïque").style.display = "block";
+            } else if (projectType === "audit") {
+                document.getElementById("audit").style.display = "block";
             } else {
                 alert("Projet non supporté pour le moment.");
+                document.getElementById("projectSelection").style.display = "block";
             }
         }
 
-        function createPowerPoint() {
-            console.log("Début de la création du PowerPoint");
+        function createPowerPoint(project) {
+            console.log("Début de la création du PowerPoint pour le projet " + project);
             if (typeof PptxGenJS === 'undefined') {
                 console.error("PptxGenJS n'est pas chargé.");
                 return;
             }
             var pptx = new PptxGenJS();
-            var items = [
-                { id: 'item1', file: 'file1', comment: 'comment1', title: "Plan d'implantation (image maps, Géoportail)" },
-                { id: 'item2', file: 'file2', comment: 'comment2', title: "Places à électrifier" },
-                { id: 'item3', file: 'file3', comment: 'comment3', title: "TGBT + disjoncteur de tête" },
-                { id: 'item4', file: 'file4', comment: 'comment4', title: "Cheminement" },
-                { id: 'item5', file: 'file5', comment: 'comment5', title: "Plan du site" },
-                { id: 'item6', file: 'file6', comment: 'comment6', title: "Éléments complémentaires" }
-            ];
+            var items = [];
+
+            if (project === "borneElectrique") {
+                items = [
+                    { id: 'item1', file: 'file1', comment: 'comment1', title: "Plan d'implantation (image maps, Géoportail)" },
+                    { id: 'item2', file: 'file2', comment: 'comment2', title: "Places à électrifier" },
+                    { id: 'item3', file: 'file3', comment: 'comment3', title: "TGBT + disjoncteur de tête" },
+                    { id: 'item4', file: 'file4', comment: 'comment4', title: "Cheminement" },
+                    { id: 'item5', file: 'file5', comment: 'comment5', title: "Plan du site" },
+                    { id: 'item6', file: 'file6', comment: 'comment6', title: "Éléments complémentaires" }
+                ];
+            } else if (project === "photovoltaïque") {
+                items = [
+                    { id: 'item1', file: 'file1', comment: 'comment1', title: "Plan de toiture" },
+                    { id: 'item2', file: 'file2', comment: 'comment2', title: "Orientation et inclinaison" },
+                    { id: 'item3', file: 'file3', comment: 'comment3', title: "Type de panneaux" },
+                    { id: 'item4', file: 'file4', comment: 'comment4', title: "Estimation de production" },
+                    { id: 'item5', file: 'file5', comment: 'comment5', title: "Plan de câblage" },
+                    { id: 'item6', file: 'file6', comment: 'comment6', title: "Éléments complémentaires" }
+                ];
+            } else if (project === "audit") {
+                items = [
+                    { id: 'item1', file: 'file1', comment: 'comment1', title: "Rapport d'audit" },
+                    { id: 'item2', file: 'file2', comment: 'comment2', title: "Photos des installations" },
+                    { id: 'item3', file: 'file3', comment: 'comment3', title: "Recommandations" },
+                    { id: 'item4', file: 'file4', comment: 'comment4', title: "Plan d'action" },
+                    { id: 'item5', file: 'file5', comment: 'comment5', title: "Suivi des actions" },
+                    { id: 'item6', file: 'file6', comment: 'comment6', title: "Éléments complémentaires" }
+                ];
+            }
 
             var completed = 0;
             items.forEach(function(item, index) {
@@ -59,7 +90,7 @@
                         completed++;
                         if (completed === items.length) {
                             console.log("Tous les éléments sont traités, génération du fichier PowerPoint");
-                            pptx.writeFile({ fileName: "Projet_Borne_Electrique.pptx" });
+                            pptx.writeFile({ fileName: "Projet_" + project + ".pptx" });
                         }
                     };
                     reader.readAsDataURL(fileInput.files[0]);
@@ -68,7 +99,7 @@
                     completed++;
                     if (completed === items.length) {
                         console.log("Tous les éléments sont traités, génération du fichier PowerPoint");
-                        pptx.writeFile({ fileName: "Projet_Borne_Electrique.pptx" });
+                        pptx.writeFile({ fileName: "Projet_" + project + ".pptx" });
                     }
                 }
             });
@@ -81,14 +112,14 @@
         <label for="projectType">Type de projet :</label>
         <select id="projectType">
             <option value="borneElectrique">Borne Électrique</option>
-            <option value="autreProjet">Autre Projet</option>
-            <!-- Ajoutez d'autres options de projet ici -->
+            <option value="photovoltaïque">Photovoltaïque</option>
+            <option value="audit">Audit</option>
         </select>
         <button id="validateBtn" onclick="validateProject()">Valider</button>
     </div>
 
-    <div id="checklist" style="display:none;">
-        <h2>Checklist</h2>
+    <div id="borneElectrique" style="display:none;">
+        <h2>Checklist Borne Électrique</h2>
         <ul>
             <li>
                 <input type="checkbox" id="item1">
@@ -121,14 +152,4 @@
                 <textarea placeholder="Ajouter un commentaire" id="comment5"></textarea>
             </li>
             <li>
-                <input type="checkbox" id="item6">
-                <label for="item6">Éléments complémentaires</label>
-                <input type="file" accept="image/*" capture="camera" id="file6">
-                <textarea placeholder="Ajouter un commentaire" id="comment6"></textarea>
-            </li>
-        </ul>
-        <button id="exportBtn" onclick="createPowerPoint()">Exporter</button>
-    </div>
-</body>
-</html>
-
+                <
