@@ -1,64 +1,63 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Borne Électrique</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.4.0/dist/pptxgen.min.js"></script>
-    <script src="script.js" defer></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Borne Électrique</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.4.0/dist/pptxgen.min.js"></script>
+  <script src="script.js" defer></script>
 </head>
 <body>
-    <h1>Borne Électrique</h1>
+  <h1>Borne Électrique</h1>
 
-    <h2>RAE du client</h2>
-    <textarea id="raeClient" placeholder="Saisir la RAE du client ici..."></textarea>
+  <h2>Informations client</h2>
+  <input type="text" id="clientName" placeholder="Nom du client" />
+  <input type="text" id="rae" placeholder="RAE" />
+  <input type="text" id="power" placeholder="Puissance souscrite / max" />
+  <input type="text" id="commercial" placeholder="Nom du commercial" />
+  <h3>Image de couverture</h3>
+  <input type="file" accept="image/*" id="coverImage" />
 
-    <h2>Image de couverture (optionnelle)</h2>
-    <input type="file" accept="image/*" id="coverImage">
+  <h2>RAE du client</h2>
+  <textarea id="raeClient" placeholder="Saisir la RAE du client ici..."></textarea>
 
-    <div id="checklist">
-        <h2>Checklist</h2>
-        <ul>
-            <li>
-                <input type="checkbox" id="item1">
-                <label for="item1">Plan d'implantation (image maps, Géoportail)</label>
-                <input type="file" accept="image/*" capture="camera" id="file1">
-                <textarea placeholder="Ajouter un commentaire" id="comment1"></textarea>
-            </li>
-            <li>
-                <input type="checkbox" id="item2">
-                <label for="item2">Places à électrifier</label>
-                <input type="file" accept="image/*" capture="camera" id="file2">
-                <textarea placeholder="Ajouter un commentaire" id="comment2"></textarea>
-            </li>
-            <li>
-                <input type="checkbox" id="item3">
-                <label for="item3">TGBT + disjoncteur de tête</label>
-                <input type="file" accept="image/*" capture="camera" id="file3">
-                <textarea placeholder="Ajouter un commentaire" id="comment3"></textarea>
-            </li>
-            <li>
-                <input type="checkbox" id="item4">
-                <label for="item4">Cheminement</label>
-                <input type="file" accept="image/*" capture="camera" id="file4">
-                <textarea placeholder="Ajouter un commentaire" id="comment4"></textarea>
-            </li>
-            <li>
-                <input type="checkbox" id="item5">
-                <label for="item5">Plan du site</label>
-                <input type="file" accept="image/*" capture="camera" id="file5">
-                <textarea placeholder="Ajouter un commentaire" id="comment5"></textarea>
-            </li>
-            <li>
-                <input type="checkbox" id="item6">
-                <label for="item6">Éléments complémentaires</label>
-                <input type="file" accept="image/*" capture="camera" id="file6">
-                <textarea placeholder="Ajouter un commentaire" id="comment6"></textarea>
-            </li>
-        </ul>
-        <button id="exportBtn" onclick="createPowerPoint()">Exporter</button>
-    </div>
+  <div id="checklist">
+    <h2>Checklist</h2>
+    <ul>
+      <li>
+        <label>Plan d'implantation</label>
+        <input type="file" accept="image/*" id="file1" />
+        <textarea id="comment1" placeholder="Commentaire"></textarea>
+      </li>
+      <li>
+        <label>Places à électrifier</label>
+        <input type="file" accept="image/*" id="file2" />
+        <textarea id="comment2" placeholder="Commentaire"></textarea>
+      </li>
+      <li>
+        <label>TGBT + disjoncteur de tête</label>
+        <input type="file" accept="image/*" id="file3" />
+        <textarea id="comment3" placeholder="Commentaire"></textarea>
+      </li>
+      <li>
+        <label>Cheminement</label>
+        <input type="file" accept="image/*" id="file4" />
+        <textarea id="comment4" placeholder="Commentaire"></textarea>
+      </li>
+      <li>
+        <label>Plan du site</label>
+        <input type="file" accept="image/*" id="file5" />
+        <textarea id="comment5" placeholder="Commentaire"></textarea>
+      </li>
+      <li>
+        <label>Éléments complémentaires</label>
+        <input type="file" accept="image/*" id="file6" />
+        <textarea id="comment6" placeholder="Commentaire"></textarea>
+      </li>
+    </ul>
+    <button onclick="createPowerPoint()">Exporter</button>
+  </div>
 </body>
 </html>
