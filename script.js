@@ -4,10 +4,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   console.log("Page prête. PptxGenJS chargé ?", typeof PptxGenJS !== "undefined");
-
-  // Si le bouton a l'ID exportBtn, on branche un écouteur
-  const btn = document.getElementById("exportBtn");
-  if (btn) btn.addEventListener("click", createPowerPoint);
+  document.getElementById("exportBtn")?.addEventListener("click", createPowerPoint);
 });
 
 function createPowerPoint() {
@@ -49,9 +46,9 @@ function createPowerPoint() {
     slide.background = { fill: "363636" };
 
     const lines = [];
-    if (clientName)   lines.push({ text: `Client : ${clientName}\n`, options: { fontSize: 20, color: "FFFFFF", bold: true } });
-    if (rae)          lines.push({ text: `RAE : ${rae}\n`,           options: { fontSize: 16, color: "FFFFFF" } });
-    if (power)        lines.push({ text: `Puissance : ${power}\n`,   options: { fontSize: 16, color: "FFFFFF" } });
+    if (clientName)   lines.push({ text: `Client : ${clientName}\n`,   options: { fontSize: 20, color: "FFFFFF", bold: true } });
+    if (rae)          lines.push({ text: `RAE : ${rae}\n`,             options: { fontSize: 16, color: "FFFFFF" } });
+    if (power)        lines.push({ text: `Puissance : ${power}\n`,     options: { fontSize: 16, color: "FFFFFF" } });
     if (commercial)   lines.push({ text: `Commercial : ${commercial}\n`, options: { fontSize: 16, color: "FFFFFF" } });
 
     // Nouveaux champs
@@ -86,11 +83,46 @@ function createPowerPoint() {
     slide.addText(raeClient || "—", { x: 0.5, y: 1.5, fontSize: 18, w: "90%", h: "70%", color: "363636" });
   }
 
+  // ======== Aide : ajoute les "marqueurs" déplaçables sur la diapo Plan d'implantation ========
+  function addMoveableMarkers(slide, imgBox) {
+    // On place 3 formes au bord droit de la zone image (pour être faciles à attraper puis déplacer).
+    const baseX = imgBox.x + imgBox.w - 0.7; // petit décalage vers la gauche
+    let y = imgBox.y + 0.2;
+
+    // Ovale contour vert (remplissage transparent)
+    slide.addShape(pptx.shapes.OVAL, {
+      x: baseX, y, w: 0.55, h: 1.2,
+      line: { color: "6FB049", width: 4 },
+      fill: { color: "FFFFFF", transparency: 100 }
+    });
+
+    y += 1.35;
+
+    // Carré jaune
+    slide.addShape(pptx.shapes.RECTANGLE, {
+      x: baseX, y, w: 0.65, h: 0.65,
+      fill: { color: "FFD666" },
+      line: { color: "C9A93A" }
+    });
+
+    y += 0.85;
+
+    // Carré rouge
+    slide.addShape(pptx.shapes.RECTANGLE, {
+      x: baseX, y, w: 0.65, h: 0.65,
+      fill: { color: "FF0000" },
+      line: { color: "B00000" }
+    });
+
+    // (Option) Petite légende en haut à droite
+    // slide.addText("Marqueurs à déplacer →", { x: baseX - 2.8, y: imgBox.y - 0.4, fontSize: 12, color: "666666", italic: true });
+  }
+
   // ======== Diapos Checklist : Image à gauche / texte à droite ========
   function addChecklistSlides() {
     // Layout zones
     const IMG = { x: 0.5, y: 1.2, w: 6.8, h: 4.8 }; // image à gauche
-    const BOX = { x: 7.6, y: 1.2, w: 3.4, h: 4.8 }; // zone de texte (commentaire) à droite
+    const BOX = { x: 7.6, y: 1.2, w: 3.4, h: 4.8 }; // zone de texte à droite
 
     const items = [
       { file: "file1", comment: "comment1", title: "Plan d'implantation" },
@@ -112,33 +144,41 @@ function createPowerPoint() {
       // Titre
       slide.addText(item.title, { x: 0.5, y: 0.5, fontSize: 24, bold: true });
 
-      // Zone de texte à droite (textbox avec fond + bordure)
+      // Zone de texte à droite
       slide.addText(comment, {
         x: BOX.x, y: BOX.y, w: BOX.w, h: BOX.h,
-        shape: pptx.shapes.ROUNDED_RECTANGLE, // ou pptx.shapes.RECTANGLE
-        fill: { color: "F3F4F6" },            // fond clair
-        line: { color: "D1D5DB" },            // bordure
+        shape: pptx.shapes.ROUNDED_RECTANGLE,
+        fill: { color: "F3F4F6" },
+        line: { color: "D1D5DB" },
         fontSize: 16,
         color: "363636",
         align: "left",
-        valign: "top"                         // texte en haut de la zone
+        valign: "top"
       });
 
-      // Image à gauche (si sélectionnée)
-      if (fileInput?.files?.length > 0) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
+      // Image à gauche
+      const injectImage = (dataUrl) => {
+        if (dataUrl) {
           slide.addImage({
-            data: e.target.result,
+            data: dataUrl,
             x: IMG.x, y: IMG.y, w: IMG.w, h: IMG.h,
             sizing: { type: "contain", w: IMG.w, h: IMG.h }
           });
-          checkDone();
-        };
+        }
+
+        // 👉 Si c'est la diapo "Plan d'implantation", on ajoute les 3 marqueurs déplaçables
+        if (item.title.toLowerCase().includes("implantation")) {
+          addMoveableMarkers(slide, IMG);
+        }
+        checkDone();
+      };
+
+      if (fileInput?.files?.length > 0) {
+        const reader = new FileReader();
+        reader.onload = (e) => injectImage(e.target.result);
         reader.readAsDataURL(fileInput.files[0]);
       } else {
-        // Pas d'image : on laisse la zone gauche vide
-        checkDone();
+        injectImage(null);
       }
     });
 
@@ -179,3 +219,4 @@ function createPowerPoint() {
 if (typeof window !== "undefined") {
   window.createPowerPoint = createPowerPoint;
 }
+
