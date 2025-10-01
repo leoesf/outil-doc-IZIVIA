@@ -1,17 +1,14 @@
 // -----------------------------------------------------------
-// script.js - Génération du PowerPoint (PptxGenJS)
+// script.js - Génération du PowerPoint (PptxGenJS v3.x)
 // -----------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
   console.log("PptxGenJS chargé ?", typeof PptxGenJS !== "undefined");
-  // au cas où tu utilises un onclick HTML, on expose aussi la fonction :
-  window.createPowerPoint = createPowerPoint;
+  window.createPowerPoint = createPowerPoint; // pour onclick HTML
   document.getElementById("exportBtn")?.addEventListener("click", createPowerPoint);
 });
 
 function createPowerPoint() {
-  console.log("[PPT] Lancement export…");
-
   const btn = document.getElementById("exportBtn");
   btn?.setAttribute("disabled", "true");
   btn?.setAttribute("aria-busy", "true");
@@ -26,9 +23,10 @@ function createPowerPoint() {
   const pptx = new PptxGenJS();
   pptx.layout = "LAYOUT_WIDE"; // 16:9 (10 x 5.625")
 
-  // ========= Récupération des champs =========
+  // ========= Utilitaire =========
   const getVal = (id) => document.getElementById(id)?.value || "";
 
+  // ========= Champs =========
   const clientName    = getVal("clientName");
   const rae           = getVal("rae");
   const power         = getVal("power");
@@ -36,14 +34,14 @@ function createPowerPoint() {
   const raeClient     = getVal("raeClient");
   const coverImageInp = document.getElementById("coverImage");
 
-  // Nouveaux champs
+  // Ajouts
   const clientAddress = getVal("clientAddress");
   const siret         = getVal("siret");
   const oppoNumber    = getVal("oppoNumber");
   const nbBornes      = getVal("nbBornes");
   const bornesPower   = getVal("bornesPower");
 
-  // ========= Diapo 1 : Couverture =========
+  // ========= Couverture =========
   function addCoverSlide(imageData) {
     const slide = pptx.addSlide();
     slide.background = { fill: "363636" };
@@ -54,7 +52,6 @@ function createPowerPoint() {
     if (power)        lines.push({ text: `Puissance : ${power}\n`,        options: { fontSize: 16, color: "FFFFFF" } });
     if (commercial)   lines.push({ text: `Commercial : ${commercial}\n`,  options: { fontSize: 16, color: "FFFFFF" } });
 
-    // Ajouts
     if (clientAddress) lines.push({ text: `Adresse : ${clientAddress}\n`,              options: { fontSize: 16, color: "FFFFFF" } });
     if (siret)         lines.push({ text: `SIRET : ${siret}\n`,                        options: { fontSize: 16, color: "FFFFFF" } });
     if (oppoNumber)    lines.push({ text: `Numéro Oppo : ${oppoNumber}\n`,            options: { fontSize: 16, color: "FFFFFF" } });
@@ -66,10 +63,8 @@ function createPowerPoint() {
       options: { fontSize: 14, color: "FFFFFF", italic: true, breakLine: true }
     });
 
-    // Texte à gauche
     slide.addText(lines, { x: 0.5, y: 0.5, w: 5.8, h: 6.2 });
 
-    // Image de couverture à droite (si fournie)
     if (imageData) {
       slide.addImage({
         data: imageData,
@@ -79,21 +74,21 @@ function createPowerPoint() {
     }
   }
 
-  // ========= Diapo 2 : RAE Client =========
+  // ========= RAE =========
   function addRAESlide() {
     const slide = pptx.addSlide();
     slide.addText("RAE du client", { x: 0.5, y: 0.5, fontSize: 24, bold: true });
     slide.addText(raeClient || "—", { x: 0.5, y: 1.5, fontSize: 18, w: "90%", h: "70%", color: "363636" });
   }
 
-  // ========= Marqueurs déplaçables (ellipse/carrés) =========
+  // ========= Marqueurs déplaçables =========
   function addMoveableMarkers(slide, imgBox) {
-    // Dans la zone image (coin haut-droit)
     const baseX = imgBox.x + imgBox.w - 1.2;
     let y = imgBox.y + 0.2;
 
     // Ellipse contour vert épais (remplissage transparent)
-    slide.addShape(pptx.ShapeType.ellipse, {
+    slide.addShape({
+      shape: PptxGenJS.ShapeType.ellipse,
       x: baseX, y, w: 0.7, h: 1.5,
       line: { color: "3A8F2D", width: 6 },
       fill: { color: "FFFFFF", transparency: 100 }
@@ -102,7 +97,8 @@ function createPowerPoint() {
     y += 1.8;
 
     // Carré jaune
-    slide.addShape(pptx.ShapeType.rect, {
+    slide.addShape({
+      shape: PptxGenJS.ShapeType.rect,
       x: baseX, y, w: 0.8, h: 0.8,
       fill: { color: "FFD24D" },
       line: { color: "C2A23B", width: 2 }
@@ -111,23 +107,28 @@ function createPowerPoint() {
     y += 1.0;
 
     // Carré rouge
-    slide.addShape(pptx.ShapeType.rect, {
+    slide.addShape({
+      shape: PptxGenJS.ShapeType.rect,
       x: baseX, y, w: 0.8, h: 0.8,
       fill: { color: "FF2B2B" },
       line: { color: "B00000", width: 2 }
     });
+
+    // Petite étiquette pour debug visuel
+    slide.addText("Marqueurs", {
+      x: baseX - 0.2, y: imgBox.y - 0.2, w: 2, h: 0.4,
+      fontSize: 10, color: "111111",
+      fill: { color: "FFFFFF" }, line: { color: "DDDDDD" }
+    });
   }
 
-  // ========= Diapos Checklist (image gauche / texte droite) =========
+  // ========= Diapos Checklist =========
   function addChecklistSlides() {
-    // Slide 16:9 : 10" x 5.625"
     const SLIDE_W = 10.0;
     const MARGIN  = 0.5;
 
-    // Image à gauche
-    const IMG = { x: MARGIN, y: 1.1, w: 6.5, h: 4.8 };       // fin à 7.0"
-    // Zone de texte à droite (dans les 10")
-    const BOX = { x: 7.2, y: 1.1, w: SLIDE_W - 7.2 - MARGIN, h: 4.8 }; // 7.2 → 9.5"
+    const IMG = { x: MARGIN, y: 1.1, w: 6.5, h: 4.8 };             // image gauche
+    const BOX = { x: 7.2, y: 1.1, w: SLIDE_W - 7.2 - MARGIN, h: 4.8 }; // texte droite
 
     const items = [
       { file: "file1", comment: "comment1", title: "Plan d'implantation" },
@@ -146,15 +147,14 @@ function createPowerPoint() {
       const comment   = document.getElementById(item.comment)?.value || "—";
       const slide     = pptx.addSlide();
 
-      // Titre
       slide.addText(item.title, { x: MARGIN, y: 0.5, fontSize: 24, bold: true });
 
-      // Zone de texte à droite (lisible)
+      // Zone texte droite avec shape rect
       slide.addText(comment, {
         x: BOX.x, y: BOX.y, w: BOX.w, h: BOX.h,
-        shape: pptx.ShapeType.rect,
-        fill: { color: "FFFFFF" },   // fond blanc
-        line: { color: "AAAAAA" },   // bordure grise
+        shape: PptxGenJS.ShapeType.rect,
+        fill: { color: "FFFFFF" },
+        line: { color: "AAAAAA" },
         margin: 0.12,
         fontSize: 18,
         color: "111111",
@@ -164,7 +164,6 @@ function createPowerPoint() {
         paraSpaceAfter: 6
       });
 
-      // Image à gauche
       const injectImage = (dataUrl) => {
         if (dataUrl) {
           slide.addImage({
@@ -173,8 +172,6 @@ function createPowerPoint() {
             sizing: { type: "contain", w: IMG.w, h: IMG.h }
           });
         }
-
-        // Marqueurs uniquement pour la diapo Plan d'implantation
         if (item.title.toLowerCase().includes("implantation")) {
           addMoveableMarkers(slide, IMG);
         }
@@ -207,7 +204,7 @@ function createPowerPoint() {
     }
   }
 
-  // ========= Séquencement =========
+  // ========= Séquence =========
   if (coverImageInp?.files?.length > 0) {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -222,3 +219,4 @@ function createPowerPoint() {
     addChecklistSlides();
   }
 }
+
