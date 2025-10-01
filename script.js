@@ -3,7 +3,9 @@
 // -----------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("Page prête. PptxGenJS chargé ?", typeof PptxGenJS !== "undefined");
+  console.log("PptxGenJS chargé ?", typeof PptxGenJS !== "undefined");
+  // au cas où tu utilises un onclick HTML, on expose aussi la fonction :
+  window.createPowerPoint = createPowerPoint;
   document.getElementById("exportBtn")?.addEventListener("click", createPowerPoint);
 });
 
@@ -15,48 +17,49 @@ function createPowerPoint() {
   btn?.setAttribute("aria-busy", "true");
 
   if (typeof PptxGenJS === "undefined") {
-    console.error("PptxGenJS non chargé.");
-    alert("La librairie PptxGenJS n'est pas chargée.");
+    alert("PptxGenJS n'est pas chargé.");
     btn?.removeAttribute("aria-busy");
     btn?.removeAttribute("disabled");
     return;
   }
 
   const pptx = new PptxGenJS();
-  pptx.layout = "LAYOUT_WIDE"; // 16:9 (10" x 5.625")
+  pptx.layout = "LAYOUT_WIDE"; // 16:9 (10 x 5.625")
 
-  // ======== Récupération des champs du formulaire ========
-  const clientName    = document.getElementById("clientName")?.value || "";
-  const rae           = document.getElementById("rae")?.value || "";
-  const power         = document.getElementById("power")?.value || "";
-  const commercial    = document.getElementById("commercial")?.value || "";
-  const raeClient     = document.getElementById("raeClient")?.value || "";
+  // ========= Récupération des champs =========
+  const getVal = (id) => document.getElementById(id)?.value || "";
+
+  const clientName    = getVal("clientName");
+  const rae           = getVal("rae");
+  const power         = getVal("power");
+  const commercial    = getVal("commercial");
+  const raeClient     = getVal("raeClient");
   const coverImageInp = document.getElementById("coverImage");
 
   // Nouveaux champs
-  const clientAddress = document.getElementById("clientAddress")?.value || "";
-  const siret         = document.getElementById("siret")?.value || "";
-  const oppoNumber    = document.getElementById("oppoNumber")?.value || "";
-  const nbBornes      = document.getElementById("nbBornes")?.value || "";
-  const bornesPower   = document.getElementById("bornesPower")?.value || "";
+  const clientAddress = getVal("clientAddress");
+  const siret         = getVal("siret");
+  const oppoNumber    = getVal("oppoNumber");
+  const nbBornes      = getVal("nbBornes");
+  const bornesPower   = getVal("bornesPower");
 
-  // ======== Diapo 1 : Couverture ========
+  // ========= Diapo 1 : Couverture =========
   function addCoverSlide(imageData) {
     const slide = pptx.addSlide();
     slide.background = { fill: "363636" };
 
     const lines = [];
-    if (clientName)   lines.push({ text: `Client : ${clientName}\n`,    options: { fontSize: 20, color: "FFFFFF", bold: true } });
-    if (rae)          lines.push({ text: `RAE : ${rae}\n`,              options: { fontSize: 16, color: "FFFFFF" } });
-    if (power)        lines.push({ text: `Puissance : ${power}\n`,      options: { fontSize: 16, color: "FFFFFF" } });
-    if (commercial)   lines.push({ text: `Commercial : ${commercial}\n`,options: { fontSize: 16, color: "FFFFFF" } });
+    if (clientName)   lines.push({ text: `Client : ${clientName}\n`,      options: { fontSize: 20, color: "FFFFFF", bold: true } });
+    if (rae)          lines.push({ text: `RAE : ${rae}\n`,                options: { fontSize: 16, color: "FFFFFF" } });
+    if (power)        lines.push({ text: `Puissance : ${power}\n`,        options: { fontSize: 16, color: "FFFFFF" } });
+    if (commercial)   lines.push({ text: `Commercial : ${commercial}\n`,  options: { fontSize: 16, color: "FFFFFF" } });
 
-    // Nouveaux champs
-    if (clientAddress) lines.push({ text: `Adresse : ${clientAddress}\n`,            options: { fontSize: 16, color: "FFFFFF" } });
-    if (siret)         lines.push({ text: `SIRET : ${siret}\n`,                      options: { fontSize: 16, color: "FFFFFF" } });
-    if (oppoNumber)    lines.push({ text: `Numéro Oppo : ${oppoNumber}\n`,          options: { fontSize: 16, color: "FFFFFF" } });
-    if (nbBornes)      lines.push({ text: `Nombre de bornes : ${nbBornes}\n`,       options: { fontSize: 16, color: "FFFFFF" } });
-    if (bornesPower)   lines.push({ text: `Puissance des bornes : ${bornesPower}\n`,options: { fontSize: 16, color: "FFFFFF" } });
+    // Ajouts
+    if (clientAddress) lines.push({ text: `Adresse : ${clientAddress}\n`,              options: { fontSize: 16, color: "FFFFFF" } });
+    if (siret)         lines.push({ text: `SIRET : ${siret}\n`,                        options: { fontSize: 16, color: "FFFFFF" } });
+    if (oppoNumber)    lines.push({ text: `Numéro Oppo : ${oppoNumber}\n`,            options: { fontSize: 16, color: "FFFFFF" } });
+    if (nbBornes)      lines.push({ text: `Nombre de bornes : ${nbBornes}\n`,         options: { fontSize: 16, color: "FFFFFF" } });
+    if (bornesPower)   lines.push({ text: `Puissance des bornes : ${bornesPower}\n`,  options: { fontSize: 16, color: "FFFFFF" } });
 
     lines.push({
       text: "Projet d’infrastructure de recharge pour véhicules électriques",
@@ -76,21 +79,21 @@ function createPowerPoint() {
     }
   }
 
-  // ======== Diapo 2 : RAE Client ========
+  // ========= Diapo 2 : RAE Client =========
   function addRAESlide() {
     const slide = pptx.addSlide();
     slide.addText("RAE du client", { x: 0.5, y: 0.5, fontSize: 24, bold: true });
     slide.addText(raeClient || "—", { x: 0.5, y: 1.5, fontSize: 18, w: "90%", h: "70%", color: "363636" });
   }
 
-  // ======== Marqueurs déplaçables (Plan d’implantation) ========
+  // ========= Marqueurs déplaçables (ellipse/carrés) =========
   function addMoveableMarkers(slide, imgBox) {
-    // On place les marqueurs DANS la zone image (coin haut droit) pour être visibles et manipulables
+    // Dans la zone image (coin haut-droit)
     const baseX = imgBox.x + imgBox.w - 1.2;
     let y = imgBox.y + 0.2;
 
-    // Ovale contour vert, épais (remplissage transparent)
-    slide.addShape(pptx.shapes.OVAL, {
+    // Ellipse contour vert épais (remplissage transparent)
+    slide.addShape(pptx.ShapeType.ellipse, {
       x: baseX, y, w: 0.7, h: 1.5,
       line: { color: "3A8F2D", width: 6 },
       fill: { color: "FFFFFF", transparency: 100 }
@@ -99,7 +102,7 @@ function createPowerPoint() {
     y += 1.8;
 
     // Carré jaune
-    slide.addShape(pptx.shapes.RECTANGLE, {
+    slide.addShape(pptx.ShapeType.rect, {
       x: baseX, y, w: 0.8, h: 0.8,
       fill: { color: "FFD24D" },
       line: { color: "C2A23B", width: 2 }
@@ -108,23 +111,22 @@ function createPowerPoint() {
     y += 1.0;
 
     // Carré rouge
-    slide.addShape(pptx.shapes.RECTANGLE, {
+    slide.addShape(pptx.ShapeType.rect, {
       x: baseX, y, w: 0.8, h: 0.8,
       fill: { color: "FF2B2B" },
       line: { color: "B00000", width: 2 }
     });
   }
 
-  // ======== Diapos Checklist : image à gauche / texte à droite ========
+  // ========= Diapos Checklist (image gauche / texte droite) =========
   function addChecklistSlides() {
-    // Dimensions slide 16:9 : 10" x 5.625"
+    // Slide 16:9 : 10" x 5.625"
     const SLIDE_W = 10.0;
     const MARGIN  = 0.5;
 
-    // Zone image à gauche
-    const IMG = { x: MARGIN, y: 1.1, w: 6.5, h: 4.8 }; // se termine à 7.0"
-
-    // Zone de texte à droite (A L'INTERIEUR de la slide)
+    // Image à gauche
+    const IMG = { x: MARGIN, y: 1.1, w: 6.5, h: 4.8 };       // fin à 7.0"
+    // Zone de texte à droite (dans les 10")
     const BOX = { x: 7.2, y: 1.1, w: SLIDE_W - 7.2 - MARGIN, h: 4.8 }; // 7.2 → 9.5"
 
     const items = [
@@ -150,10 +152,10 @@ function createPowerPoint() {
       // Zone de texte à droite (lisible)
       slide.addText(comment, {
         x: BOX.x, y: BOX.y, w: BOX.w, h: BOX.h,
-        shape: pptx.shapes.RECTANGLE,
-        fill: { color: "FFFFFF" },   // fond blanc pour la lisibilité
+        shape: pptx.ShapeType.rect,
+        fill: { color: "FFFFFF" },   // fond blanc
         line: { color: "AAAAAA" },   // bordure grise
-        margin: 0.12,                // marge interne
+        margin: 0.12,
         fontSize: 18,
         color: "111111",
         align: "left",
@@ -172,7 +174,7 @@ function createPowerPoint() {
           });
         }
 
-        // Marqueurs uniquement pour "Plan d'implantation"
+        // Marqueurs uniquement pour la diapo Plan d'implantation
         if (item.title.toLowerCase().includes("implantation")) {
           addMoveableMarkers(slide, IMG);
         }
@@ -205,10 +207,10 @@ function createPowerPoint() {
     }
   }
 
-  // ======== Lancement séquencé ========
+  // ========= Séquencement =========
   if (coverImageInp?.files?.length > 0) {
     const reader = new FileReader();
-    reader.onload = function (e) {
+    reader.onload = (e) => {
       addCoverSlide(e.target.result);
       addRAESlide();
       addChecklistSlides();
@@ -219,9 +221,4 @@ function createPowerPoint() {
     addRAESlide();
     addChecklistSlides();
   }
-}
-
-// Fallback global pour compatibilité avec onclick="createPowerPoint()"
-if (typeof window !== "undefined") {
-  window.createPowerPoint = createPowerPoint;
 }
