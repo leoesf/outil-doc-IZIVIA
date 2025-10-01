@@ -23,9 +23,9 @@ function createPowerPoint() {
   }
 
   const pptx = new PptxGenJS();
-  pptx.layout = "LAYOUT_WIDE"; // 16:9
+  pptx.layout = "LAYOUT_WIDE"; // 16:9 (10" x 5.625")
 
-  // ======== Récupération des champs ========
+  // ======== Récupération des champs du formulaire ========
   const clientName    = document.getElementById("clientName")?.value || "";
   const rae           = document.getElementById("rae")?.value || "";
   const power         = document.getElementById("power")?.value || "";
@@ -46,17 +46,17 @@ function createPowerPoint() {
     slide.background = { fill: "363636" };
 
     const lines = [];
-    if (clientName)   lines.push({ text: `Client : ${clientName}\n`,   options: { fontSize: 20, color: "FFFFFF", bold: true } });
-    if (rae)          lines.push({ text: `RAE : ${rae}\n`,             options: { fontSize: 16, color: "FFFFFF" } });
-    if (power)        lines.push({ text: `Puissance : ${power}\n`,     options: { fontSize: 16, color: "FFFFFF" } });
-    if (commercial)   lines.push({ text: `Commercial : ${commercial}\n`, options: { fontSize: 16, color: "FFFFFF" } });
+    if (clientName)   lines.push({ text: `Client : ${clientName}\n`,    options: { fontSize: 20, color: "FFFFFF", bold: true } });
+    if (rae)          lines.push({ text: `RAE : ${rae}\n`,              options: { fontSize: 16, color: "FFFFFF" } });
+    if (power)        lines.push({ text: `Puissance : ${power}\n`,      options: { fontSize: 16, color: "FFFFFF" } });
+    if (commercial)   lines.push({ text: `Commercial : ${commercial}\n`,options: { fontSize: 16, color: "FFFFFF" } });
 
     // Nouveaux champs
-    if (clientAddress) lines.push({ text: `Adresse : ${clientAddress}\n`, options: { fontSize: 16, color: "FFFFFF" } });
-    if (siret)         lines.push({ text: `SIRET : ${siret}\n`,           options: { fontSize: 16, color: "FFFFFF" } });
-    if (oppoNumber)    lines.push({ text: `Numéro Oppo : ${oppoNumber}\n`,options: { fontSize: 16, color: "FFFFFF" } });
-    if (nbBornes)      lines.push({ text: `Nombre de bornes : ${nbBornes}\n`, options: { fontSize: 16, color: "FFFFFF" } });
-    if (bornesPower)   lines.push({ text: `Puissance des bornes : ${bornesPower}\n`, options: { fontSize: 16, color: "FFFFFF" } });
+    if (clientAddress) lines.push({ text: `Adresse : ${clientAddress}\n`,            options: { fontSize: 16, color: "FFFFFF" } });
+    if (siret)         lines.push({ text: `SIRET : ${siret}\n`,                      options: { fontSize: 16, color: "FFFFFF" } });
+    if (oppoNumber)    lines.push({ text: `Numéro Oppo : ${oppoNumber}\n`,          options: { fontSize: 16, color: "FFFFFF" } });
+    if (nbBornes)      lines.push({ text: `Nombre de bornes : ${nbBornes}\n`,       options: { fontSize: 16, color: "FFFFFF" } });
+    if (bornesPower)   lines.push({ text: `Puissance des bornes : ${bornesPower}\n`,options: { fontSize: 16, color: "FFFFFF" } });
 
     lines.push({
       text: "Projet d’infrastructure de recharge pour véhicules électriques",
@@ -66,7 +66,7 @@ function createPowerPoint() {
     // Texte à gauche
     slide.addText(lines, { x: 0.5, y: 0.5, w: 5.8, h: 6.2 });
 
-    // Image à droite (si fournie)
+    // Image de couverture à droite (si fournie)
     if (imageData) {
       slide.addImage({
         data: imageData,
@@ -83,46 +83,49 @@ function createPowerPoint() {
     slide.addText(raeClient || "—", { x: 0.5, y: 1.5, fontSize: 18, w: "90%", h: "70%", color: "363636" });
   }
 
-  // ======== Aide : ajoute les "marqueurs" déplaçables sur la diapo Plan d'implantation ========
+  // ======== Marqueurs déplaçables (Plan d’implantation) ========
   function addMoveableMarkers(slide, imgBox) {
-    // On place 3 formes au bord droit de la zone image (pour être faciles à attraper puis déplacer).
-    const baseX = imgBox.x + imgBox.w - 0.7; // petit décalage vers la gauche
+    // On place les marqueurs DANS la zone image (coin haut droit) pour être visibles et manipulables
+    const baseX = imgBox.x + imgBox.w - 1.2;
     let y = imgBox.y + 0.2;
 
-    // Ovale contour vert (remplissage transparent)
+    // Ovale contour vert, épais (remplissage transparent)
     slide.addShape(pptx.shapes.OVAL, {
-      x: baseX, y, w: 0.55, h: 1.2,
-      line: { color: "6FB049", width: 4 },
+      x: baseX, y, w: 0.7, h: 1.5,
+      line: { color: "3A8F2D", width: 6 },
       fill: { color: "FFFFFF", transparency: 100 }
     });
 
-    y += 1.35;
+    y += 1.8;
 
     // Carré jaune
     slide.addShape(pptx.shapes.RECTANGLE, {
-      x: baseX, y, w: 0.65, h: 0.65,
-      fill: { color: "FFD666" },
-      line: { color: "C9A93A" }
+      x: baseX, y, w: 0.8, h: 0.8,
+      fill: { color: "FFD24D" },
+      line: { color: "C2A23B", width: 2 }
     });
 
-    y += 0.85;
+    y += 1.0;
 
     // Carré rouge
     slide.addShape(pptx.shapes.RECTANGLE, {
-      x: baseX, y, w: 0.65, h: 0.65,
-      fill: { color: "FF0000" },
-      line: { color: "B00000" }
+      x: baseX, y, w: 0.8, h: 0.8,
+      fill: { color: "FF2B2B" },
+      line: { color: "B00000", width: 2 }
     });
-
-    // (Option) Petite légende en haut à droite
-    // slide.addText("Marqueurs à déplacer →", { x: baseX - 2.8, y: imgBox.y - 0.4, fontSize: 12, color: "666666", italic: true });
   }
 
-  // ======== Diapos Checklist : Image à gauche / texte à droite ========
+  // ======== Diapos Checklist : image à gauche / texte à droite ========
   function addChecklistSlides() {
-    // Layout zones
-    const IMG = { x: 0.5, y: 1.2, w: 6.8, h: 4.8 }; // image à gauche
-    const BOX = { x: 7.6, y: 1.2, w: 3.4, h: 4.8 }; // zone de texte à droite
+    // Dimensions slide 16:9 : 10" x 5.625"
+    const SLIDE_W = 10.0;
+    const MARGIN  = 0.5;
+
+    // Zone image à gauche
+    const IMG = { x: MARGIN, y: 1.1, w: 6.5, h: 4.8 }; // se termine à 7.0"
+
+    // Zone de texte à droite (A L'INTERIEUR de la slide)
+    const BOX = { x: 7.2, y: 1.1, w: SLIDE_W - 7.2 - MARGIN, h: 4.8 }; // 7.2 → 9.5"
 
     const items = [
       { file: "file1", comment: "comment1", title: "Plan d'implantation" },
@@ -142,18 +145,21 @@ function createPowerPoint() {
       const slide     = pptx.addSlide();
 
       // Titre
-      slide.addText(item.title, { x: 0.5, y: 0.5, fontSize: 24, bold: true });
+      slide.addText(item.title, { x: MARGIN, y: 0.5, fontSize: 24, bold: true });
 
-      // Zone de texte à droite
+      // Zone de texte à droite (lisible)
       slide.addText(comment, {
         x: BOX.x, y: BOX.y, w: BOX.w, h: BOX.h,
-        shape: pptx.shapes.ROUNDED_RECTANGLE,
-        fill: { color: "F3F4F6" },
-        line: { color: "D1D5DB" },
-        fontSize: 16,
-        color: "363636",
+        shape: pptx.shapes.RECTANGLE,
+        fill: { color: "FFFFFF" },   // fond blanc pour la lisibilité
+        line: { color: "AAAAAA" },   // bordure grise
+        margin: 0.12,                // marge interne
+        fontSize: 18,
+        color: "111111",
         align: "left",
-        valign: "top"
+        valign: "top",
+        bullet: false,
+        paraSpaceAfter: 6
       });
 
       // Image à gauche
@@ -166,7 +172,7 @@ function createPowerPoint() {
           });
         }
 
-        // 👉 Si c'est la diapo "Plan d'implantation", on ajoute les 3 marqueurs déplaçables
+        // Marqueurs uniquement pour "Plan d'implantation"
         if (item.title.toLowerCase().includes("implantation")) {
           addMoveableMarkers(slide, IMG);
         }
@@ -219,4 +225,3 @@ function createPowerPoint() {
 if (typeof window !== "undefined") {
   window.createPowerPoint = createPowerPoint;
 }
-
