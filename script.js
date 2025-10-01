@@ -33,7 +33,7 @@ function createPowerPoint() {
     if (power)        textBox.push({ text: `Puissance : ${power}\n`,            options: { fontSize: 16, color: "FFFFFF" } });
     if (commercial)   textBox.push({ text: `Commercial : ${commercial}\n`,      options: { fontSize: 16, color: "FFFFFF" } });
 
-    // ➕ Lignes ajoutées
+    
     if (clientAddress) textBox.push({ text: `Adresse : ${clientAddress}\n`,     options: { fontSize: 16, color: "FFFFFF" } });
     if (siret)         textBox.push({ text: `SIRET : ${siret}\n`,               options: { fontSize: 16, color: "FFFFFF" } });
     if (oppoNumber)    textBox.push({ text: `Numéro Oppo : ${oppoNumber}\n`,    options: { fontSize: 16, color: "FFFFFF" } });
@@ -135,3 +135,5 @@ function createPowerPoint() {
   }
 }
 
+
+if (typeof window !== "undefined") window.createPowerPoint = createPowerPoint;
