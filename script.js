@@ -2,23 +2,38 @@
 // Génération du PowerPoint (PptxGenJS v3.x)
 // - Commentaires à DROITE de la photo (textbox large, déplaçable)
 // - Rubriques doublées (2 slides par rubrique)
-// - "RAE du client" renommé en "Compléments d’informations"
+// - "RAE du client" -> "Compléments d’informations"
 // - PAS d'image de couverture
-// - Téléchargement robuste: writeFile -> fallback blob
+// - Téléchargement robuste: writeFile -> blob
 // -----------------------------------------------------------
 
-document.addEventListener("DOMContentLoaded", () => {
-  const PptxCtor = window.PptxGenJS || window.pptxgen; // accepte les 2 globals
-  console.log(
-    "Pptx present ?",
-    !!PptxCtor,
-    " (PptxGenJS:", !!window.PptxGenJS,
-    ", pptxgen:", !!window.pptxgen, ")"
-  );
+(function initWhenReady() {
+  const start = () => {
+    const ctor = window.PptxGenJS || window.pptxgen;
+    console.log("Pptx present ?", !!ctor, " (PptxGenJS:", !!window.PptxGenJS, ", pptxgen:", !!window.pptxgen, ")");
 
-  window.createPowerPoint = createPowerPoint;
-  document.getElementById("exportBtn")?.addEventListener("click", createPowerPoint);
-});
+    if (!ctor) {
+      const st = document.getElementById("pptxStatus");
+      if (st) st.textContent = "PptxGenJS non détecté. (vérifie le réseau/CDN)";
+      return; // on ne force pas d'alerte ici, le loader gère déjà
+    }
+
+    // Bouton Export
+    const btn = document.getElementById("exportBtn");
+    if (btn) {
+      btn.addEventListener("click", createPowerPoint);
+      btn.disabled = false;
+    }
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
+      (window.__pptxReady || Promise.resolve()).finally(start);
+    });
+  } else {
+    (window.__pptxReady || Promise.resolve()).finally(start);
+  }
+})();
 
 /** Téléchargement avec fallback : writeFile -> blob + lien */
 async function savePptx(pptx, fileName) {
@@ -29,7 +44,7 @@ async function savePptx(pptx, fileName) {
       return;
     }
   } catch (e) {
-    console.warn("[savePptx] writeFile a échoué, on tente en blob…", e);
+    console.warn("[savePptx] writeFile a échoué, tentative blob…", e);
   }
 
   try {
@@ -61,7 +76,7 @@ function createPowerPoint() {
   btn?.setAttribute("aria-busy", "true");
 
   if (!PptxCtor) {
-    alert("PptxGenJS n'est pas chargé (réseau/CDN ?). Recharge la page ou vérifie les scripts.");
+    alert("PptxGenJS n'est pas chargé (réseau/CDN ?). Vérifie le message de statut sous le bouton.");
     btn?.removeAttribute("aria-busy");
     btn?.removeAttribute("disabled");
     return;
@@ -85,7 +100,7 @@ function createPowerPoint() {
   const bornesPower   = getVal("bornesPower");
 
   // ---------- Diapo 1 : Informations client ----------
-  function addInfoSlide() {
+  (function addInfoSlide() {
     const slide = pptx.addSlide();
     slide.background = { color: "363636" };
 
@@ -101,10 +116,10 @@ function createPowerPoint() {
     if (bornesPower)   lines.push({ text: `Puissance des bornes : ${bornesPower}\n`,options: { fontSize: 16, color: "FFFFFF" } });
 
     slide.addText(lines, { x: 0.6, y: 0.6, w: 8.8, h: 5.0 });
-  }
+  })();
 
   // ---------- Diapo 2 : Compléments d’informations ----------
-  function addComplementsSlide() {
+  (function addComplementsSlide() {
     const slide = pptx.addSlide();
     slide.addText("Compléments d’informations", { x: 0.6, y: 0.6, fontSize: 24, bold: true });
     slide.addText(infoComplem || "—", {
@@ -112,10 +127,10 @@ function createPowerPoint() {
       fontSize: 18, color: "363636", valign: "top",
       fill: { color: "FFFFFF" }, line: { color: "AAAAAA" }, margin: 0.14
     });
-  }
+  })();
 
   // ---------- Checklist : photo à gauche, commentaire à droite ----------
-  function addChecklistSlides() {
+  (function addChecklistSlides() {
     const SLIDE_W = 10.0;
     const MARGIN  = 0.5;
 
@@ -172,7 +187,7 @@ function createPowerPoint() {
           reader.onload = (e) => injectImage(e.target.result);
           reader.onerror = (err) => {
             console.warn(`[FileReader] Lecture échouée pour ${fileId}:`, err);
-            injectImage(null); // on avance quand même
+            injectImage(null);
           };
           reader.readAsDataURL(fileInput.files[0]);
         } else {
@@ -200,10 +215,5 @@ function createPowerPoint() {
           });
       }
     }
-  }
-
-  // ---------- Exécution ----------
-  addInfoSlide();
-  addComplementsSlide();
-  addChecklistSlides();
+  })();
 }
