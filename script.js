@@ -17,7 +17,7 @@ function createPowerPoint() {
   }
 
   const pptx = new PptxGenJS();
-  pptx.layout = "LAYOUT_WIDE";
+  pptx.layout = "LAYOUT_WIDE"; // 16:9
 
   const getVal = (id) => document.getElementById(id)?.value || "";
 
@@ -33,7 +33,7 @@ function createPowerPoint() {
   const nbBornes      = getVal("nbBornes");
   const bornesPower   = getVal("bornesPower");
 
-  // ---------------- Diapo 1 : Informations client ----------------
+  // ---------- Diapo 1 : Informations client ----------
   function addInfoSlide() {
     const slide = pptx.addSlide();
     slide.background = { color: "363636" };
@@ -49,31 +49,39 @@ function createPowerPoint() {
     if (nbBornes)      lines.push({ text: `Nombre de bornes : ${nbBornes}\n`,options: { fontSize: 16, color: "FFFFFF" } });
     if (bornesPower)   lines.push({ text: `Puissance des bornes : ${bornesPower}\n`,options: { fontSize: 16, color: "FFFFFF" } });
 
-    slide.addText(lines, { x: 0.5, y: 0.5, w: 9, h: 6 });
+    slide.addText(lines, { x: 0.6, y: 0.6, w: 8.8, h: 5.0 });
   }
 
-  // ---------------- Diapo 2 : Compléments ----------------
+  // ---------- Diapo 2 : Compléments d’informations ----------
   function addComplementsSlide() {
     const slide = pptx.addSlide();
-    slide.background = { color: "FFFFFF" };
-    slide.addText("Compléments d’informations", { x: 0.5, y: 0.5, fontSize: 24, bold: true });
-    slide.addText(infoComplem || "—", { x: 0.5, y: 1.1, w: 9, h: 4.2, fontSize: 18, color: "363636", valign: "top" });
+    slide.addText("Compléments d’informations", { x: 0.6, y: 0.6, fontSize: 24, bold: true });
+    slide.addText(infoComplem || "—", {
+      x: 0.6, y: 1.2, w: 8.8, h: 4.2,
+      fontSize: 18, color: "363636", valign: "top",
+      fill: { color: "FFFFFF" }, line: { color: "AAAAAA" }, margin: 0.14
+    });
   }
 
-  // ---------------- Checklist ----------------
+  // ---------- Checklist : photo à gauche, commentaire à droite ----------
   function addChecklistSlides() {
+    // Slide 16:9 : 10" x 5.625"
     const SLIDE_W = 10.0;
     const MARGIN  = 0.5;
-    const IMG = { x: MARGIN, y: 1.1, w: 6.5, h: 4.8 };
-    const BOX = { x: 7.2, y: 1.1, w: SLIDE_W - 7.2 - MARGIN, h: 4.8 };
+
+    // Image à gauche
+    const IMG = { x: MARGIN, y: 1.1, w: 6.3, h: 4.6 };
+
+    // Zone de texte à droite (grande, déplaçable)
+    const BOX = { x: 7.1, y: 1.1, w: SLIDE_W - 7.1 - MARGIN, h: 4.6 };
 
     const items = [
-      { base: "Plan d'implantation",      pairs: [ ["file1a","comment1a"], ["file1b","comment1b"] ] },
-      { base: "Places à électrifier",     pairs: [ ["file2a","comment2a"], ["file2b","comment2b"] ] },
+      { base: "Plan d'implantation",        pairs: [ ["file1a","comment1a"], ["file1b","comment1b"] ] },
+      { base: "Places à électrifier",       pairs: [ ["file2a","comment2a"], ["file2b","comment2b"] ] },
       { base: "TGBT + disjoncteur de tête", pairs: [ ["file3a","comment3a"], ["file3b","comment3b"] ] },
-      { base: "Cheminement",              pairs: [ ["file4a","comment4a"], ["file4b","comment4b"] ] },
-      { base: "Plan du site",             pairs: [ ["file5a","comment5a"], ["file5b","comment5b"] ] },
-      { base: "Éléments complémentaires", pairs: [ ["file6a","comment6a"], ["file6b","comment6b"] ] }
+      { base: "Cheminement",                pairs: [ ["file4a","comment4a"], ["file4b","comment4b"] ] },
+      { base: "Plan du site",               pairs: [ ["file5a","comment5a"], ["file5b","comment5b"] ] },
+      { base: "Éléments complémentaires",   pairs: [ ["file6a","comment6a"], ["file6b","comment6b"] ] }
     ];
 
     let done = 0;
@@ -85,19 +93,32 @@ function createPowerPoint() {
         const comment   = document.getElementById(commentId)?.value || "—";
         const slide     = pptx.addSlide();
 
+        // Titre
         const title = `${rub.base} — ${idx === 0 ? "1" : "2"}`;
         slide.addText(title, { x: MARGIN, y: 0.5, fontSize: 24, bold: true });
 
+        // Zone de commentaire à droite (textbox large, bordurée, facilement déplaçable)
         slide.addText(comment, {
           x: BOX.x, y: BOX.y, w: BOX.w, h: BOX.h,
-          fill: { color: "FFFFFF" }, line: { color: "AAAAAA" },
-          margin: 0.12, fontSize: 18, color: "111111",
-          align: "left", valign: "top"
+          fontSize: 18, color: "111111",
+          fill: { color: "FFFFFF" },
+          line: { color: "AAAAAA", width: 1 },
+          margin: 0.14,
+          align: "left",
+          valign: "top",
+          bullet: false,
+          // garder une boîte fixe et spacieuse, pas d'auto-réduction
+          autoFit: false
         });
 
+        // Image à gauche (contain)
         const injectImage = (dataUrl) => {
           if (dataUrl) {
-            slide.addImage({ data: dataUrl, x: IMG.x, y: IMG.y, w: IMG.w, h: IMG.h, sizing: { type: "contain" } });
+            slide.addImage({
+              data: dataUrl,
+              x: IMG.x, y: IMG.y, w: IMG.w, h: IMG.h,
+              sizing: { type: "contain", w: IMG.w, h: IMG.h }
+            });
           }
           checkDone();
         };
@@ -129,8 +150,9 @@ function createPowerPoint() {
     }
   }
 
-  // ---------------- Exécution ----------------
+  // ---------- Exécution ----------
   addInfoSlide();
   addComplementsSlide();
   addChecklistSlides();
 }
+
