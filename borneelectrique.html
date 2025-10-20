@@ -22,8 +22,6 @@
   <input type="number" id="nbBornes" placeholder="Nombre de bornes" min="0" />
   <input type="text" id="bornesPower" placeholder="Puissance des bornes (ex: 2 x 22 kW)" />
 
-  <!-- Plus d'image de couverture -->
-
   <h2>Compléments d’informations</h2>
   <textarea id="raeClient" placeholder="Saisir les compléments d’informations ici..."></textarea>
 
@@ -98,11 +96,67 @@
     </ul>
 
     <button id="exportBtn">Exporter</button>
+    <p id="pptxStatus" style="margin-top:8px;color:#666;font-size:13px;"></p>
   </div>
 
-  <!-- ⚠️ Ne charge PAS ton ancien pptxgen.min.js local -->
-  <!-- ✅ Charge le bundle officiel (inclut JSZip) avant ton script -->
-  <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.11.1/dist/pptxgen.bundle.js"></script>
-  <script src="script.js"></script>
+  <!-- Loader multi-CDN pour PptxGenJS -->
+  <script>
+    (function () {
+      const statusEl = () => document.getElementById('pptxStatus');
+      function setStatus(msg, isError=false){
+        const el = statusEl(); if(!el) return;
+        el.textContent = msg; el.style.color = isError ? '#b00020' : '#666';
+      }
+
+      const CDNS = [
+        "https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.11.1/pptxgen.bundle.js",
+        "https://cdn.jsdelivr.net/npm/pptxgenjs@3.11.1/dist/pptxgen.bundle.js",
+        "https://unpkg.com/pptxgenjs@3.11.1/dist/pptxgen.bundle.js"
+      ];
+
+      function loadSequential(urls, onSuccess, onFail, idx=0) {
+        if (idx >= urls.length) { onFail(); return; }
+        const url = urls[idx];
+        setStatus(`Chargement de PptxGenJS… (source ${idx+1}/${urls.length})`);
+        const s = document.createElement('script');
+        s.src = url;
+        s.async = true;
+        s.onload = () => onSuccess(url);
+        s.onerror = () => loadSequential(urls, onSuccess, onFail, idx+1);
+        document.head.appendChild(s);
+      }
+
+      window.__pptxReady = new Promise((resolve, reject) => {
+        loadSequential(
+          CDNS,
+          (okUrl) => {
+            const ok = !!(window.PptxGenJS || window.pptxgen);
+            console.log("Pptx loaded from:", okUrl, "ok?", ok);
+            if (!ok) { reject(new Error("Global PptxGenJS absent après chargement.")); return; }
+            setStatus("PptxGenJS chargé ✅");
+            resolve();
+          },
+          () => {
+            setStatus("Impossible de charger PptxGenJS depuis les CDN.", true);
+            reject(new Error("CDN load failed"));
+          }
+        );
+      });
+
+      // Une fois PptxGenJS dispo, on charge le script applicatif
+      window.__pptxReady
+        .then(() => {
+          const app = document.createElement('script');
+          app.src = "script.js";
+          app.defer = true;
+          document.body.appendChild(app);
+        })
+        .catch((err) => {
+          console.error("PptxGenJS load failed:", err);
+          const btn = document.getElementById("exportBtn");
+          btn && (btn.disabled = true);
+        });
+    })();
+  </script>
 </body>
 </html>
