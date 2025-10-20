@@ -22,7 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 /** Téléchargement avec fallback : writeFile -> blob + lien */
 async function savePptx(pptx, fileName) {
-  // 1) tentative standard PptxGenJS (déclenche le download)
   try {
     if (typeof pptx.writeFile === "function") {
       await pptx.writeFile({ fileName });
@@ -33,7 +32,6 @@ async function savePptx(pptx, fileName) {
     console.warn("[savePptx] writeFile a échoué, on tente en blob…", e);
   }
 
-  // 2) fallback : on génère un blob puis on force un clic sur un lien invisible
   try {
     const blob = await pptx.write("blob");
     const url = URL.createObjectURL(blob);
@@ -193,9 +191,8 @@ function createPowerPoint() {
 
         const fileName = `Borne_Electrique_${safeName}.pptx`;
 
-        // ===== Téléchargement robuste =====
         savePptx(pptx, fileName)
-          .catch(() => {}) // l’alerte a déjà été faite dans savePptx
+          .catch(() => {})
           .finally(() => {
             const btn = document.getElementById("exportBtn");
             btn?.removeAttribute("aria-busy");
