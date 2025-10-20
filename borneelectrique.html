@@ -4,8 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Borne Électrique</title>
-
-  <!-- ⚠️ Tu peux garder "styles.css" ou le renommer; ça n'impacte pas PptxGenJS -->
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -17,122 +15,94 @@
   <input type="text" id="power" placeholder="Puissance souscrite / max" />
   <input type="text" id="commercial" placeholder="Nom du commercial" />
 
-  <!-- Champs complémentaires -->
+  <!-- Nouveaux champs -->
   <input type="text" id="clientAddress" placeholder="Adresse du client" />
   <input type="text" id="siret" placeholder="SIRET" />
   <input type="text" id="oppoNumber" placeholder="Numéro Oppo" />
   <input type="number" id="nbBornes" placeholder="Nombre de bornes" min="0" />
   <input type="text" id="bornesPower" placeholder="Puissance des bornes (ex: 2 x 22 kW)" />
 
+  <!-- Plus d'image de couverture -->
+
   <h2>Compléments d’informations</h2>
   <textarea id="raeClient" placeholder="Saisir les compléments d’informations ici..."></textarea>
 
   <div id="checklist">
-    <h2>Checklist (2 jeux de photos & commentaires par rubrique)</h2>
+    <h2>Checklist (deux photos + commentaires par rubrique)</h2>
     <ul>
       <li>
-        <label><strong>Plan d'implantation</strong> — Photo & Commentaire #1</label>
+        <label>Plan d'implantation — 1</label>
         <input type="file" accept="image/*" id="file1a" capture="environment" />
-        <textarea id="comment1a" placeholder="Commentaire #1"></textarea>
-
-        <label>— Photo & Commentaire #2</label>
+        <textarea id="comment1a" placeholder="Commentaire"></textarea>
+      </li>
+      <li>
+        <label>Plan d'implantation — 2</label>
         <input type="file" accept="image/*" id="file1b" capture="environment" />
-        <textarea id="comment1b" placeholder="Commentaire #2"></textarea>
+        <textarea id="comment1b" placeholder="Commentaire"></textarea>
       </li>
 
       <li>
-        <label><strong>Places à électrifier</strong> — Photo & Commentaire #1</label>
+        <label>Places à électrifier — 1</label>
         <input type="file" accept="image/*" id="file2a" capture="environment" />
-        <textarea id="comment2a" placeholder="Commentaire #1"></textarea>
-
-        <label>— Photo & Commentaire #2</label>
+        <textarea id="comment2a" placeholder="Commentaire"></textarea>
+      </li>
+      <li>
+        <label>Places à électrifier — 2</label>
         <input type="file" accept="image/*" id="file2b" capture="environment" />
-        <textarea id="comment2b" placeholder="Commentaire #2"></textarea>
+        <textarea id="comment2b" placeholder="Commentaire"></textarea>
       </li>
 
       <li>
-        <label><strong>TGBT + disjoncteur de tête</strong> — Photo & Commentaire #1</label>
+        <label>TGBT + disjoncteur de tête — 1</label>
         <input type="file" accept="image/*" id="file3a" capture="environment" />
-        <textarea id="comment3a" placeholder="Commentaire #1"></textarea>
-
-        <label>— Photo & Commentaire #2</label>
+        <textarea id="comment3a" placeholder="Commentaire"></textarea>
+      </li>
+      <li>
+        <label>TGBT + disjoncteur de tête — 2</label>
         <input type="file" accept="image/*" id="file3b" capture="environment" />
-        <textarea id="comment3b" placeholder="Commentaire #2"></textarea>
+        <textarea id="comment3b" placeholder="Commentaire"></textarea>
       </li>
 
       <li>
-        <label><strong>Cheminement</strong> — Photo & Commentaire #1</label>
+        <label>Cheminement — 1</label>
         <input type="file" accept="image/*" id="file4a" capture="environment" />
-        <textarea id="comment4a" placeholder="Commentaire #1"></textarea>
-
-        <label>— Photo & Commentaire #2</label>
+        <textarea id="comment4a" placeholder="Commentaire"></textarea>
+      </li>
+      <li>
+        <label>Cheminement — 2</label>
         <input type="file" accept="image/*" id="file4b" capture="environment" />
-        <textarea id="comment4b" placeholder="Commentaire #2"></textarea>
+        <textarea id="comment4b" placeholder="Commentaire"></textarea>
       </li>
 
       <li>
-        <label><strong>Plan du site</strong> — Photo & Commentaire #1</label>
+        <label>Plan du site — 1</label>
         <input type="file" accept="image/*" id="file5a" capture="environment" />
-        <textarea id="comment5a" placeholder="Commentaire #1"></textarea>
-
-        <label>— Photo & Commentaire #2</label>
+        <textarea id="comment5a" placeholder="Commentaire"></textarea>
+      </li>
+      <li>
+        <label>Plan du site — 2</label>
         <input type="file" accept="image/*" id="file5b" capture="environment" />
-        <textarea id="comment5b" placeholder="Commentaire #2"></textarea>
+        <textarea id="comment5b" placeholder="Commentaire"></textarea>
       </li>
 
       <li>
-        <label><strong>Éléments complémentaires</strong> — Photo & Commentaire #1</label>
+        <label>Éléments complémentaires — 1</label>
         <input type="file" accept="image/*" id="file6a" capture="environment" />
-        <textarea id="comment6a" placeholder="Commentaire #1"></textarea>
-
-        <label>— Photo & Commentaire #2</label>
+        <textarea id="comment6a" placeholder="Commentaire"></textarea>
+      </li>
+      <li>
+        <label>Éléments complémentaires — 2</label>
         <input type="file" accept="image/*" id="file6b" capture="environment" />
-        <textarea id="comment6b" placeholder="Commentaire #2"></textarea>
+        <textarea id="comment6b" placeholder="Commentaire"></textarea>
       </li>
     </ul>
 
     <button id="exportBtn">Exporter</button>
   </div>
 
-  <!-- =======================
-       Scripts requis (ORDRE)
-       ======================= -->
-
-  <!-- 1) JSZip en local -->
-  <script src="./jszip.min.js"></script>
-
-  <!-- 2) PptxGenJS (CDN principal) -->
-  <script
-    src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.11.1/dist/pptxgen.min.js"
-    crossorigin="anonymous"
-    onload="window.__pptxOk = true"
-    onerror="(function(){
-      // Fallback #1 : unpkg
-      var s=document.createElement('script');
-      s.src='https://unpkg.com/pptxgenjs@3.11.1/dist/pptxgen.min.js';
-      s.onload=function(){ window.__pptxOk = true; };
-      s.onerror=function(){
-        // Fallback #2 : local (mets le fichier à la racine sous ce nom)
-        var l=document.createElement('script');
-        l.src='./pptxgen.min.js';
-        l.onload=function(){ window.__pptxOk = true; };
-        document.head.appendChild(l);
-      };
-      document.head.appendChild(s);
-    })()"
-  ></script>
-
-  <!-- 3) Petit garde-fou : on attend que PptxGenJS soit chargé avant de lancer ton script -->
-  <script>
-    (function waitPptx(){
-      if (window.PptxGenJS || window.pptxgen) return loadApp();
-      setTimeout(waitPptx, 50);
-    })();
-    function loadApp(){
-      var s=document.createElement('script');
-      s.src='script.js';
-      document.body.appendChild(s);
-    }
-  </script>
+  <!-- ⚠️ Ne charge PAS ton ancien pptxgen.min.js local -->
+  <!-- ✅ Charge le bundle officiel (inclut JSZip) avant ton script -->
+  <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.11.1/dist/pptxgen.bundle.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
