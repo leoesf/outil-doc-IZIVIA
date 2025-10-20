@@ -7,7 +7,7 @@
 
   <link rel="stylesheet" href="styles.css" />
 
-  <!-- Librairies requises (ordre IMPORTANT) -->
+  <!-- Librairies requises -->
   <script src="./jszip.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.11.1/dist/pptxgen.min.js"></script>
 </head>
@@ -27,17 +27,13 @@
   <input type="number" id="nbBornes" placeholder="Nombre de bornes" min="0" />
   <input type="text" id="bornesPower" placeholder="Puissance des bornes (ex: 2 x 22 kW)" />
 
-  <h3>Image de couverture</h3>
-  <input type="file" accept="image/*" id="coverImage" capture="environment" />
-
-  <!-- 🔁 Renommé -->
+  <!-- 🆕 Renommé -->
   <h2>Compléments d’informations</h2>
   <textarea id="raeClient" placeholder="Saisir les compléments d’informations ici..."></textarea>
 
   <div id="checklist">
     <h2>Checklist (2 jeux de photos & commentaires par rubrique)</h2>
     <ul>
-      <!-- Plan d'implantation -->
       <li>
         <label><strong>Plan d'implantation</strong> — Photo & Commentaire #1</label>
         <input type="file" accept="image/*" id="file1a" capture="environment" />
@@ -48,7 +44,6 @@
         <textarea id="comment1b" placeholder="Commentaire #2"></textarea>
       </li>
 
-      <!-- Places à électrifier -->
       <li>
         <label><strong>Places à électrifier</strong> — Photo & Commentaire #1</label>
         <input type="file" accept="image/*" id="file2a" capture="environment" />
@@ -59,7 +54,6 @@
         <textarea id="comment2b" placeholder="Commentaire #2"></textarea>
       </li>
 
-      <!-- TGBT + disjoncteur de tête -->
       <li>
         <label><strong>TGBT + disjoncteur de tête</strong> — Photo & Commentaire #1</label>
         <input type="file" accept="image/*" id="file3a" capture="environment" />
@@ -70,7 +64,6 @@
         <textarea id="comment3b" placeholder="Commentaire #2"></textarea>
       </li>
 
-      <!-- Cheminement -->
       <li>
         <label><strong>Cheminement</strong> — Photo & Commentaire #1</label>
         <input type="file" accept="image/*" id="file4a" capture="environment" />
@@ -81,7 +74,6 @@
         <textarea id="comment4b" placeholder="Commentaire #2"></textarea>
       </li>
 
-      <!-- Plan du site -->
       <li>
         <label><strong>Plan du site</strong> — Photo & Commentaire #1</label>
         <input type="file" accept="image/*" id="file5a" capture="environment" />
@@ -92,7 +84,6 @@
         <textarea id="comment5b" placeholder="Commentaire #2"></textarea>
       </li>
 
-      <!-- Éléments complémentaires -->
       <li>
         <label><strong>Éléments complémentaires</strong> — Photo & Commentaire #1</label>
         <input type="file" accept="image/*" id="file6a" capture="environment" />
@@ -104,11 +95,9 @@
       </li>
     </ul>
 
-    <!-- Bouton Export -->
     <button id="exportBtn">Exporter</button>
   </div>
 
-  <!-- Script : génération du PowerPoint -->
   <script src="script.js"></script>
 </body>
 </html>
