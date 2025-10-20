@@ -4,15 +4,56 @@
 // - Rubriques doublées (2 slides par rubrique)
 // - "RAE du client" renommé en "Compléments d’informations"
 // - PAS d'image de couverture
+// - Téléchargement robuste: writeFile -> fallback blob
 // -----------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
-  const PptxCtor = window.PptxGenJS || window.pptxgen; // <-- accepte les 2 globals
-  console.log("Pptx present ?", !!PptxCtor, " (PptxGenJS:", !!window.PptxGenJS, ", pptxgen:", !!window.pptxgen, ")");
+  const PptxCtor = window.PptxGenJS || window.pptxgen; // accepte les 2 globals
+  console.log(
+    "Pptx present ?",
+    !!PptxCtor,
+    " (PptxGenJS:", !!window.PptxGenJS,
+    ", pptxgen:", !!window.pptxgen, ")"
+  );
 
   window.createPowerPoint = createPowerPoint;
   document.getElementById("exportBtn")?.addEventListener("click", createPowerPoint);
 });
+
+/** Téléchargement avec fallback : writeFile -> blob + lien */
+async function savePptx(pptx, fileName) {
+  // 1) tentative standard PptxGenJS (déclenche le download)
+  try {
+    if (typeof pptx.writeFile === "function") {
+      await pptx.writeFile({ fileName });
+      console.log("[savePptx] writeFile OK");
+      return;
+    }
+  } catch (e) {
+    console.warn("[savePptx] writeFile a échoué, on tente en blob…", e);
+  }
+
+  // 2) fallback : on génère un blob puis on force un clic sur un lien invisible
+  try {
+    const blob = await pptx.write("blob");
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.style.display = "none";
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    }, 1500);
+    console.log("[savePptx] blob fallback OK");
+  } catch (e2) {
+    console.error("[savePptx] blob fallback KO", e2);
+    alert("Le fichier n’a pas pu être généré.\nDétail: " + (e2 && e2.message ? e2.message : e2));
+    throw e2;
+  }
+}
 
 function createPowerPoint() {
   const PptxCtor = window.PptxGenJS || window.pptxgen;
@@ -22,7 +63,7 @@ function createPowerPoint() {
   btn?.setAttribute("aria-busy", "true");
 
   if (!PptxCtor) {
-    alert("PptxGenJS n'est pas chargé (réseau/CDN ?). Essaye de recharger la page ou vérifie les scripts.");
+    alert("PptxGenJS n'est pas chargé (réseau/CDN ?). Recharge la page ou vérifie les scripts.");
     btn?.removeAttribute("aria-busy");
     btn?.removeAttribute("disabled");
     return;
@@ -80,11 +121,8 @@ function createPowerPoint() {
     const SLIDE_W = 10.0;
     const MARGIN  = 0.5;
 
-    // Image à gauche
-    const IMG = { x: MARGIN, y: 1.1, w: 6.3, h: 4.6 };
-
-    // Zone de texte à droite (grande, déplaçable)
-    const BOX = { x: 7.1, y: 1.1, w: SLIDE_W - 7.1 - MARGIN, h: 4.6 };
+    const IMG = { x: MARGIN, y: 1.1, w: 6.3, h: 4.6 }; // image à gauche
+    const BOX = { x: 7.1, y: 1.1, w: SLIDE_W - 7.1 - MARGIN, h: 4.6 }; // texte à droite
 
     const items = [
       { base: "Plan d'implantation",        pairs: [ ["file1a","comment1a"], ["file1b","comment1b"] ] },
@@ -104,11 +142,10 @@ function createPowerPoint() {
         const comment   = document.getElementById(commentId)?.value || "—";
         const slide     = pptx.addSlide();
 
-        // Titre
         const title = `${rub.base} — ${idx === 0 ? "1" : "2"}`;
         slide.addText(title, { x: MARGIN, y: 0.5, fontSize: 24, bold: true });
 
-        // Zone de commentaire à droite
+        // Zone de commentaire à droite (grande & déplaçable)
         slide.addText(comment, {
           x: BOX.x, y: BOX.y, w: BOX.w, h: BOX.h,
           fontSize: 18, color: "111111",
@@ -135,6 +172,10 @@ function createPowerPoint() {
         if (fileInput?.files?.length > 0) {
           const reader = new FileReader();
           reader.onload = (e) => injectImage(e.target.result);
+          reader.onerror = (err) => {
+            console.warn(`[FileReader] Lecture échouée pour ${fileId}:`, err);
+            injectImage(null); // on avance quand même
+          };
           reader.readAsDataURL(fileInput.files[0]);
         } else {
           injectImage(null);
@@ -150,7 +191,11 @@ function createPowerPoint() {
           .trim()
           .replace(/\s+/g, "_");
 
-        pptx.writeFile({ fileName: `Borne_Electrique_${safeName}.pptx` })
+        const fileName = `Borne_Electrique_${safeName}.pptx`;
+
+        // ===== Téléchargement robuste =====
+        savePptx(pptx, fileName)
+          .catch(() => {}) // l’alerte a déjà été faite dans savePptx
           .finally(() => {
             const btn = document.getElementById("exportBtn");
             btn?.removeAttribute("aria-busy");
