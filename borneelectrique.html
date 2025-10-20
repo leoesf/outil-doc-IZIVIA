@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Borne Électrique</title>
 
+  <!-- ⚠️ Tu peux garder "styles.css" ou le renommer; ça n'impacte pas PptxGenJS -->
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -23,7 +24,6 @@
   <input type="number" id="nbBornes" placeholder="Nombre de bornes" min="0" />
   <input type="text" id="bornesPower" placeholder="Puissance des bornes (ex: 2 x 22 kW)" />
 
-  <!-- Renommé -->
   <h2>Compléments d’informations</h2>
   <textarea id="raeClient" placeholder="Saisir les compléments d’informations ici..."></textarea>
 
@@ -94,9 +94,45 @@
     <button id="exportBtn">Exporter</button>
   </div>
 
-  <!-- Scripts requis : ordre IMPORTANT -->
+  <!-- =======================
+       Scripts requis (ORDRE)
+       ======================= -->
+
+  <!-- 1) JSZip en local -->
   <script src="./jszip.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.11.1/dist/pptxgen.min.js"></script>
-  <script src="script.js"></script>
+
+  <!-- 2) PptxGenJS (CDN principal) -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.11.1/dist/pptxgen.min.js"
+    crossorigin="anonymous"
+    onload="window.__pptxOk = true"
+    onerror="(function(){
+      // Fallback #1 : unpkg
+      var s=document.createElement('script');
+      s.src='https://unpkg.com/pptxgenjs@3.11.1/dist/pptxgen.min.js';
+      s.onload=function(){ window.__pptxOk = true; };
+      s.onerror=function(){
+        // Fallback #2 : local (mets le fichier à la racine sous ce nom)
+        var l=document.createElement('script');
+        l.src='./pptxgen.min.js';
+        l.onload=function(){ window.__pptxOk = true; };
+        document.head.appendChild(l);
+      };
+      document.head.appendChild(s);
+    })()"
+  ></script>
+
+  <!-- 3) Petit garde-fou : on attend que PptxGenJS soit chargé avant de lancer ton script -->
+  <script>
+    (function waitPptx(){
+      if (window.PptxGenJS || window.pptxgen) return loadApp();
+      setTimeout(waitPptx, 50);
+    })();
+    function loadApp(){
+      var s=document.createElement('script');
+      s.src='script.js';
+      document.body.appendChild(s);
+    }
+  </script>
 </body>
 </html>
