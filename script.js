@@ -1,7 +1,8 @@
 // -----------------------------------------------------------
-/* script.js - Génération du PowerPoint (PptxGenJS v3.x)
-   — Zones de texte colorées pour les marqueurs sur "Plan d'implantation" */
- // -----------------------------------------------------------
+// script.js - Génération du PowerPoint (PptxGenJS v3.x)
+// - "RAE du client" → "Compléments d’informations"
+// - 2 jeux (photo + commentaire) par rubrique → 2 diapositives
+// -----------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
   console.log("PptxGenJS chargé ?", typeof PptxGenJS !== "undefined");
@@ -32,7 +33,7 @@ function createPowerPoint() {
   const rae           = getVal("rae");
   const power         = getVal("power");
   const commercial    = getVal("commercial");
-  const raeClient     = getVal("raeClient");
+  const infoComplem   = getVal("raeClient"); // zone de texte, renommée côté UI
   const coverImageInp = document.getElementById("coverImage");
 
   // nouveaux champs
@@ -45,7 +46,7 @@ function createPowerPoint() {
   // ---------------- Couverture ----------------
   function addCoverSlide(imageData) {
     const slide = pptx.addSlide();
-    slide.background = { fill: "363636" };
+    slide.background = { color: "363636" };
 
     const lines = [];
     if (clientName)   lines.push({ text: `Client : ${clientName}\n`,      options: { fontSize: 20, color: "FFFFFF", bold: true } });
@@ -73,146 +74,96 @@ function createPowerPoint() {
     }
   }
 
-  // ---------------- Diapo RAE ----------------
-  function addRAESlide() {
+  // ---------------- Diapo Compléments d'informations ----------------
+  function addComplementsSlide() {
     const slide = pptx.addSlide();
-    slide.addText("RAE du client", { x: 0.5, y: 0.5, fontSize: 24, bold: true });
-    slide.addText(raeClient || "—", { x: 0.5, y: 1.5, fontSize: 18, w: "90%", h: "70%", color: "363636" });
+    slide.background = { color: "FFFFFF" };
+    slide.addText("Compléments d’informations", { x: 0.5, y: 0.5, fontSize: 24, bold: true, color: "111827" });
+    slide.addText(infoComplem || "—", { x: 0.5, y: 1.1, w: 9.2, h: 4.2, fontSize: 18, color: "363636", valign: "top" });
   }
 
-  // ---------------- Marqueurs en zones de texte ----------------
-  // On crée 3 zones de texte colorées, vides ou avec un petit libellé, déplaçables dans PowerPoint.
+  // ---------------- Marqueurs en zones de texte (optionnels) ----------------
   function addPlanMarkersAsTextBoxes(slide, imgBox) {
-    // Position: dans le coin haut-droit de l'image
-    const baseX = imgBox.x + imgBox.w - 2.0; // on réserve ~2" de large pour 3 boîtes empilées
+    const baseX = imgBox.x + imgBox.w - 2.0;
     let y = imgBox.y + 0.2;
-
-    // Style commun
     const common = {
-      x: baseX,
-      w: 1.8,
-      h: 0.7,
-      fontSize: 14,
-      bold: true,
-      align: "center",
-      valign: "middle",
-      line: { color: "444444", width: 1.0 },
-      margin: 0.06
+      x: baseX, w: 1.8, h: 0.7, fontSize: 14, bold: true,
+      align: "center", valign: "middle", line: { color: "444444", width: 1.0 }, margin: 0.06
     };
-
-    // Boîte JAUNE
-    slide.addText("Zone JAUNE", {
-      ...common,
-      y,
-      fill: { color: "FFD24D" }, // jaune
-      color: "111111"
-    });
-
-    y += 0.85;
-
-    // Boîte ROUGE
-    slide.addText("Zone ROUGE", {
-      ...common,
-      y,
-      fill: { color: "FF2B2B" }, // rouge
-      color: "FFFFFF"
-    });
-
-    y += 0.85;
-
-    // Boîte VERTE
-    slide.addText("Zone VERTE", {
-      ...common,
-      y,
-      fill: { color: "3A8F2D" }, // vert
-      color: "FFFFFF"
-    });
-
-    // Petite étiquette pour te repérer (facultatif)
+    slide.addText("Zone JAUNE", { ...common, y,   fill: { color: "FFD24D" }, color: "111111" });
+    slide.addText("Zone ROUGE", { ...common, y: y+0.85, fill: { color: "FF2B2B" }, color: "FFFFFF" });
+    slide.addText("Zone VERTE", { ...common, y: y+1.70, fill: { color: "3A8F2D" }, color: "FFFFFF" });
     slide.addText("Marqueurs (déplaçables)", {
       x: baseX - 0.1, y: imgBox.y - 0.25, w: 2.2, h: 0.35,
-      fontSize: 10, color: "111111",
-      fill: { color: "FFFFFF" }, line: { color: "DDDDDD" },
+      fontSize: 10, color: "111111", fill: { color: "FFFFFF" }, line: { color: "DDDDDD" },
       align: "center", valign: "middle"
     });
   }
 
-  // ---------------- Diapos Checklist ----------------
+  // ---------------- Diapos Checklist (2 slides par rubrique) ----------------
   function addChecklistSlides() {
-    // Slide 16:9 : 10" x 5.625"
     const SLIDE_W = 10.0;
     const MARGIN  = 0.5;
+    const IMG = { x: MARGIN, y: 1.1, w: 6.5, h: 4.8 };
+    const BOX = { x: 7.2, y: 1.1, w: SLIDE_W - 7.2 - MARGIN, h: 4.8 };
 
-    // Zone image gauche
-    const IMG = { x: MARGIN, y: 1.1, w: 6.5, h: 4.8 }; // s'arrête vers 7.0"
-    // Zone texte droite
-    const BOX = { x: 7.2, y: 1.1, w: SLIDE_W - 7.2 - MARGIN, h: 4.8 }; // ~7.2 → 9.5"
-
+    // Chaque rubrique possède 2 entrées (a/b)
     const items = [
-      { file: "file1", comment: "comment1", title: "Plan d'implantation" },
-      { file: "file2", comment: "comment2", title: "Places à électrifier" },
-      { file: "file3", comment: "comment3", title: "TGBT + disjoncteur de tête" },
-      { file: "file4", comment: "comment4", title: "Cheminement" },
-      { file: "file5", comment: "comment5", title: "Plan du site" },
-      { file: "file6", comment: "comment6", title: "Éléments complémentaires" }
+      { base: "Plan d'implantation",      pairs: [ ["file1a","comment1a"], ["file1b","comment1b"] ] },
+      { base: "Places à électrifier",     pairs: [ ["file2a","comment2a"], ["file2b","comment2b"] ] },
+      { base: "TGBT + disjoncteur de tête", pairs: [ ["file3a","comment3a"], ["file3b","comment3b"] ] },
+      { base: "Cheminement",              pairs: [ ["file4a","comment4a"], ["file4b","comment4b"] ] },
+      { base: "Plan du site",             pairs: [ ["file5a","comment5a"], ["file5b","comment5b"] ] },
+      { base: "Éléments complémentaires", pairs: [ ["file6a","comment6a"], ["file6b","comment6b"] ] }
     ];
 
     let done = 0;
-    const total = items.length;
+    const totalSlides = items.reduce((acc, it) => acc + it.pairs.length, 0);
 
-    items.forEach((item) => {
-      const fileInput = document.getElementById(item.file);
-      const comment   = document.getElementById(item.comment)?.value || "—";
-      const slide     = pptx.addSlide();
+    items.forEach((rub) => {
+      rub.pairs.forEach(async ([fileId, commentId], idx) => {
+        const fileInput = document.getElementById(fileId);
+        const comment   = document.getElementById(commentId)?.value || "—";
+        const slide     = pptx.addSlide();
 
-      // Titre
-      slide.addText(item.title, { x: MARGIN, y: 0.5, fontSize: 24, bold: true });
+        // Titre avec suffixe #1 / #2
+        const title = `${rub.base} — ${idx === 0 ? "1" : "2"}`;
+        slide.addText(title, { x: MARGIN, y: 0.5, fontSize: 24, bold: true });
 
-      // Zone de commentaire à droite
-      slide.addText(comment, {
-        x: BOX.x, y: BOX.y, w: BOX.w, h: BOX.h,
-        // une zone de texte est naturellement un rectangle déplaçable
-        fill: { color: "FFFFFF" },
-        line: { color: "AAAAAA" },
-        margin: 0.12,
-        fontSize: 18,
-        color: "111111",
-        align: "left",
-        valign: "top",
-        bullet: false,
-        paraSpaceAfter: 6
+        // Zone commentaire à droite
+        slide.addText(comment, {
+          x: BOX.x, y: BOX.y, w: BOX.w, h: BOX.h,
+          fill: { color: "FFFFFF" }, line: { color: "AAAAAA" }, margin: 0.12,
+          fontSize: 18, color: "111111", align: "left", valign: "top", bullet: false, paraSpaceAfter: 6
+        });
+
+        const injectImage = (dataUrl) => {
+          if (dataUrl) {
+            slide.addImage({ data: dataUrl, x: IMG.x, y: IMG.y, w: IMG.w, h: IMG.h, sizing: { type: "contain", w: IMG.w, h: IMG.h } });
+          }
+
+          // Marqueurs uniquement sur "Plan d'implantation"
+          if (rub.base.toLowerCase().includes("implantation")) {
+            addPlanMarkersAsTextBoxes(slide, IMG);
+          }
+
+          checkDone();
+        };
+
+        if (fileInput?.files?.length > 0) {
+          // possibilité d’ajouter ici une compression si souhaité
+          const reader = new FileReader();
+          reader.onload = (e) => injectImage(e.target.result);
+          reader.readAsDataURL(fileInput.files[0]);
+        } else {
+          injectImage(null);
+        }
       });
-
-      // Image à gauche
-      const injectImage = (dataUrl) => {
-        if (dataUrl) {
-          slide.addImage({
-            data: dataUrl,
-            x: IMG.x, y: IMG.y, w: IMG.w, h: IMG.h,
-            sizing: { type: "contain", w: IMG.w, h: IMG.h }
-          });
-        }
-
-        // 👉 Ajout des "marqueurs" (zones de texte colorées) UNIQUEMENT pour Plan d'implantation
-        if (item.title.toLowerCase().includes("implantation")) {
-          addPlanMarkersAsTextBoxes(slide, IMG);
-        }
-
-        checkDone();
-      };
-
-      if (fileInput?.files?.length > 0) {
-        const reader = new FileReader();
-        reader.onload = (e) => injectImage(e.target.result);
-        reader.readAsDataURL(fileInput.files[0]);
-      } else {
-        injectImage(null);
-      }
     });
 
     function checkDone() {
       done++;
-      if (done === total) {
+      if (done === totalSlides) {
         const safeName = (clientName || "Projet")
           .replace(/[^\p{L}\p{N}_\- ]/gu, "")
           .trim()
@@ -232,13 +183,13 @@ function createPowerPoint() {
     const reader = new FileReader();
     reader.onload = (e) => {
       addCoverSlide(e.target.result);
-      addRAESlide();
-      addChecklistSlides();
+      addComplementsSlide();     // 🔁 nouveau nom + slide
+      addChecklistSlides();      // 🔁 deux slides par rubrique
     };
     reader.readAsDataURL(coverImageInp.files[0]);
   } else {
     addCoverSlide();
-    addRAESlide();
-    addChecklistSlides();
+    addComplementsSlide();       // 🔁 nouveau nom + slide
+    addChecklistSlides();        // 🔁 deux slides par rubrique
   }
 }
