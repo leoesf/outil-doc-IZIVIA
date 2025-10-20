@@ -14,11 +14,10 @@
 
     if (!ctor) {
       const st = document.getElementById("pptxStatus");
-      if (st) st.textContent = "PptxGenJS non détecté. (vérifie le réseau/CDN)";
-      return; // on ne force pas d'alerte ici, le loader gère déjà
+      if (st) st.textContent = "PptxGenJS non détecté. (vérifie le fichier local /vendor/pptxgen.bundle.js)";
+      return;
     }
 
-    // Bouton Export
     const btn = document.getElementById("exportBtn");
     if (btn) {
       btn.addEventListener("click", createPowerPoint);
@@ -27,11 +26,9 @@
   };
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => {
-      (window.__pptxReady || Promise.resolve()).finally(start);
-    });
+    document.addEventListener("DOMContentLoaded", start);
   } else {
-    (window.__pptxReady || Promise.resolve()).finally(start);
+    start();
   }
 })();
 
@@ -76,7 +73,7 @@ function createPowerPoint() {
   btn?.setAttribute("aria-busy", "true");
 
   if (!PptxCtor) {
-    alert("PptxGenJS n'est pas chargé (réseau/CDN ?). Vérifie le message de statut sous le bouton.");
+    alert("PptxGenJS n'est pas chargé. Place le fichier local /vendor/pptxgen.bundle.js");
     btn?.removeAttribute("aria-busy");
     btn?.removeAttribute("disabled");
     return;
