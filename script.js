@@ -3,28 +3,32 @@
 // - Commentaires à DROITE de la photo (textbox large, déplaçable)
 // - Rubriques doublées (2 slides par rubrique)
 // - "RAE du client" renommé en "Compléments d’informations"
-// - PAS d'image de couverture (retirée précédemment)
+// - PAS d'image de couverture
 // -----------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("PptxGenJS chargé ?", typeof PptxGenJS !== "undefined");
+  const PptxCtor = window.PptxGenJS || window.pptxgen; // <-- accepte les 2 globals
+  console.log("Pptx present ?", !!PptxCtor, " (PptxGenJS:", !!window.PptxGenJS, ", pptxgen:", !!window.pptxgen, ")");
+
   window.createPowerPoint = createPowerPoint;
   document.getElementById("exportBtn")?.addEventListener("click", createPowerPoint);
 });
 
 function createPowerPoint() {
+  const PptxCtor = window.PptxGenJS || window.pptxgen;
   const btn = document.getElementById("exportBtn");
+
   btn?.setAttribute("disabled", "true");
   btn?.setAttribute("aria-busy", "true");
 
-  if (typeof PptxGenJS === "undefined") {
-    alert("PptxGenJS n'est pas chargé.");
+  if (!PptxCtor) {
+    alert("PptxGenJS n'est pas chargé (réseau/CDN ?). Essaye de recharger la page ou vérifie les scripts.");
     btn?.removeAttribute("aria-busy");
     btn?.removeAttribute("disabled");
     return;
   }
 
-  const pptx = new PptxGenJS();
+  const pptx = new PptxCtor();
   pptx.layout = "LAYOUT_WIDE"; // 16:9
 
   const getVal = (id) => document.getElementById(id)?.value || "";
@@ -73,7 +77,6 @@ function createPowerPoint() {
 
   // ---------- Checklist : photo à gauche, commentaire à droite ----------
   function addChecklistSlides() {
-    // Slide 16:9 : 10" x 5.625"
     const SLIDE_W = 10.0;
     const MARGIN  = 0.5;
 
@@ -105,7 +108,7 @@ function createPowerPoint() {
         const title = `${rub.base} — ${idx === 0 ? "1" : "2"}`;
         slide.addText(title, { x: MARGIN, y: 0.5, fontSize: 24, bold: true });
 
-        // Zone de commentaire à droite (textbox large)
+        // Zone de commentaire à droite
         slide.addText(comment, {
           x: BOX.x, y: BOX.y, w: BOX.w, h: BOX.h,
           fontSize: 18, color: "111111",
@@ -118,7 +121,6 @@ function createPowerPoint() {
           autoFit: false
         });
 
-        // Image à gauche (contain)
         const injectImage = (dataUrl) => {
           if (dataUrl) {
             slide.addImage({
@@ -150,6 +152,7 @@ function createPowerPoint() {
 
         pptx.writeFile({ fileName: `Borne_Electrique_${safeName}.pptx` })
           .finally(() => {
+            const btn = document.getElementById("exportBtn");
             btn?.removeAttribute("aria-busy");
             btn?.removeAttribute("disabled");
           });
