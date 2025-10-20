@@ -6,10 +6,6 @@
   <title>Borne Électrique</title>
 
   <link rel="stylesheet" href="styles.css" />
-
-  <!-- Librairies requises -->
-  <script src="./jszip.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.11.1/dist/pptxgen.min.js"></script>
 </head>
 <body>
   <h1>Borne Électrique</h1>
@@ -20,7 +16,7 @@
   <input type="text" id="power" placeholder="Puissance souscrite / max" />
   <input type="text" id="commercial" placeholder="Nom du commercial" />
 
-  <!-- ➕ Nouveaux champs -->
+  <!-- Champs complémentaires -->
   <input type="text" id="clientAddress" placeholder="Adresse du client" />
   <input type="text" id="siret" placeholder="SIRET" />
   <input type="text" id="oppoNumber" placeholder="Numéro Oppo" />
@@ -98,6 +94,9 @@
     <button id="exportBtn">Exporter</button>
   </div>
 
+  <!-- Scripts requis : ordre IMPORTANT -->
+  <script src="./jszip.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.11.1/dist/pptxgen.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
