@@ -5,12 +5,11 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Borne Électrique</title>
 
-  <!-- Styles du projet -->
   <link rel="stylesheet" href="styles.css" />
 
   <!-- Librairies requises (ordre IMPORTANT) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.4.0/dist/pptxgen.min.js"></script>
+  <script src="./jszip.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.11.1/dist/pptxgen.min.js"></script>
 </head>
 <body>
   <h1>Borne Électrique</h1>
@@ -31,41 +30,77 @@
   <h3>Image de couverture</h3>
   <input type="file" accept="image/*" id="coverImage" capture="environment" />
 
-  <h2>RAE du client</h2>
-  <textarea id="raeClient" placeholder="Saisir la RAE du client ici..."></textarea>
+  <!-- 🔁 Renommé -->
+  <h2>Compléments d’informations</h2>
+  <textarea id="raeClient" placeholder="Saisir les compléments d’informations ici..."></textarea>
 
   <div id="checklist">
-    <h2>Checklist</h2>
+    <h2>Checklist (2 jeux de photos & commentaires par rubrique)</h2>
     <ul>
+      <!-- Plan d'implantation -->
       <li>
-        <label>Plan d'implantation</label>
-        <input type="file" accept="image/*" id="file1" capture="environment" />
-        <textarea id="comment1" placeholder="Commentaire"></textarea>
+        <label><strong>Plan d'implantation</strong> — Photo & Commentaire #1</label>
+        <input type="file" accept="image/*" id="file1a" capture="environment" />
+        <textarea id="comment1a" placeholder="Commentaire #1"></textarea>
+
+        <label>— Photo & Commentaire #2</label>
+        <input type="file" accept="image/*" id="file1b" capture="environment" />
+        <textarea id="comment1b" placeholder="Commentaire #2"></textarea>
       </li>
+
+      <!-- Places à électrifier -->
       <li>
-        <label>Places à électrifier</label>
-        <input type="file" accept="image/*" id="file2" capture="environment" />
-        <textarea id="comment2" placeholder="Commentaire"></textarea>
+        <label><strong>Places à électrifier</strong> — Photo & Commentaire #1</label>
+        <input type="file" accept="image/*" id="file2a" capture="environment" />
+        <textarea id="comment2a" placeholder="Commentaire #1"></textarea>
+
+        <label>— Photo & Commentaire #2</label>
+        <input type="file" accept="image/*" id="file2b" capture="environment" />
+        <textarea id="comment2b" placeholder="Commentaire #2"></textarea>
       </li>
+
+      <!-- TGBT + disjoncteur de tête -->
       <li>
-        <label>TGBT + disjoncteur de tête</label>
-        <input type="file" accept="image/*" id="file3" capture="environment" />
-        <textarea id="comment3" placeholder="Commentaire"></textarea>
+        <label><strong>TGBT + disjoncteur de tête</strong> — Photo & Commentaire #1</label>
+        <input type="file" accept="image/*" id="file3a" capture="environment" />
+        <textarea id="comment3a" placeholder="Commentaire #1"></textarea>
+
+        <label>— Photo & Commentaire #2</label>
+        <input type="file" accept="image/*" id="file3b" capture="environment" />
+        <textarea id="comment3b" placeholder="Commentaire #2"></textarea>
       </li>
+
+      <!-- Cheminement -->
       <li>
-        <label>Cheminement</label>
-        <input type="file" accept="image/*" id="file4" capture="environment" />
-        <textarea id="comment4" placeholder="Commentaire"></textarea>
+        <label><strong>Cheminement</strong> — Photo & Commentaire #1</label>
+        <input type="file" accept="image/*" id="file4a" capture="environment" />
+        <textarea id="comment4a" placeholder="Commentaire #1"></textarea>
+
+        <label>— Photo & Commentaire #2</label>
+        <input type="file" accept="image/*" id="file4b" capture="environment" />
+        <textarea id="comment4b" placeholder="Commentaire #2"></textarea>
       </li>
+
+      <!-- Plan du site -->
       <li>
-        <label>Plan du site</label>
-        <input type="file" accept="image/*" id="file5" capture="environment" />
-        <textarea id="comment5" placeholder="Commentaire"></textarea>
+        <label><strong>Plan du site</strong> — Photo & Commentaire #1</label>
+        <input type="file" accept="image/*" id="file5a" capture="environment" />
+        <textarea id="comment5a" placeholder="Commentaire #1"></textarea>
+
+        <label>— Photo & Commentaire #2</label>
+        <input type="file" accept="image/*" id="file5b" capture="environment" />
+        <textarea id="comment5b" placeholder="Commentaire #2"></textarea>
       </li>
+
+      <!-- Éléments complémentaires -->
       <li>
-        <label>Éléments complémentaires</label>
-        <input type="file" accept="image/*" id="file6" capture="environment" />
-        <textarea id="comment6" placeholder="Commentaire"></textarea>
+        <label><strong>Éléments complémentaires</strong> — Photo & Commentaire #1</label>
+        <input type="file" accept="image/*" id="file6a" capture="environment" />
+        <textarea id="comment6a" placeholder="Commentaire #1"></textarea>
+
+        <label>— Photo & Commentaire #2</label>
+        <input type="file" accept="image/*" id="file6b" capture="environment" />
+        <textarea id="comment6b" placeholder="Commentaire #2"></textarea>
       </li>
     </ul>
 
@@ -74,145 +109,6 @@
   </div>
 
   <!-- Script : génération du PowerPoint -->
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      console.log("Page prête. PptxGenJS chargé ?", typeof PptxGenJS !== "undefined");
-      const btn = document.getElementById("exportBtn");
-      if (btn) btn.addEventListener("click", createPowerPoint);
-    });
-
-    function createPowerPoint() {
-      console.log("[PPT] Lancement export…");
-      const btn = document.getElementById("exportBtn");
-      btn?.setAttribute("disabled", "true");
-      btn?.setAttribute("aria-busy", "true");
-
-      if (typeof PptxGenJS === "undefined") {
-        console.error("PptxGenJS non chargé");
-        alert("La librairie PptxGenJS n'est pas chargée.");
-        btn?.removeAttribute("aria-busy"); btn?.removeAttribute("disabled");
-        return;
-      }
-
-      const pptx = new PptxGenJS();
-      pptx.layout = "LAYOUT_WIDE"; // 16:9
-
-      // ===== Récupération des valeurs
-      const clientName   = document.getElementById("clientName").value || "";
-      const rae          = document.getElementById("rae").value || "";
-      const power        = document.getElementById("power").value || "";
-      const commercial   = document.getElementById("commercial").value || "";
-      const raeClient    = document.getElementById("raeClient").value || "";
-
-      const clientAddress = document.getElementById("clientAddress")?.value || "";
-      const siret         = document.getElementById("siret")?.value || "";
-      const oppoNumber    = document.getElementById("oppoNumber")?.value || "";
-      const nbBornes      = document.getElementById("nbBornes")?.value || "";
-      const bornesPower   = document.getElementById("bornesPower")?.value || "";
-
-      const coverImageInput = document.getElementById("coverImage");
-
-      // ===== Diapo 1 : Couverture
-      function addCoverSlide(imageData) {
-        const slide = pptx.addSlide();
-        slide.background = { fill: "363636" };
-
-        const lines = [];
-        if (clientName)   lines.push({ text: `Client : ${clientName}\n`, options: { fontSize: 20, color: "FFFFFF", bold: true } });
-        if (rae)          lines.push({ text: `RAE : ${rae}\n`, options: { fontSize: 16, color: "FFFFFF" } });
-        if (power)        lines.push({ text: `Puissance : ${power}\n`, options: { fontSize: 16, color: "FFFFFF" } });
-        if (commercial)   lines.push({ text: `Commercial : ${commercial}\n`, options: { fontSize: 16, color: "FFFFFF" } });
-
-        // Nouveaux champs
-        if (clientAddress) lines.push({ text: `Adresse : ${clientAddress}\n`, options: { fontSize: 16, color: "FFFFFF" } });
-        if (siret)         lines.push({ text: `SIRET : ${siret}\n`, options: { fontSize: 16, color: "FFFFFF" } });
-        if (oppoNumber)    lines.push({ text: `Numéro Oppo : ${oppoNumber}\n`, options: { fontSize: 16, color: "FFFFFF" } });
-        if (nbBornes)      lines.push({ text: `Nombre de bornes : ${nbBornes}\n`, options: { fontSize: 16, color: "FFFFFF" } });
-        if (bornesPower)   lines.push({ text: `Puissance des bornes : ${bornesPower}\n`, options: { fontSize: 16, color: "FFFFFF" } });
-
-        lines.push({ text: "Projet d’infrastructure de recharge pour véhicules électriques", options: { fontSize: 14, color: "FFFFFF", italic: true, breakLine: true } });
-
-        // Texte gauche
-        slide.addText(lines, { x: 0.5, y: 0.5, w: 5.8, h: 6.2 });
-
-        // Image droite
-        if (imageData) {
-          slide.addImage({ data: imageData, x: 6.7, y: 0.4, w: 3.8, h: 5.8, sizing: { type: "cover", w: 3.8, h: 5.8 } });
-        }
-      }
-
-      // ===== Diapo 2 : RAE client
-      function addRAESlide() {
-        const slide = pptx.addSlide();
-        slide.addText("RAE du client", { x: 0.5, y: 0.5, fontSize: 24, bold: true });
-        slide.addText(raeClient || "—", { x: 0.5, y: 1.5, fontSize: 18, w: "90%", h: "70%", color: "363636" });
-      }
-
-      // ===== Diapos Checklist
-      function addChecklistSlides() {
-        const items = [
-          { file: "file1", comment: "comment1", title: "Plan d'implantation" },
-          { file: "file2", comment: "comment2", title: "Places à électrifier" },
-          { file: "file3", comment: "comment3", title: "TGBT + disjoncteur de tête" },
-          { file: "file4", comment: "comment4", title: "Cheminement" },
-          { file: "file5", comment: "comment5", title: "Plan du site" },
-          { file: "file6", comment: "comment6", title: "Éléments complémentaires" }
-        ];
-
-        let done = 0;
-        const total = items.length;
-
-        items.forEach((item) => {
-          const fileInput = document.getElementById(item.file);
-          const comment = document.getElementById(item.comment).value;
-          const slide = pptx.addSlide();
-          slide.addText(item.title, { x: 0.5, y: 0.5, fontSize: 24 });
-
-          if (fileInput.files.length > 0) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-              slide.addImage({ data: e.target.result, x: 0.5, y: 1.5, w: 8.0, h: 4.5, sizing: { type: "contain", w: 8.0, h: 4.5 } });
-              slide.addText(comment || "", { x: 0.5, y: 6.1, fontSize: 18 });
-              checkDone();
-            };
-            reader.readAsDataURL(fileInput.files[0]);
-          } else {
-            slide.addText(comment || "", { x: 0.5, y: 1.5, fontSize: 18 });
-            checkDone();
-          }
-        });
-
-        function checkDone() {
-          done++;
-          if (done === total) {
-            const safeName = (clientName || "Projet").replace(/[^\p{L}\p{N}_\- ]/gu, "").trim().replace(/\s+/g, "_");
-            pptx.writeFile({ fileName: `Borne_Electrique_${safeName}.pptx` })
-              .finally(() => {
-                btn?.removeAttribute("aria-busy");
-                btn?.removeAttribute("disabled");
-              });
-          }
-        }
-      }
-
-      // ===== Lancement (avec ou sans image de couverture)
-      if (coverImageInput.files.length > 0) {
-        const r = new FileReader();
-        r.onload = function (e) {
-          addCoverSlide(e.target.result);
-          addRAESlide();
-          addChecklistSlides();
-        };
-        r.readAsDataURL(coverImageInput.files[0]);
-      } else {
-        addCoverSlide();
-        addRAESlide();
-        addChecklistSlides();
-      }
-    }
-
-    // Fallback : si tu gardes onclick="createPowerPoint()"
-    if (typeof window !== "undefined") window.createPowerPoint = createPowerPoint;
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
