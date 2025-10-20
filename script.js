@@ -1,3 +1,11 @@
+// -----------------------------------------------------------
+// Génération du PowerPoint (PptxGenJS v3.x)
+// - Commentaires à DROITE de la photo (textbox large, déplaçable)
+// - Rubriques doublées (2 slides par rubrique)
+// - "RAE du client" renommé en "Compléments d’informations"
+// - PAS d'image de couverture (retirée précédemment)
+// -----------------------------------------------------------
+
 document.addEventListener("DOMContentLoaded", () => {
   console.log("PptxGenJS chargé ?", typeof PptxGenJS !== "undefined");
   window.createPowerPoint = createPowerPoint;
@@ -97,7 +105,7 @@ function createPowerPoint() {
         const title = `${rub.base} — ${idx === 0 ? "1" : "2"}`;
         slide.addText(title, { x: MARGIN, y: 0.5, fontSize: 24, bold: true });
 
-        // Zone de commentaire à droite (textbox large, bordurée, facilement déplaçable)
+        // Zone de commentaire à droite (textbox large)
         slide.addText(comment, {
           x: BOX.x, y: BOX.y, w: BOX.w, h: BOX.h,
           fontSize: 18, color: "111111",
@@ -107,7 +115,6 @@ function createPowerPoint() {
           align: "left",
           valign: "top",
           bullet: false,
-          // garder une boîte fixe et spacieuse, pas d'auto-réduction
           autoFit: false
         });
 
@@ -155,4 +162,3 @@ function createPowerPoint() {
   addComplementsSlide();
   addChecklistSlides();
 }
-
