@@ -4,7 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Borne Électrique</title>
+
   <link rel="stylesheet" href="styles.css" />
+
+  <!-- 📦 Librairies locales (à la racine) -->
+  <script defer src="jszip.min.js"></script>
+  <script defer src="pptxgen.bundle.js"></script>
+
+  <!-- Ton script d’app -->
+  <script defer src="script.js"></script>
 </head>
 <body>
   <h1>Borne Électrique</h1>
@@ -23,151 +31,85 @@
   <input type="text" id="bornesPower" placeholder="Puissance des bornes (ex: 2 x 22 kW)" />
 
   <h2>Compléments d’informations</h2>
-  <textarea id="raeClient" placeholder="Saisir les compléments d’informations ici..."></textarea>
+  <textarea id="raeClient" placeholder="Saisir les compléments d’informations..."></textarea>
 
   <div id="checklist">
-    <h2>Checklist (deux photos + commentaires par rubrique)</h2>
+    <h2>Checklist</h2>
     <ul>
+      <!-- Plan d'implantation x2 -->
       <li>
-        <label>Plan d'implantation — 1</label>
-        <input type="file" accept="image/*" id="file1a" capture="environment" />
-        <textarea id="comment1a" placeholder="Commentaire"></textarea>
+        <label>Plan d'implantation #1</label>
+        <input type="file" accept="image/*" id="file1" capture="environment" />
+        <textarea id="comment1" placeholder="Commentaire #1"></textarea>
       </li>
       <li>
-        <label>Plan d'implantation — 2</label>
+        <label>Plan d'implantation #2</label>
         <input type="file" accept="image/*" id="file1b" capture="environment" />
-        <textarea id="comment1b" placeholder="Commentaire"></textarea>
+        <textarea id="comment1b" placeholder="Commentaire #2"></textarea>
       </li>
 
+      <!-- Places à électrifier x2 -->
       <li>
-        <label>Places à électrifier — 1</label>
-        <input type="file" accept="image/*" id="file2a" capture="environment" />
-        <textarea id="comment2a" placeholder="Commentaire"></textarea>
+        <label>Places à électrifier #1</label>
+        <input type="file" accept="image/*" id="file2" capture="environment" />
+        <textarea id="comment2" placeholder="Commentaire #1"></textarea>
       </li>
       <li>
-        <label>Places à électrifier — 2</label>
+        <label>Places à électrifier #2</label>
         <input type="file" accept="image/*" id="file2b" capture="environment" />
-        <textarea id="comment2b" placeholder="Commentaire"></textarea>
+        <textarea id="comment2b" placeholder="Commentaire #2"></textarea>
       </li>
 
+      <!-- TGBT + disjoncteur de tête x2 -->
       <li>
-        <label>TGBT + disjoncteur de tête — 1</label>
-        <input type="file" accept="image/*" id="file3a" capture="environment" />
-        <textarea id="comment3a" placeholder="Commentaire"></textarea>
+        <label>TGBT + disjoncteur de tête #1</label>
+        <input type="file" accept="image/*" id="file3" capture="environment" />
+        <textarea id="comment3" placeholder="Commentaire #1"></textarea>
       </li>
       <li>
-        <label>TGBT + disjoncteur de tête — 2</label>
+        <label>TGBT + disjoncteur de tête #2</label>
         <input type="file" accept="image/*" id="file3b" capture="environment" />
-        <textarea id="comment3b" placeholder="Commentaire"></textarea>
+        <textarea id="comment3b" placeholder="Commentaire #2"></textarea>
       </li>
 
+      <!-- Cheminement x2 -->
       <li>
-        <label>Cheminement — 1</label>
-        <input type="file" accept="image/*" id="file4a" capture="environment" />
-        <textarea id="comment4a" placeholder="Commentaire"></textarea>
+        <label>Cheminement #1</label>
+        <input type="file" accept="image/*" id="file4" capture="environment" />
+        <textarea id="comment4" placeholder="Commentaire #1"></textarea>
       </li>
       <li>
-        <label>Cheminement — 2</label>
+        <label>Cheminement #2</label>
         <input type="file" accept="image/*" id="file4b" capture="environment" />
-        <textarea id="comment4b" placeholder="Commentaire"></textarea>
+        <textarea id="comment4b" placeholder="Commentaire #2"></textarea>
       </li>
 
+      <!-- Plan du site x2 -->
       <li>
-        <label>Plan du site — 1</label>
-        <input type="file" accept="image/*" id="file5a" capture="environment" />
-        <textarea id="comment5a" placeholder="Commentaire"></textarea>
+        <label>Plan du site #1</label>
+        <input type="file" accept="image/*" id="file5" capture="environment" />
+        <textarea id="comment5" placeholder="Commentaire #1"></textarea>
       </li>
       <li>
-        <label>Plan du site — 2</label>
+        <label>Plan du site #2</label>
         <input type="file" accept="image/*" id="file5b" capture="environment" />
-        <textarea id="comment5b" placeholder="Commentaire"></textarea>
+        <textarea id="comment5b" placeholder="Commentaire #2"></textarea>
       </li>
 
+      <!-- Éléments complémentaires x2 -->
       <li>
-        <label>Éléments complémentaires — 1</label>
-        <input type="file" accept="image/*" id="file6a" capture="environment" />
-        <textarea id="comment6a" placeholder="Commentaire"></textarea>
+        <label>Éléments complémentaires #1</label>
+        <input type="file" accept="image/*" id="file6" capture="environment" />
+        <textarea id="comment6" placeholder="Commentaire #1"></textarea>
       </li>
       <li>
-        <label>Éléments complémentaires — 2</label>
+        <label>Éléments complémentaires #2</label>
         <input type="file" accept="image/*" id="file6b" capture="environment" />
-        <textarea id="comment6b" placeholder="Commentaire"></textarea>
+        <textarea id="comment6b" placeholder="Commentaire #2"></textarea>
       </li>
     </ul>
 
-    <button id="exportBtn" disabled>Exporter</button>
-    <p id="pptxStatus" style="margin-top:8px;color:#666;font-size:13px;"></p>
+    <button id="exportBtn">Exporter</button>
   </div>
-
-  <!-- Loader : priorité au fichier local -->
-  <script>
-    (function () {
-      const statusEl = () => document.getElementById('pptxStatus');
-      function setStatus(msg, isError=false){
-        const el = statusEl(); if(!el) return;
-        el.textContent = msg; el.style.color = isError ? '#b00020' : '#666';
-      }
-
-      // 1) Essaye d'abord le fichier local (que tu as téléchargé dans /vendor)
-      const LOCAL = ["./pptxgen.bundle.js"];
-
-      // 2) En secours uniquement : CDN (si ton réseau les autorise)
-      const CDNS = [
-        "https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.11.1/pptxgen.bundle.js",
-        "https://cdn.jsdelivr.net/npm/pptxgenjs@3.11.1/dist/pptxgen.bundle.js",
-        "https://unpkg.com/pptxgenjs@3.11.1/dist/pptxgen.bundle.js"
-      ];
-
-      function loadScript(url, onLoad, onError){
-        const s = document.createElement('script');
-        s.src = url;
-        s.async = true;
-        s.onload = onLoad;
-        s.onerror = onError;
-        document.head.appendChild(s);
-      }
-
-      function tryList(urls, idx, label, next) {
-        if (idx >= urls.length) { next(); return; }
-        const url = urls[idx];
-        setStatus(`Chargement ${label}: ${url}`);
-        loadScript(
-          url,
-          () => {
-            const ok = !!(window.PptxGenJS || window.pptxgen);
-            console.log("Loaded:", url, "ok?", ok);
-            if (ok) {
-              setStatus(`PptxGenJS chargé depuis ${label} ✅`);
-              afterPptxReady();
-            } else {
-              tryList(urls, idx+1, label, next);
-            }
-          },
-          () => tryList(urls, idx+1, label, next)
-        );
-      }
-
-      function afterPptxReady() {
-        const ok = !!(window.PptxGenJS || window.pptxgen);
-        if (!ok) { setStatus("Échec du chargement de PptxGenJS", true); return; }
-        // Charge le script applicatif
-        const app = document.createElement('script');
-        app.src = "script.js";
-        app.defer = true;
-        app.onload = () => {
-          setStatus("Prêt ✅");
-          const btn = document.getElementById("exportBtn");
-          btn && (btn.disabled = false);
-        };
-        app.onerror = () => setStatus("Erreur lors du chargement de script.js", true);
-        document.body.appendChild(app);
-      }
-
-      // D’abord LOCAL, puis CDNs
-      tryList(LOCAL, 0, "local", () => {
-        tryList(CDNS, 0, "CDN", () => setStatus("Impossible de charger PptxGenJS (local et CDN). Place le fichier dans /vendor.", true));
-      });
-    })();
-  </script>
 </body>
 </html>
