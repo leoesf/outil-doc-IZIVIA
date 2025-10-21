@@ -1,216 +1,134 @@
-// -----------------------------------------------------------
-// Génération du PowerPoint (PptxGenJS v3.x)
-// - Commentaires à DROITE de la photo (textbox large, déplaçable)
-// - Rubriques doublées (2 slides par rubrique)
-// - "RAE du client" -> "Compléments d’informations"
-// - PAS d'image de couverture
-// - Téléchargement robuste: writeFile -> blob
-// -----------------------------------------------------------
-
-(function initWhenReady() {
-  const start = () => {
-    const ctor = window.PptxGenJS || window.pptxgen;
-    console.log("Pptx present ?", !!ctor, " (PptxGenJS:", !!window.PptxGenJS, ", pptxgen:", !!window.pptxgen, ")");
-
-    if (!ctor) {
-      const st = document.getElementById("pptxStatus");
-      if (st) st.textContent = "PptxGenJS non détecté. (vérifie le fichier local /vendor/pptxgen.bundle.js)";
-      return;
-    }
-
-    const btn = document.getElementById("exportBtn");
-    if (btn) {
-      btn.addEventListener("click", createPowerPoint);
-      btn.disabled = false;
-    }
-  };
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", start);
-  } else {
-    start();
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("Pptx present ?", typeof PptxGenJS !== "undefined");
+  if (typeof PptxGenJS === "undefined") {
+    alert("❌ PptxGenJS n'est pas chargé. Vérifie que 'pptxgen.bundle.js' est bien à la racine.");
   }
-})();
-
-/** Téléchargement avec fallback : writeFile -> blob + lien */
-async function savePptx(pptx, fileName) {
-  try {
-    if (typeof pptx.writeFile === "function") {
-      await pptx.writeFile({ fileName });
-      console.log("[savePptx] writeFile OK");
-      return;
-    }
-  } catch (e) {
-    console.warn("[savePptx] writeFile a échoué, tentative blob…", e);
-  }
-
-  try {
-    const blob = await pptx.write("blob");
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.style.display = "none";
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => {
-      URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    }, 1500);
-    console.log("[savePptx] blob fallback OK");
-  } catch (e2) {
-    console.error("[savePptx] blob fallback KO", e2);
-    alert("Le fichier n’a pas pu être généré.\nDétail: " + (e2 && e2.message ? e2.message : e2));
-    throw e2;
-  }
-}
+  document.getElementById("exportBtn")?.addEventListener("click", createPowerPoint);
+});
 
 function createPowerPoint() {
-  const PptxCtor = window.PptxGenJS || window.pptxgen;
   const btn = document.getElementById("exportBtn");
-
   btn?.setAttribute("disabled", "true");
   btn?.setAttribute("aria-busy", "true");
 
-  if (!PptxCtor) {
-    alert("PptxGenJS n'est pas chargé. Place le fichier local /vendor/pptxgen.bundle.js");
+  if (typeof PptxGenJS === "undefined") {
+    alert("❌ PptxGenJS n'est pas chargé.");
     btn?.removeAttribute("aria-busy");
     btn?.removeAttribute("disabled");
     return;
   }
 
-  const pptx = new PptxCtor();
-  pptx.layout = "LAYOUT_WIDE"; // 16:9
+  const pptx = new PptxGenJS();
+  pptx.layout = "LAYOUT_WIDE";
 
   const getVal = (id) => document.getElementById(id)?.value || "";
 
-  // Champs infos
-  const clientName    = getVal("clientName");
-  const rae           = getVal("rae");
-  const power         = getVal("power");
-  const commercial    = getVal("commercial");
-  const infoComplem   = getVal("raeClient");
-  const clientAddress = getVal("clientAddress");
-  const siret         = getVal("siret");
-  const oppoNumber    = getVal("oppoNumber");
-  const nbBornes      = getVal("nbBornes");
-  const bornesPower   = getVal("bornesPower");
+  // Champs
+  const clientName   = getVal("clientName");
+  const rae          = getVal("rae");
+  const power        = getVal("power");
+  const commercial   = getVal("commercial");
+  const raeClient    = getVal("raeClient");
+  const clientAddress= getVal("clientAddress");
+  const siret        = getVal("siret");
+  const oppoNumber   = getVal("oppoNumber");
+  const nbBornes     = getVal("nbBornes");
+  const bornesPower  = getVal("bornesPower");
 
-  // ---------- Diapo 1 : Informations client ----------
-  (function addInfoSlide() {
+  // --- Slide d'accueil
+  (function addCoverSlide() {
     const slide = pptx.addSlide();
-    slide.background = { color: "363636" };
+    slide.background = { fill: "363636" };
 
     const lines = [];
-    if (clientName)   lines.push({ text: `Client : ${clientName}\n`,      options: { fontSize: 20, color: "FFFFFF", bold: true } });
-    if (rae)          lines.push({ text: `RAE : ${rae}\n`,                options: { fontSize: 16, color: "FFFFFF" } });
-    if (power)        lines.push({ text: `Puissance : ${power}\n`,        options: { fontSize: 16, color: "FFFFFF" } });
-    if (commercial)   lines.push({ text: `Commercial : ${commercial}\n`,  options: { fontSize: 16, color: "FFFFFF" } });
-    if (clientAddress) lines.push({ text: `Adresse : ${clientAddress}\n`, options: { fontSize: 16, color: "FFFFFF" } });
-    if (siret)         lines.push({ text: `SIRET : ${siret}\n`,           options: { fontSize: 16, color: "FFFFFF" } });
-    if (oppoNumber)    lines.push({ text: `Numéro Oppo : ${oppoNumber}\n`,options: { fontSize: 16, color: "FFFFFF" } });
-    if (nbBornes)      lines.push({ text: `Nombre de bornes : ${nbBornes}\n`,options: { fontSize: 16, color: "FFFFFF" } });
-    if (bornesPower)   lines.push({ text: `Puissance des bornes : ${bornesPower}\n`,options: { fontSize: 16, color: "FFFFFF" } });
+    if (clientName)    lines.push({ text: `Client : ${clientName}\n`,      options:{ fontSize:20, color:"FFFFFF", bold:true }});
+    if (rae)           lines.push({ text: `RAE : ${rae}\n`,                options:{ fontSize:16, color:"FFFFFF" }});
+    if (power)         lines.push({ text: `Puissance : ${power}\n`,        options:{ fontSize:16, color:"FFFFFF" }});
+    if (commercial)    lines.push({ text: `Commercial : ${commercial}\n`,  options:{ fontSize:16, color:"FFFFFF" }});
+    if (clientAddress) lines.push({ text: `Adresse : ${clientAddress}\n`,  options:{ fontSize:16, color:"FFFFFF" }});
+    if (siret)         lines.push({ text: `SIRET : ${siret}\n`,            options:{ fontSize:16, color:"FFFFFF" }});
+    if (oppoNumber)    lines.push({ text: `Numéro Oppo : ${oppoNumber}\n`, options:{ fontSize:16, color:"FFFFFF" }});
+    if (nbBornes)      lines.push({ text: `Nombre de bornes : ${nbBornes}\n`, options:{ fontSize:16, color:"FFFFFF" }});
+    if (bornesPower)   lines.push({ text: `Puissance des bornes : ${bornesPower}\n`, options:{ fontSize:16, color:"FFFFFF" }});
+    lines.push({ text:"Projet d’infrastructure de recharge pour véhicules électriques",
+                 options:{ fontSize:14, color:"FFFFFF", italic:true, breakLine:true } });
 
-    slide.addText(lines, { x: 0.6, y: 0.6, w: 8.8, h: 5.0 });
+    slide.addText(lines, { x:0.7, y:0.7, w:8.6, h:4.2 });
   })();
 
-  // ---------- Diapo 2 : Compléments d’informations ----------
-  (function addComplementsSlide() {
+  // --- Slide Compléments
+  (function addInfoSlide() {
     const slide = pptx.addSlide();
-    slide.addText("Compléments d’informations", { x: 0.6, y: 0.6, fontSize: 24, bold: true });
-    slide.addText(infoComplem || "—", {
-      x: 0.6, y: 1.2, w: 8.8, h: 4.2,
-      fontSize: 18, color: "363636", valign: "top",
-      fill: { color: "FFFFFF" }, line: { color: "AAAAAA" }, margin: 0.14
+    slide.addText("Compléments d’informations", { x:0.7, y:0.5, fontSize:24, bold:true });
+    slide.addText(raeClient || "—", {
+      x:0.7, y:1.3, w:8.6, h:4.8, fontSize:18, color:"363636",
+      fill:{ color:"FFFFFF" }, line:{ color:"DDDDDD" }, margin:0.12, valign:"top"
     });
   })();
 
-  // ---------- Checklist : photo à gauche, commentaire à droite ----------
-  (function addChecklistSlides() {
-    const SLIDE_W = 10.0;
-    const MARGIN  = 0.5;
+  // Mise en page image/texte
+  const SLIDE_W = 10.0;
+  const MARGIN  = 0.5;
+  const IMG = { x: MARGIN, y: 1.1, w: 6.1, h: 4.6 };
+  const BOX = { x: 6.7, y: 1.1, w: SLIDE_W - 6.7 - MARGIN, h: 4.6 };
 
-    const IMG = { x: MARGIN, y: 1.1, w: 6.3, h: 4.6 }; // image à gauche
-    const BOX = { x: 7.1, y: 1.1, w: SLIDE_W - 7.1 - MARGIN, h: 4.6 }; // texte à droite
+  const items = [
+    { title: "Plan d'implantation #1", file: "file1",  comment: "comment1"  },
+    { title: "Plan d'implantation #2", file: "file1b", comment: "comment1b" },
+    { title: "Places à électrifier #1", file: "file2",  comment: "comment2"  },
+    { title: "Places à électrifier #2", file: "file2b", comment: "comment2b" },
+    { title: "TGBT + disjoncteur de tête #1", file: "file3",  comment: "comment3"  },
+    { title: "TGBT + disjoncteur de tête #2", file: "file3b", comment: "comment3b" },
+    { title: "Cheminement #1", file: "file4",  comment: "comment4"  },
+    { title: "Cheminement #2", file: "file4b", comment: "comment4b" },
+    { title: "Plan du site #1", file: "file5",  comment: "comment5"  },
+    { title: "Plan du site #2", file: "file5b", comment: "comment5b" },
+    { title: "Éléments complémentaires #1", file: "file6",  comment: "comment6"  },
+    { title: "Éléments complémentaires #2", file: "file6b", comment: "comment6b" },
+  ];
 
-    const items = [
-      { base: "Plan d'implantation",        pairs: [ ["file1a","comment1a"], ["file1b","comment1b"] ] },
-      { base: "Places à électrifier",       pairs: [ ["file2a","comment2a"], ["file2b","comment2b"] ] },
-      { base: "TGBT + disjoncteur de tête", pairs: [ ["file3a","comment3a"], ["file3b","comment3b"] ] },
-      { base: "Cheminement",                pairs: [ ["file4a","comment4a"], ["file4b","comment4b"] ] },
-      { base: "Plan du site",               pairs: [ ["file5a","comment5a"], ["file5b","comment5b"] ] },
-      { base: "Éléments complémentaires",   pairs: [ ["file6a","comment6a"], ["file6b","comment6b"] ] }
-    ];
+  let done = 0;
+  const total = items.length;
 
-    let done = 0;
-    const totalSlides = items.reduce((acc, it) => acc + it.pairs.length, 0);
+  items.forEach((item) => {
+    const fileInput = document.getElementById(item.file);
+    const comment   = document.getElementById(item.comment)?.value || "—";
+    const slide     = pptx.addSlide();
 
-    items.forEach((rub) => {
-      rub.pairs.forEach(([fileId, commentId], idx) => {
-        const fileInput = document.getElementById(fileId);
-        const comment   = document.getElementById(commentId)?.value || "—";
-        const slide     = pptx.addSlide();
+    slide.addText(item.title, { x:MARGIN, y:0.5, fontSize:24, bold:true });
 
-        const title = `${rub.base} — ${idx === 0 ? "1" : "2"}`;
-        slide.addText(title, { x: MARGIN, y: 0.5, fontSize: 24, bold: true });
-
-        // Zone de commentaire à droite (grande & déplaçable)
-        slide.addText(comment, {
-          x: BOX.x, y: BOX.y, w: BOX.w, h: BOX.h,
-          fontSize: 18, color: "111111",
-          fill: { color: "FFFFFF" },
-          line: { color: "AAAAAA", width: 1 },
-          margin: 0.14,
-          align: "left",
-          valign: "top",
-          bullet: false,
-          autoFit: false
-        });
-
-        const injectImage = (dataUrl) => {
-          if (dataUrl) {
-            slide.addImage({
-              data: dataUrl,
-              x: IMG.x, y: IMG.y, w: IMG.w, h: IMG.h,
-              sizing: { type: "contain", w: IMG.w, h: IMG.h }
-            });
-          }
-          checkDone();
-        };
-
-        if (fileInput?.files?.length > 0) {
-          const reader = new FileReader();
-          reader.onload = (e) => injectImage(e.target.result);
-          reader.onerror = (err) => {
-            console.warn(`[FileReader] Lecture échouée pour ${fileId}:`, err);
-            injectImage(null);
-          };
-          reader.readAsDataURL(fileInput.files[0]);
-        } else {
-          injectImage(null);
-        }
-      });
+    slide.addText(comment, {
+      x: BOX.x, y: BOX.y, w: BOX.w, h: BOX.h,
+      fill: { color:"FFFFFF" }, line:{ color:"AAAAAA" }, margin:0.12,
+      fontSize: 18, color:"111111", align:"left", valign:"top"
     });
 
-    function checkDone() {
-      done++;
-      if (done === totalSlides) {
-        const safeName = (clientName || "Projet")
-          .replace(/[^\p{L}\p{N}_\- ]/gu, "")
-          .trim()
-          .replace(/\s+/g, "_");
-
-        const fileName = `Borne_Electrique_${safeName}.pptx`;
-
-        savePptx(pptx, fileName)
-          .catch(() => {})
-          .finally(() => {
-            const btn = document.getElementById("exportBtn");
-            btn?.removeAttribute("aria-busy");
-            btn?.removeAttribute("disabled");
-          });
+    const placeImage = (dataUrl) => {
+      if (dataUrl) {
+        slide.addImage({ data: dataUrl, x: IMG.x, y: IMG.y, w: IMG.w, h: IMG.h,
+          sizing: { type:"contain", w: IMG.w, h: IMG.h } });
       }
+      checkDone();
+    };
+
+    if (fileInput?.files?.length > 0) {
+      const reader = new FileReader();
+      reader.onload = (e) => placeImage(e.target.result);
+      reader.readAsDataURL(fileInput.files[0]);
+    } else {
+      placeImage(null);
     }
-  })();
+  });
+
+  function checkDone() {
+    done++;
+    if (done === total) {
+      const safeName = (clientName || "Projet").replace(/[^\p{L}\p{N}_\- ]/gu, "").trim().replace(/\s+/g, "_");
+      pptx.writeFile({ fileName: `Borne_Electrique_${safeName}.pptx` })
+        .finally(() => {
+          btn?.removeAttribute("aria-busy");
+          btn?.removeAttribute("disabled");
+        });
+    }
+  }
 }
