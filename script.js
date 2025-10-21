@@ -1,9 +1,10 @@
 // -----------------------------------------------------------
 // script.js - Génération du PowerPoint (PptxGenJS v3.x)
-// - Commentaires à droite des images
+// - Commentaires à droite des images (zone large déplaçable)
 // - 2 slides par rubrique
 // - "Compléments d’informations" au lieu de "RAE du client"
-// - Rectangles sans texte : rouge (TGBT) / bleu (bornes)
+// - Rectangles SANS texte : rouge (TGBT) / bleu (bornes)
+// - Cercle vert épais sur "Plan d’implantation"
 // -----------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -37,7 +38,7 @@ function createPowerPoint() {
 
   const getVal = (id) => document.getElementById(id)?.value || "";
 
-  // --- Champs
+  // --- Champs (infos couverture & complément) ---
   const clientName    = getVal("clientName");
   const rae           = getVal("rae");
   const power         = getVal("power");
@@ -92,17 +93,28 @@ function createPowerPoint() {
   // Commentaire à droite (grande zone déplaçable)
   const BOX = { x: 6.7, y: 1.1, w: SLIDE_W - 6.7 - MARGIN, h: 4.6 };
 
-  // Rectangles par défaut (tu peux ajuster ici la position/taille initiales)
+  // Rectangles par défaut (positions initiales relatives à l'image)
   const TGBT_RECT = {  // Rouge (Plan d’implantation)
     w: 1.5, h: 1.0,
-    dx: 0.8, dy: 0.6   // offset par rapport au coin haut-gauche de l'image
+    dx: 0.8, dy: 0.6
   };
   const BORNE_RECT = { // Bleu (Places à électrifier)
     w: 1.5, h: 1.0,
     dx: 2.0, dy: 1.8
   };
 
-  // ---------------- Eléments (2 slides par rubrique) ----------------
+  // Cercle vert (Plan d’implantation) : position et taille par défaut
+  const GREEN_CIRCLE = {
+    dx: 3.5,  // offset X par rapport au coin haut-gauche de l'image
+    dy: 2.0,  // offset Y
+    w: 2.0,   // largeur
+    h: 2.0,   // hauteur (égale à w pour un cercle parfait)
+    fill: "00FF00",     // vert clair
+    stroke: "008000",   // vert foncé
+    strokeWidth: 4      // épaisseur visible
+  };
+
+  // ---------------- Éléments (2 slides par rubrique) ----------------
   const items = [
     { title: "Plan d'implantation #1", file: "file1",  comment: "comment1"  },
     { title: "Plan d'implantation #2", file: "file1b", comment: "comment1b" },
@@ -139,7 +151,7 @@ function createPowerPoint() {
       align: "left", valign: "top"
     });
 
-    // Ajout de l'image puis des rectangles si besoin
+    // Ajout de l'image puis des formes si besoin
     const placeImageAndShapes = (dataUrl) => {
       if (dataUrl) {
         slide.addImage({
@@ -149,18 +161,28 @@ function createPowerPoint() {
         });
       }
 
-      // Rectangles SANS texte
       const titleLower = item.title.toLowerCase();
 
-      // Plan d’implantation → rectangle rouge (TGBT)
+      // Plan d’implantation → rectangle rouge (TGBT) + cercle vert épais
       if (titleLower.includes("implantation")) {
+        // 🔴 Rectangle rouge
         slide.addShape(pptx.shapes.RECTANGLE, {
           x: IMG.x + TGBT_RECT.dx,
           y: IMG.y + TGBT_RECT.dy,
           w: TGBT_RECT.w,
           h: TGBT_RECT.h,
-          fill: { color: "FF0000" },           // rouge
+          fill: { color: "FF0000" },
           line: { color: "000000", width: 1.5 }
+        });
+
+        // 🟢 Cercle vert épais
+        slide.addShape(pptx.shapes.ELLIPSE, {
+          x: IMG.x + GREEN_CIRCLE.dx,
+          y: IMG.y + GREEN_CIRCLE.dy,
+          w: GREEN_CIRCLE.w,
+          h: GREEN_CIRCLE.h,
+          fill: { color: GREEN_CIRCLE.fill },
+          line: { color: GREEN_CIRCLE.stroke, width: GREEN_CIRCLE.strokeWidth }
         });
       }
 
