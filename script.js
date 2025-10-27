@@ -1,10 +1,11 @@
 // -----------------------------------------------------------
-/* script.js - Génération du PowerPoint (PptxGenJS v3.x)
-   - Images à gauche, commentaire à droite (bloc déplaçable)
-   - Overlays :
-       * Plan d'implantation : rectangle ROUGE + cercle VERT épais
-       * Places à électrifier : rectangle BLEU
-*/
+// script.js - Génération du PowerPoint (PptxGenJS v3.x)
+//
+// - Images à gauche, commentaire à droite (bloc déplaçable)
+// - Overlays :
+//     * Plan d'implantation : rectangle ROUGE (TGBT) + cercle VERT (vide, 3pt) sous le commentaire
+//     * Places à électrifier : rectangle BLEU (bornes)
+// - Compatibilité des types de formes (enum OU string) pour toutes les builds PptxGenJS
 // -----------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -29,7 +30,7 @@ function createPowerPoint() {
   }
 
   const pptx = new PptxGenJS();
-  pptx.layout = "LAYOUT_WIDE"; // 16:9
+  pptx.layout = "LAYOUT_WIDE"; // 16:9 (10" x 5.625")
 
   // === Types de formes : compat maximum (enum OU string) ===
   const RECT    = PptxGenJS?.ShapeType?.rect    || "rect";
@@ -89,14 +90,29 @@ function createPowerPoint() {
 
   // ---------------- Mise en page standard (image gauche / texte droite) ----------------
   const SLIDE_W = 10.0;
+  const SLIDE_H = 5.625;
   const MARGIN  = 0.5;
-  const IMG = { x: MARGIN, y: 1.1, w: 6.1, h: 4.6 }; // image à gauche
-  const BOX = { x: 6.7, y: 1.1, w: SLIDE_W - 6.7 - MARGIN, h: 4.6 }; // texte à droite
+
+  // Image à gauche
+  const IMG = { x: MARGIN, y: 1.1, w: 6.1, h: 4.6 };
+  // Commentaire à droite
+  const BOX = { x: 6.7, y: 1.1, w: SLIDE_W - 6.7 - MARGIN, h: 4.6 };
 
   // ---------------- Paramètres des overlays ----------------
-  const TGBT_RECT    = { w: 1.6, h: 1.1, dx: 0.8, dy: 0.6 }; // rouge
-  const BORNE_RECT   = { w: 1.6, h: 1.1, dx: 2.0, dy: 1.8 }; // bleu
-  const GREEN_CIRCLE = { dx: 3.5, dy: 2.0, w: 2.0, h: 2.0, fill: "00FF00", stroke: "008000", strokeWidth: 4 }; // cercle vert épais
+  const TGBT_RECT  = { w: 1.6, h: 1.1, dx: 0.8, dy: 0.6 }; // rouge sur plan d'implantation
+  const BORNE_RECT = { w: 1.6, h: 1.1, dx: 2.0, dy: 1.8 }; // bleu sur places à électrifier
+
+  // Cercle vert VIDE (contour 3pt) — demandé : sous le commentaire
+  const GREEN_CIRCLE = {
+    w: 1.8,
+    h: 1.8,
+    stroke: "00FF00",
+    strokeWidth: 3,
+    // La position est calculée dynamiquement pour être "sous le commentaire"
+    // tout en restant visible dans la diapo (contrainte aux marges).
+    x: BOX.x,                             // aligné sur le bloc texte
+    y: Math.min(BOX.y + BOX.h + 0.2, SLIDE_H - MARGIN - 1.8) // sous la zone texte, mais borné
+  };
 
   function placeImageAndShapes(slide, title, imgBox, dataUrl) {
     // Image
@@ -111,7 +127,7 @@ function createPowerPoint() {
     const lower = title.toLowerCase();
 
     if (lower.includes("implantation")) {
-      // Rectangle ROUGE (TGBT)
+      // Rectangle ROUGE : TGBT
       slide.addShape(RECT, {
         x: IMG.x + TGBT_RECT.dx, y: IMG.y + TGBT_RECT.dy,
         w: TGBT_RECT.w, h: TGBT_RECT.h,
@@ -119,13 +135,13 @@ function createPowerPoint() {
         line: { color: "880000", width: 1 }
       });
 
-      // Cercle VERT épais
+      // Cercle VERT VIDE (contour 3pt) sous le commentaire
       slide.addShape(ELLIPSE, {
-        x: IMG.x + GREEN_CIRCLE.dx,
-        y: IMG.y + GREEN_CIRCLE.dy,
+        x: GREEN_CIRCLE.x,
+        y: GREEN_CIRCLE.y,
         w: GREEN_CIRCLE.w,
         h: GREEN_CIRCLE.h,
-        fill: { color: GREEN_CIRCLE.fill },
+        fill: null, // vide
         line: { color: GREEN_CIRCLE.stroke, width: GREEN_CIRCLE.strokeWidth }
       });
     }
@@ -136,7 +152,7 @@ function createPowerPoint() {
       lower.includes("place à electrifier") ||
       lower.includes("places elect")
     ) {
-      // Rectangle BLEU (bornes)
+      // Rectangle BLEU : bornes
       slide.addShape(RECT, {
         x: IMG.x + BORNE_RECT.dx, y: IMG.y + BORNE_RECT.dy,
         w: BORNE_RECT.w, h: BORNE_RECT.h,
