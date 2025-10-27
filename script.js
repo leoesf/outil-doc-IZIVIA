@@ -1,9 +1,10 @@
 // -----------------------------------------------------------
-// script.js - Génération du PowerPoint (PptxGenJS v3.x)
-// - Images à gauche, commentaire à droite (bloc déplaçable)
-// - Overlays sur images :
-//     * Plan d'implantation : rectangle rouge + cercle vert épais
-//     * Places à électrifier : rectangle bleu
+/* script.js - Génération du PowerPoint (PptxGenJS v3.x)
+   - Images à gauche, commentaire à droite (bloc déplaçable)
+   - Overlays :
+       * Plan d'implantation : rectangle ROUGE + cercle VERT épais
+       * Places à électrifier : rectangle BLEU
+*/
 // -----------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -30,13 +31,10 @@ function createPowerPoint() {
   const pptx = new PptxGenJS();
   pptx.layout = "LAYOUT_WIDE"; // 16:9
 
-  // === Récupération fiable des types de formes (NE PAS lire sur l'instance) ===
-  const RECT    = PptxGenJS?.ShapeType?.rect     ?? null;
-  const ELLIPSE = PptxGenJS?.ShapeType?.ellipse  ?? null;
-  const canDrawShapes = !!(RECT && ELLIPSE);
-  if (!canDrawShapes) {
-    console.warn("Shapes enum introuvable sur PptxGenJS.ShapeType — les overlays (rectangles/cercle) seront ignorés, mais l'export fonctionnera.");
-  }
+  // === Types de formes : compat maximum (enum OU string) ===
+  const RECT    = PptxGenJS?.ShapeType?.rect    || "rect";
+  const ELLIPSE = PptxGenJS?.ShapeType?.ellipse || "ellipse";
+  console.log("Shapes used => RECT:", RECT, "ELLIPSE:", ELLIPSE);
 
   // --- util ---
   const getVal = (id) => document.getElementById(id)?.value || "";
@@ -96,8 +94,8 @@ function createPowerPoint() {
   const BOX = { x: 6.7, y: 1.1, w: SLIDE_W - 6.7 - MARGIN, h: 4.6 }; // texte à droite
 
   // ---------------- Paramètres des overlays ----------------
-  const TGBT_RECT    = { w: 1.5, h: 1.0, dx: 0.8, dy: 0.6 }; // rouge
-  const BORNE_RECT   = { w: 1.5, h: 1.0, dx: 2.0, dy: 1.8 }; // bleu
+  const TGBT_RECT    = { w: 1.6, h: 1.1, dx: 0.8, dy: 0.6 }; // rouge
+  const BORNE_RECT   = { w: 1.6, h: 1.1, dx: 2.0, dy: 1.8 }; // bleu
   const GREEN_CIRCLE = { dx: 3.5, dy: 2.0, w: 2.0, h: 2.0, fill: "00FF00", stroke: "008000", strokeWidth: 4 }; // cercle vert épais
 
   function placeImageAndShapes(slide, title, imgBox, dataUrl) {
@@ -110,44 +108,41 @@ function createPowerPoint() {
       });
     }
 
-    // Overlays conditionnels — uniquement si l'énum des shapes est dispo
-    if (canDrawShapes) {
-      const lower = title.toLowerCase();
+    const lower = title.toLowerCase();
 
-      if (lower.includes("implantation")) {
-        // Rectangle ROUGE (TGBT)
-        slide.addShape(RECT, {
-          x: IMG.x + TGBT_RECT.dx, y: IMG.y + TGBT_RECT.dy,
-          w: TGBT_RECT.w, h: TGBT_RECT.h,
-          fill: { color: "FF0000" },
-          line: { color: "880000", width: 1 }
-        });
+    if (lower.includes("implantation")) {
+      // Rectangle ROUGE (TGBT)
+      slide.addShape(RECT, {
+        x: IMG.x + TGBT_RECT.dx, y: IMG.y + TGBT_RECT.dy,
+        w: TGBT_RECT.w, h: TGBT_RECT.h,
+        fill: { color: "FF0000" },
+        line: { color: "880000", width: 1 }
+      });
 
-        // Cercle VERT épais
-        slide.addShape(ELLIPSE, {
-          x: IMG.x + GREEN_CIRCLE.dx,
-          y: IMG.y + GREEN_CIRCLE.dy,
-          w: GREEN_CIRCLE.w,
-          h: GREEN_CIRCLE.h,
-          fill: { color: GREEN_CIRCLE.fill },
-          line: { color: GREEN_CIRCLE.stroke, width: GREEN_CIRCLE.strokeWidth }
-        });
-      }
+      // Cercle VERT épais
+      slide.addShape(ELLIPSE, {
+        x: IMG.x + GREEN_CIRCLE.dx,
+        y: IMG.y + GREEN_CIRCLE.dy,
+        w: GREEN_CIRCLE.w,
+        h: GREEN_CIRCLE.h,
+        fill: { color: GREEN_CIRCLE.fill },
+        line: { color: GREEN_CIRCLE.stroke, width: GREEN_CIRCLE.strokeWidth }
+      });
+    }
 
-      if (
-        lower.includes("places à électrifier") ||
-        lower.includes("places a electrifier") ||
-        lower.includes("place à electrifier") ||
-        lower.includes("places elect")
-      ) {
-        // Rectangle BLEU (bornes)
-        slide.addShape(RECT, {
-          x: IMG.x + BORNE_RECT.dx, y: IMG.y + BORNE_RECT.dy,
-          w: BORNE_RECT.w, h: BORNE_RECT.h,
-          fill: { color: "0070C0" },
-          line: { color: "004A87", width: 1 }
-        });
-      }
+    if (
+      lower.includes("places à électrifier") ||
+      lower.includes("places a electrifier") ||
+      lower.includes("place à electrifier") ||
+      lower.includes("places elect")
+    ) {
+      // Rectangle BLEU (bornes)
+      slide.addShape(RECT, {
+        x: IMG.x + BORNE_RECT.dx, y: IMG.y + BORNE_RECT.dy,
+        w: BORNE_RECT.w, h: BORNE_RECT.h,
+        fill: { color: "0070C0" },
+        line: { color: "004A87", width: 1 }
+      });
     }
   }
 
