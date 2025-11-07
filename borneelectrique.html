@@ -5,14 +5,12 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Borne Électrique</title>
 
+  <!-- Styles -->
   <link rel="stylesheet" href="styles.css" />
 
-  <!-- 📦 Librairies locales (à la racine) -->
-  <script defer src="jszip.min.js"></script>
-  <script defer src="pptxgen.bundle.js"></script>
-
-  <!-- Ton script d’app -->
-  <script defer src="script.js"></script>
+  <!-- Librairies locales (pas de CDN) -->
+  <script src="jszip.min.js"></script>
+  <script src="pptxgen.bundle.js"></script>
 </head>
 <body>
   <h1>Borne Électrique</h1>
@@ -31,85 +29,91 @@
   <input type="text" id="bornesPower" placeholder="Puissance des bornes (ex: 2 x 22 kW)" />
 
   <h2>Compléments d’informations</h2>
-  <textarea id="raeClient" placeholder="Saisir les compléments d’informations..."></textarea>
+  <textarea id="raeClient" placeholder="Saisir les compléments ici..."></textarea>
 
   <div id="checklist">
     <h2>Checklist</h2>
+
+    <!-- Plan d’implantation (x2) -->
     <ul>
-      <!-- Plan d'implantation x2 -->
       <li>
         <label>Plan d'implantation #1</label>
-        <input type="file" accept="image/*" id="file1" capture="environment" />
+        <input type="file" accept="image/*" id="file1" />
         <textarea id="comment1" placeholder="Commentaire #1"></textarea>
       </li>
       <li>
         <label>Plan d'implantation #2</label>
-        <input type="file" accept="image/*" id="file1b" capture="environment" />
+        <input type="file" accept="image/*" id="file1b" />
         <textarea id="comment1b" placeholder="Commentaire #2"></textarea>
       </li>
 
-      <!-- Places à électrifier x2 -->
+      <!-- Places à électrifier (x2) -->
       <li>
         <label>Places à électrifier #1</label>
-        <input type="file" accept="image/*" id="file2" capture="environment" />
+        <input type="file" accept="image/*" id="file2" />
         <textarea id="comment2" placeholder="Commentaire #1"></textarea>
       </li>
       <li>
         <label>Places à électrifier #2</label>
-        <input type="file" accept="image/*" id="file2b" capture="environment" />
+        <input type="file" accept="image/*" id="file2b" />
         <textarea id="comment2b" placeholder="Commentaire #2"></textarea>
       </li>
 
-      <!-- TGBT + disjoncteur de tête x2 -->
+      <!-- TGBT + disjoncteur (x2) -->
       <li>
         <label>TGBT + disjoncteur de tête #1</label>
-        <input type="file" accept="image/*" id="file3" capture="environment" />
+        <input type="file" accept="image/*" id="file3" />
         <textarea id="comment3" placeholder="Commentaire #1"></textarea>
       </li>
       <li>
         <label>TGBT + disjoncteur de tête #2</label>
-        <input type="file" accept="image/*" id="file3b" capture="environment" />
+        <input type="file" accept="image/*" id="file3b" />
         <textarea id="comment3b" placeholder="Commentaire #2"></textarea>
       </li>
 
-      <!-- Cheminement x2 -->
+      <!-- Cheminement (x2) -->
       <li>
         <label>Cheminement #1</label>
-        <input type="file" accept="image/*" id="file4" capture="environment" />
+        <input type="file" accept="image/*" id="file4" />
         <textarea id="comment4" placeholder="Commentaire #1"></textarea>
       </li>
       <li>
         <label>Cheminement #2</label>
-        <input type="file" accept="image/*" id="file4b" capture="environment" />
+        <input type="file" accept="image/*" id="file4b" />
         <textarea id="comment4b" placeholder="Commentaire #2"></textarea>
       </li>
 
-      <!-- Plan du site x2 -->
+      <!-- Plan du site (x2) -->
       <li>
         <label>Plan du site #1</label>
-        <input type="file" accept="image/*" id="file5" capture="environment" />
+        <input type="file" accept="image/*" id="file5" />
         <textarea id="comment5" placeholder="Commentaire #1"></textarea>
       </li>
       <li>
         <label>Plan du site #2</label>
-        <input type="file" accept="image/*" id="file5b" capture="environment" />
+        <input type="file" accept="image/*" id="file5b" />
         <textarea id="comment5b" placeholder="Commentaire #2"></textarea>
       </li>
 
-      <!-- Éléments complémentaires x2 -->
+      <!-- Éléments complémentaires (x2) -->
       <li>
         <label>Éléments complémentaires #1</label>
-        <input type="file" accept="image/*" id="file6" capture="environment" />
+        <input type="file" accept="image/*" id="file6" />
         <textarea id="comment6" placeholder="Commentaire #1"></textarea>
       </li>
       <li>
         <label>Éléments complémentaires #2</label>
-        <input type="file" accept="image/*" id="file6b" capture="environment" />
+        <input type="file" accept="image/*" id="file6b" />
         <textarea id="comment6b" placeholder="Commentaire #2"></textarea>
       </li>
     </ul>
 
+    <!-- Bouton Export -->
     <button id="exportBtn">Exporter</button>
   </div>
+
+  <!-- Script applicatif -->
+  <script src="script.js"></script>
 </body>
 </html>
+
