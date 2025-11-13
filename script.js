@@ -1,11 +1,9 @@
 // -----------------------------------------------------------
 // script.js - Génération du PowerPoint (PptxGenJS v3.x)
 // -----------------------------------------------------------
-// Version de test : affichage "TEST COIN BAS DROITE" pour vérifier la position
-// -----------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("🔥 VERSION TEST LEGEND – vTest1");
+  console.log("✅ script.js chargé (version avec légende en bas à droite)");
 
   if (typeof PptxGenJS === "undefined") {
     alert("❌ PptxGenJS n'est pas chargé.");
@@ -27,8 +25,9 @@ function createPowerPoint() {
   }
 
   const pptx = new PptxGenJS();
-  pptx.layout = "LAYOUT_WIDE";
+  pptx.layout = "LAYOUT_WIDE"; // 16:9
 
+  // Types de formes
   const RECT    = PptxGenJS.ShapeType?.rect    || "rect";
   const ELLIPSE = PptxGenJS.ShapeType?.ellipse || "ellipse";
 
@@ -75,9 +74,9 @@ function createPowerPoint() {
   const MARGIN  = 0.5;
 
   const IMG = { x: MARGIN, y: 1.1, w: 6.1, h: 4.6 };
-  const BOX = { x: 6.7, y: 1.1, w: SLIDE_W - 6.7 - MARGIN, h: 4.6 };
+  const BOX = { x: 6.7,   y: 1.1, w: SLIDE_W - 6.7 - MARGIN, h: 4.6 };
 
-  // ---------------- Formes ----------------
+  // ---------------- Formes (TGBT / bornes / cercle) ----------------
   const TGBT_RECT = { w:1.6, h:1.1, dx:0.8, dy:0.6 };
   const BORNE_RECT = { w:1.6, h:1.1, dx:2.0, dy:1.8 };
 
@@ -85,25 +84,31 @@ function createPowerPoint() {
     w: 1.8, h: 1.8,
     stroke: "00FF00",
     strokeWidth: 3,
-    x: BOX.x,
+    x: BOX.x, // à droite de l'image
     y: Math.min(BOX.y + BOX.h + 0.2, SLIDE_H - MARGIN - 1.8)
   };
 
-  // ---------------- Légende : TEST TEMPORAIRE ----------------
+  // ---------------- Légende en bas à droite ----------------
   function addLegend(slide, texts = []) {
-    console.log("🟢 TEST POSITION LÉGENDE – fonction active !");
+    if (!texts || texts.length === 0) return;
 
-    slide.addText("TEST COIN BAS DROITE", {
-      x: 9.5,        // très proche du bord droit
-      y: 5.3,        // très proche du bas
-      w: 1.5,
-      h: 0.5,
-      fontSize: 20,
-      color: "FF0000",
-      bold: true
+    const LEG_W = 3.2;
+    const LEG_H = 0.8;
+
+    // Coin bas droite, en gardant une petite marge
+    const x = SLIDE_W - LEG_W - 0.3; // ~9.7 - LEG_W
+    const y = SLIDE_H - LEG_H - 0.3; // ~5.325 - LEG_H
+
+    slide.addText(texts.join("\n"), {
+      x,
+      y,
+      w: LEG_W,
+      h: LEG_H,
+      fontSize: 12,
+      color: "000000",
+      valign: "top"
+      // pas de fill, pas de contour → juste du texte
     });
-
-    // (Le vrai affichage de légende est désactivé volontairement pour le test)
   }
 
   // ---------------- Placement image + formes + légendes ----------------
@@ -120,41 +125,55 @@ function createPowerPoint() {
     }
 
     const lower = title.toLowerCase();
+    const legendTexts = [];
 
-    // Formes selon titre
+    // Formes + légende selon le titre
     if (lower.includes("implantation")) {
+      // Rectangle rouge = TGBT
       slide.addShape(RECT, {
         x: IMG.x + TGBT_RECT.dx,
         y: IMG.y + TGBT_RECT.dy,
         w: TGBT_RECT.w,
         h: TGBT_RECT.h,
-        fill:{color:"FF0000"},
-        line:{color:"880000"}
+        fill: { color: "FF0000" },
+        line: { color: "880000" }
       });
 
+      // Cercle vert
       slide.addShape(ELLIPSE, {
         x: GREEN_CIRCLE.x,
         y: GREEN_CIRCLE.y,
         w: GREEN_CIRCLE.w,
         h: GREEN_CIRCLE.h,
         fill: null,
-        line: { color:GREEN_CIRCLE.stroke, width:GREEN_CIRCLE.strokeWidth }
+        line: { color: GREEN_CIRCLE.stroke, width: GREEN_CIRCLE.strokeWidth }
       });
+
+      legendTexts.push(
+        "Rectangle rouge = TGBT",
+        "Cercle vert = place à équiper",
+        "Rectangle bleu = future borne"
+      );
     }
 
     if (lower.includes("places à électrifier") || lower.includes("places a electrifier")) {
+      // Rectangle bleu = future borne
       slide.addShape(RECT, {
         x: IMG.x + BORNE_RECT.dx,
         y: IMG.y + BORNE_RECT.dy,
         w: BORNE_RECT.w,
         h: BORNE_RECT.h,
-        fill:{color:"0070C0"},
-        line:{color:"003A70"}
+        fill: { color: "0070C0" },
+        line: { color: "003A70" }
       });
+
+      if (legendTexts.length === 0) {
+        legendTexts.push("Rectangle bleu = future borne");
+      }
     }
 
-    // → Ajout de la légende TEST
-    addLegend(slide);
+    // Ajoute la légende si nécessaire
+    addLegend(slide, legendTexts);
   }
 
   // ---------------- Slides checklist ----------------
@@ -184,6 +203,7 @@ function createPowerPoint() {
     items.forEach((item) => {
       const slide = pptx.addSlide();
 
+      // Titre de la diapo
       slide.addText(item.title, {
         x: MARGIN,
         y: 0.5,
@@ -191,6 +211,7 @@ function createPowerPoint() {
         bold: true
       });
 
+      // Commentaire à droite (zone déplaçable)
       const comment = document.getElementById(item.comment)?.value || "—";
       slide.addText(comment, {
         x: BOX.x,
