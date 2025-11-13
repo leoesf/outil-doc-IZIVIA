@@ -1,21 +1,14 @@
 // -----------------------------------------------------------
 // script.js - Génération du PowerPoint (PptxGenJS v3.x)
 // -----------------------------------------------------------
-// Fonctionnalités :
-// - Images à gauche, commentaire à droite
-// - Deux diapositives par rubrique
-// - Overlays :
-//      * Rectangle rouge → TGBT
-//      * Rectangle bleu → Futur borne
-//      * Cercle vert vide → Zone à équiper
-// - Légende automatique sur les diapositives où ils apparaissent
-// -----------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
-  if (typeof PptxGenJS === "undefined") {
-    alert("❌ PptxGenJS n'est pas chargé.");
+  console.log("✅ script.js chargé – PptxGenJS présent ?", typeof PptxGenJS !== "undefined");
+
+  const btn = document.getElementById("exportBtn");
+  if (btn) {
+    btn.addEventListener("click", createPowerPoint);
   }
-  document.getElementById("exportBtn")?.addEventListener("click", createPowerPoint);
 });
 
 function createPowerPoint() {
@@ -24,198 +17,308 @@ function createPowerPoint() {
   btn?.setAttribute("aria-busy", "true");
 
   if (typeof PptxGenJS === "undefined") {
-    alert("PptxGenJS n'est pas chargé.");
+    alert("❌ PptxGenJS n'est pas chargé (vérifie bien <script src=\"pptxgen.bundle.js\"></script>).");
     btn?.removeAttribute("aria-busy");
     btn?.removeAttribute("disabled");
     return;
   }
 
   const pptx = new PptxGenJS();
-  pptx.layout = "LAYOUT_WIDE";
+  pptx.layout = "LAYOUT_WIDE"; // 16:9
 
-  const RECT    = PptxGenJS.ShapeType?.rect    || "rect";
-  const ELLIPSE = PptxGenJS.ShapeType?.ellipse || "ellipse";
+  // Types de formes (utilisation de l'instance pptx)
+  const RECT    = pptx.shapes.RECTANGLE;
+  const ELLIPSE = pptx.shapes.OVAL;
 
-  // Récupération valeurs
+  // --- util ---
   const getVal = (id) => document.getElementById(id)?.value || "";
-  const clientName = getVal("clientName");
-  const raeClient  = getVal("raeClient");
 
-  // ---------------- Slides Informations ----------------
+  // --- Champs formulaire ---
+  const clientName    = getVal("clientName");
+  const rae           = getVal("rae");
+  const power         = getVal("power");
+  const commercial    = getVal("commercial");
+  const raeClient     = getVal("raeClient");
+
+  const clientAddress = getVal("clientAddress");
+  const siret         = getVal("siret");
+  const oppoNumber    = getVal("oppoNumber");
+  const nbBornes      = getVal("nbBornes");
+  const bornesPower   = getVal("bornesPower");
+
+  // ------------------ SLIDE 1 : Couverture ------------------
   function addCoverSlide() {
     const slide = pptx.addSlide();
     slide.background = { fill: "363636" };
-    slide.addText(`Client : ${clientName}`, { x:0.5, y:0.5, fontSize:30, color:"FFFFFF", bold:true });
-    slide.addText("Projet d’infrastructure de recharge", { x:0.5, y:1.3, fontSize:20, color:"FFFFFF" });
-  }
 
-  function addInfoSlide() {
-    const slide = pptx.addSlide();
-    slide.addText("Compléments d’informations", { x:0.5, y:0.5, fontSize:24, bold:true });
-    slide.addText(raeClient || "—", {
-      x:0.5, y:1.3, w:"90%", h:"70%", fontSize:18,
-      fill:{color:"FFFFFF"}, line:{color:"CCCCCC"}
+    const lines = [];
+
+    if (clientName)    lines.push({ text: `Client : ${clientName}\n`,      options: { fontSize: 20, color: "FFFFFF", bold: true } });
+    if (rae)           lines.push({ text: `RAE : ${rae}\n`,                options: { fontSize: 16, color: "FFFFFF" } });
+    if (power)         lines.push({ text: `Puissance : ${power}\n`,        options: { fontSize: 16, color: "FFFFFF" } });
+    if (commercial)    lines.push({ text: `Commercial : ${commercial}\n`,  options: { fontSize: 16, color: "FFFFFF" } });
+    if (clientAddress) lines.push({ text: `Adresse : ${clientAddress}\n`,  options: { fontSize: 16, color: "FFFFFF" } });
+    if (siret)         lines.push({ text: `SIRET : ${siret}\n`,            options: { fontSize: 16, color: "FFFFFF" } });
+    if (oppoNumber)    lines.push({ text: `Numéro Oppo : ${oppoNumber}\n`, options: { fontSize: 16, color: "FFFFFF" } });
+    if (nbBornes)      lines.push({ text: `Nombre de bornes : ${nbBornes}\n`,       options: { fontSize: 16, color: "FFFFFF" } });
+    if (bornesPower)   lines.push({ text: `Puissance des bornes : ${bornesPower}\n`, options: { fontSize: 16, color: "FFFFFF" } });
+
+    lines.push({
+      text: "Projet d’infrastructure de recharge pour véhicules électriques",
+      options: { fontSize: 14, color: "FFFFFF", italic: true, breakLine: true }
+    });
+
+    slide.addText(lines, {
+      x: 0.5,
+      y: 0.5,
+      w: 5.8,
+      h: 6.2
     });
   }
 
-  // ---------------- Mise en page standard ----------------
+  // --------------- SLIDE 2 : Compléments d’informations ---------------
+  function addInfoSlide() {
+    const slide = pptx.addSlide();
+
+    slide.addText("Compléments d’informations", {
+      x: 0.5,
+      y: 0.4,
+      w: 9,
+      fontSize: 36,
+      bold: true,
+      color: "0070C0",
+      align: "center"
+    });
+
+    slide.addText(raeClient || "—", {
+      x: 0.5,
+      y: 1.5,
+      w: "90%",
+      h: "70%",
+      fontSize: 18,
+      fill: { color: "FFFFFF" },
+      line: { color: "CCCCCC" }
+    });
+  }
+
+  // ---------------- Mise en page générale ----------------
   const SLIDE_W = 10.0;
   const SLIDE_H = 5.625;
   const MARGIN  = 0.5;
 
-  const IMG = { x:MARGIN, y:1.1, w:6.1, h:4.6 };
-  const BOX = { x:6.7, y:1.1, w:SLIDE_W - 6.7 - MARGIN, h:4.6 };
+  // Zone image (gauche)
+  const IMG = { x: MARGIN, y: 1.4, w: 5.8, h: 3.8 };
+  // Zone texte commentaire (droite)
+  const BOX = { x: 6.6,   y: 1.4, w: SLIDE_W - 6.6 - MARGIN, h: 3.8 };
 
-  // ---------------- Formes (overlays) ----------------
-  const TGBT_RECT = { w:1.6, h:1.1, dx:0.8, dy:0.6 };
-  const BORNE_RECT = { w:1.6, h:1.1, dx:2.0, dy:1.8 };
+  // Tailles / positions des formes (relatives à l'image)
+  const TGBT_RECT = { w: 1.6, h: 1.1, dx: 1.0, dy: 0.8 };  // rectangle rouge
+  const BORNE_RECT = { w: 1.6, h: 1.1, dx: 3.2, dy: 2.0 }; // rectangle bleu
 
-  // Cercle vert V I D E sous le commentaire
   const GREEN_CIRCLE = {
-    w:1.8, h:1.8,
-    stroke:"00FF00", strokeWidth:3,
-    x: BOX.x,
-    y: Math.min(BOX.y + BOX.h + 0.2, SLIDE_H - MARGIN - 1.8)
+    w: 1.8,
+    h: 1.8,
+    stroke: "00FF00",
+    strokeWidth: 3,
+    x: BOX.x + 0.2,
+    y: BOX.y + BOX.h + 0.15   // sous la zone de texte, à droite
   };
 
-  // ---------------- Ajout de légende ----------------
+  // ---------------- Légende bas-droite ----------------
   function addLegend(slide, texts = []) {
-    if (texts.length === 0) return;
+    if (!texts || texts.length === 0) return;
 
-    slide.addShape(RECT, {
-      x: SLIDE_W - 3.8,
-      y: SLIDE_H - 1.3,
-      w: 3.3,
-      h: 1.0,
-      fill: { color: "FFFFFF" },
-      line: { color: "000000", width: 1 }
-    });
+    const LEG_W = 3.5;
+    const LEG_H = 1.0;
+
+    const x = SLIDE_W - LEG_W - 0.2; // coin bas droite
+    const y = SLIDE_H - LEG_H - 0.2;
 
     slide.addText(texts.join("\n"), {
-      x: SLIDE_W - 3.7,
-      y: SLIDE_H - 1.25,
-      w: 3.1,
-      h: 1.0,
+      x,
+      y,
+      w: LEG_W,
+      h: LEG_H,
       fontSize: 12,
       color: "000000",
       valign: "top"
     });
   }
 
-  // ---------------- Placement image + formes ----------------
+  // ---------------- Image + formes + légende ----------------
   function placeImageAndShapes(slide, title, imgBox, dataUrl) {
+    // Image
     if (dataUrl) {
       slide.addImage({
         data: dataUrl,
-        x: imgBox.x, y: imgBox.y,
-        w: imgBox.w, h: imgBox.h,
+        x: imgBox.x,
+        y: imgBox.y,
+        w: imgBox.w,
+        h: imgBox.h,
         sizing: { type: "contain" }
       });
     }
 
-    const lower = title.toLowerCase();
-    let legendText = [];
+    const low = title.toLowerCase();
+    const legendTexts = [];
 
-    // --- Rectangle rouge + cercle vert (Plan implantation)
-    if (lower.includes("implantation")) {
+    // Plan d'implantation : rectangle rouge + cercle vert
+    if (low.includes("implantation")) {
+      // Rectangle rouge = TGBT
       slide.addShape(RECT, {
-        x: IMG.x + TGBT_RECT.dx, y: IMG.y + TGBT_RECT.dy,
-        w: TGBT_RECT.w, h: TGBT_RECT.h,
-        fill:{color:"FF0000"}, line:{color:"880000"}
+        x: IMG.x + TGBT_RECT.dx,
+        y: IMG.y + TGBT_RECT.dy,
+        w: TGBT_RECT.w,
+        h: TGBT_RECT.h,
+        fill: { color: "FF0000" },
+        line: { color: "880000" }
       });
 
+      // Cercle vert = place à équiper
       slide.addShape(ELLIPSE, {
-        x: GREEN_CIRCLE.x, y: GREEN_CIRCLE.y,
-        w: GREEN_CIRCLE.w, h: GREEN_CIRCLE.h,
-        fill:null,
-        line:{color:GREEN_CIRCLE.stroke, width:GREEN_CIRCLE.strokeWidth}
+        x: GREEN_CIRCLE.x,
+        y: GREEN_CIRCLE.y,
+        w: GREEN_CIRCLE.w,
+        h: GREEN_CIRCLE.h,
+        fill: null,
+        line: { color: GREEN_CIRCLE.stroke, width: GREEN_CIRCLE.strokeWidth }
       });
 
-      legendText.push("■ Rectangle rouge = TGBT");
-      legendText.push("○ Cercle vert = Place à équiper");
+      legendTexts.push(
+        "Rectangle rouge = TGBT",
+        "Cercle vert = place à équiper",
+        "Rectangle bleu = future borne"
+      );
     }
 
-    // --- Rectangle bleu (Places à électrifier)
-    if (lower.includes("places à électrifier") || lower.includes("places a electrifier")) {
+    // Places à électrifier : rectangle bleu
+    if (low.includes("places à électrifier") || low.includes("places a electrifier")) {
       slide.addShape(RECT, {
-        x: IMG.x + BORNE_RECT.dx, y: IMG.y + BORNE_RECT.dy,
-        w: BORNE_RECT.w, h: BORNE_RECT.h,
-        fill:{color:"0070C0"}, line:{color:"003A70"}
+        x: IMG.x + BORNE_RECT.dx,
+        y: IMG.y + BORNE_RECT.dy,
+        w: BORNE_RECT.w,
+        h: BORNE_RECT.h,
+        fill: { color: "0070C0" },
+        line: { color: "003A70" }
       });
 
-      legendText.push("■ Rectangle bleu = Futur borne");
+      legendTexts.push("Rectangle bleu = future borne");
     }
 
-    // Ajout légende si nécessaire
-    addLegend(slide, legendText);
+    addLegend(slide, legendTexts);
   }
 
   // ---------------- Slides checklist ----------------
   function addChecklistSlides() {
-    const items = [
-      { title:"Plan d'implantation #1", file:"file1", comment:"comment1" },
-      { title:"Plan d'implantation #2", file:"file1b", comment:"comment1b" },
+    // Numéro de section par rubrique
+    const sectionNumber = {
+      "Plan d'implantation": 1,
+      "Places à électrifier": 2,
+      "TGBT + disjoncteur de tête": 3,
+      "Cheminement": 4,
+      "Plan du site": 5,
+      "Éléments complémentaires": 6
+    };
 
-      { title:"Places à électrifier #1", file:"file2", comment:"comment2" },
-      { title:"Places à électrifier #2", file:"file2b", comment:"comment2b" },
+    // 6 rubriques × 2 photos/commentaires
+    const slideDefs = [
+      { title: "Plan d'implantation",        fileId: "file1",  commentId: "comment1"  },
+      { title: "Plan d'implantation",        fileId: "file1b", commentId: "comment1b" },
 
-      { title:"TGBT + disjoncteur de tête #1", file:"file3", comment:"comment3" },
-      { title:"TGBT + disjoncteur de tête #2", file:"file3b", comment:"comment3b" },
+      { title: "Places à électrifier",       fileId: "file2",  commentId: "comment2"  },
+      { title: "Places à électrifier",       fileId: "file2b", commentId: "comment2b" },
 
-      { title:"Cheminement #1", file:"file4", comment:"comment4" },
-      { title:"Cheminement #2", file:"file4b", comment:"comment4b" },
+      { title: "TGBT + disjoncteur de tête", fileId: "file3",  commentId: "comment3"  },
+      { title: "TGBT + disjoncteur de tête", fileId: "file3b", commentId: "comment3b" },
 
-      { title:"Plan du site #1", file:"file5", comment:"comment5" },
-      { title:"Plan du site #2", file:"file5b", comment:"comment5b" },
+      { title: "Cheminement",                fileId: "file4",  commentId: "comment4"  },
+      { title: "Cheminement",                fileId: "file4b", commentId: "comment4b" },
 
-      { title:"Éléments complémentaires #1", file:"file6", comment:"comment6" },
-      { title:"Éléments complémentaires #2", file:"file6b", comment:"comment6b" }
+      { title: "Plan du site",               fileId: "file5",  commentId: "comment5"  },
+      { title: "Plan du site",               fileId: "file5b", commentId: "comment5b" },
+
+      { title: "Éléments complémentaires",   fileId: "file6",  commentId: "comment6"  },
+      { title: "Éléments complémentaires",   fileId: "file6b", commentId: "comment6b" }
     ];
 
-    let done = 0;
+    let remaining = slideDefs.length;
 
-    items.forEach(item => {
+    function finalizeIfDone() {
+      if (remaining === 0) {
+        const safeName = (clientName || "Projet")
+          .replace(/[^\p{L}\p{N}_\- ]/gu, "")
+          .trim()
+          .replace(/\s+/g, "_") || "Projet";
+
+        pptx
+          .writeFile({ fileName: `Borne_Electrique_${safeName}.pptx` })
+          .finally(() => {
+            btn?.removeAttribute("aria-busy");
+            btn?.removeAttribute("disabled");
+          });
+      }
+    }
+
+    slideDefs.forEach((def) => {
       const slide = pptx.addSlide();
 
-      slide.addText(item.title, { x:MARGIN, y:0.5, fontSize:24, bold:true });
-
-      const comment = document.getElementById(item.comment)?.value || "—";
-      slide.addText(comment, {
-        x: BOX.x, y: BOX.y,
-        w: BOX.w, h: BOX.h,
-        fill:{color:"FFFFFF"},
-        line:{color:"AAAAAA"},
-        fontSize:18,
-        valign:"top",
-        margin:0.1
+      // Titre de section : N. Titre
+      const secNum = sectionNumber[def.title] || "";
+      slide.addText(`${secNum}. ${def.title}`, {
+        x: 0.5,
+        y: 0.3,
+        w: SLIDE_W - 1.0,
+        fontSize: 36,
+        bold: true,
+        color: "0070C0",
+        align: "center"
       });
 
-      const fileInput = document.getElementById(item.file);
+      // Commentaire à droite
+      const commentText = getVal(def.commentId) || "—";
+      slide.addText(commentText, {
+        x: BOX.x,
+        y: BOX.y,
+        w: BOX.w,
+        h: BOX.h,
+        fill: { color: "FFFFFF" },
+        line: { color: "AAAAAA" },
+        margin: 0.12,
+        fontSize: 18,
+        color: "111111",
+        align: "left",
+        valign: "top"
+      });
 
-      const apply = (dataUrl) => {
-        placeImageAndShapes(slide, item.title, IMG, dataUrl);
-        done++;
-        if (done === items.length) {
-          pptx.writeFile({ fileName:`Borne_Electrique_${clientName || "Projet"}.pptx` })
-            .finally(() => {
-              btn.removeAttribute("disabled");
-              btn.removeAttribute("aria-busy");
-            });
-        }
+      const fileInput = document.getElementById(def.fileId);
+
+      const finishSlide = (dataUrl) => {
+        placeImageAndShapes(slide, def.title, IMG, dataUrl);
+        remaining--;
+        finalizeIfDone();
       };
 
-      if (fileInput?.files.length > 0) {
+      if (fileInput && fileInput.files && fileInput.files.length > 0) {
         const reader = new FileReader();
-        reader.onload = e => apply(e.target.result);
+        reader.onload = (e) => {
+          finishSlide(e.target.result);
+        };
         reader.readAsDataURL(fileInput.files[0]);
       } else {
-        apply(null);
+        finishSlide(null);
       }
     });
   }
 
-  // ---------------- Lancement ----------------
-  addCoverSlide();
-  addInfoSlide();
-  addChecklistSlides();
+  // ---------------- Lancement de la génération ----------------
+  try {
+    addCoverSlide();
+    addInfoSlide();
+    addChecklistSlides();
+  } catch (err) {
+    console.error("❌ Erreur lors de la génération PPTX :", err);
+    alert("Erreur lors de la génération du PowerPoint. Regarde la console pour plus de détails.");
+    btn?.removeAttribute("aria-busy");
+    btn?.removeAttribute("disabled");
+  }
 }
