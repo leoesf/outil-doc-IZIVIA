@@ -23,23 +23,31 @@ function createPowerPoint() {
   const pptx = new PptxGenJS();
   pptx.layout = "LAYOUT_WIDE";
 
-  // Shapes
   const RECT = pptx.shapes.RECTANGLE;
   const ELLIPSE = pptx.shapes.OVAL;
 
   const getVal = (id) => document.getElementById(id)?.value || "";
 
-  // Champs formulaire
-  const clientName = getVal("clientName");
-  const rae = getVal("rae");
-  const power = getVal("power");
-  const commercial = getVal("commercial");
-  const raeClient = getVal("raeClient");
-  const clientAddress = getVal("clientAddress");
-  const siret = getVal("siret");
-  const oppoNumber = getVal("oppoNumber");
-  const nbBornes = getVal("nbBornes");
-  const bornesPower = getVal("bornesPower");
+  // Champs formulaire – client & projet
+  const clientName     = getVal("clientName");
+  const rae            = getVal("rae");
+  const power          = getVal("power");
+  const commercial     = getVal("commercial");
+  const raeClient      = getVal("raeClient");
+  const clientAddress  = getVal("clientAddress");
+  const siret          = getVal("siret");
+  const oppoNumber     = getVal("oppoNumber");
+  const nbBornes       = getVal("nbBornes");
+  const bornesPower    = getVal("bornesPower");
+
+  // 🌟 NOUVEAUX CHAMPS – commercial
+  const commercialPhone = getVal("commercialPhone");
+  const commercialEmail = getVal("commercialEmail");
+
+  // 🌟 NOUVEAUX CHAMPS – interlocuteur
+  const contactName     = getVal("contactName");
+  const contactPhone    = getVal("contactPhone");
+  const contactEmail    = getVal("contactEmail");
 
   // -----------------------------------------------------------
   // SLIDE 1 – COUVERTURE (NOM DU CLIENT CENTRÉ EN HAUT)
@@ -48,7 +56,7 @@ function createPowerPoint() {
     const slide = pptx.addSlide();
     slide.background = { fill: "363636" };
 
-    // NOM DU CLIENT EN GROS & CENTRÉ
+    // Titre : nom du client en gros / centré
     slide.addText(clientName || "Client", {
       x: 0.5,
       y: 0.4,
@@ -61,18 +69,26 @@ function createPowerPoint() {
 
     const lines = [];
 
-    if (rae) lines.push(`RAE : ${rae}`);
-    if (power) lines.push(`Puissance : ${power}`);
-    if (commercial) lines.push(`Commercial : ${commercial}`);
-    if (clientAddress) lines.push(`Adresse : ${clientAddress}`);
-    if (siret) lines.push(`SIRET : ${siret}`);
-    if (oppoNumber) lines.push(`Numéro Oppo : ${oppoNumber}`);
-    if (nbBornes) lines.push(`Nombre de bornes : ${nbBornes}`);
-    if (bornesPower) lines.push(`Puissance des bornes : ${bornesPower}`);
+    if (rae)           lines.push(`RAE : ${rae}`);
+    if (power)         lines.push(`Puissance : ${power}`);
+    if (commercial)    lines.push(`Commercial : ${commercial}`);
+    if (commercialPhone) lines.push(`Tél. commercial : ${commercialPhone}`);
+    if (commercialEmail) lines.push(`Mail commercial : ${commercialEmail}`);
 
+    if (contactName)   lines.push(`Interlocuteur : ${contactName}`);
+    if (contactPhone)  lines.push(`Tél. interlocuteur : ${contactPhone}`);
+    if (contactEmail)  lines.push(`Mail interlocuteur : ${contactEmail}`);
+
+    if (clientAddress) lines.push(`Adresse : ${clientAddress}`);
+    if (siret)         lines.push(`SIRET : ${siret}`);
+    if (oppoNumber)    lines.push(`Numéro Oppo : ${oppoNumber}`);
+    if (nbBornes)      lines.push(`Nombre de bornes : ${nbBornes}`);
+    if (bornesPower)   lines.push(`Puissance des bornes : ${bornesPower}`);
+
+    // 🔽 Bloc descendu plus bas pour laisser de l'espace sous le nom du client
     slide.addText(lines.join("\n"), {
       x: 0.8,
-      y: 1.5,
+      y: 2.1,        // <- avant : 1.5, maintenant plus bas
       fontSize: 18,
       color: "FFFFFF"
     });
@@ -104,30 +120,27 @@ function createPowerPoint() {
   }
 
   // -----------------------------------------------------------
-  // Mise en page générale
+  // Mise en page générales
   // -----------------------------------------------------------
   const SLIDE_W = 10.0;
   const SLIDE_H = 5.625;
-  const MARGIN = 0.5;
+  const MARGIN  = 0.5;
 
   const IMG = { x: MARGIN, y: 1.4, w: 5.8, h: 3.8 };
   const BOX = { x: 6.6, y: 1.4, w: 10 - 6.6 - MARGIN, h: 3.8 };
 
-  // Formes
   const TGBT_RECT = { w: 1.6, h: 1.1, dx: 1.0, dy: 0.8 };
   const BORNE_RECT = { w: 1.6, h: 1.1, dx: 3.2, dy: 2.0 };
 
   const GREEN_CIRCLE = {
-    w: 1.8, h: 1.8,
+    w: 1.8,
+    h: 1.8,
     x: BOX.x + 0.2,
     y: BOX.y + BOX.h + 0.15,
     stroke: "00FF00",
     strokeWidth: 3
   };
 
-  // -----------------------------------------------------------
-  // Légende en bas à droite
-  // -----------------------------------------------------------
   function addLegend(slide, items) {
     if (!items.length) return;
 
@@ -142,9 +155,6 @@ function createPowerPoint() {
     });
   }
 
-  // -----------------------------------------------------------
-  // Placement image + formes
-  // -----------------------------------------------------------
   function placeImageAndShapes(slide, title, imgBox, dataUrl) {
     if (dataUrl) {
       slide.addImage({
@@ -202,9 +212,6 @@ function createPowerPoint() {
     addLegend(slide, legend);
   }
 
-  // -----------------------------------------------------------
-  // Slides checklist
-  // -----------------------------------------------------------
   function addChecklistSlides() {
     const sectionNumber = {
       "Plan d'implantation": 1,
@@ -216,17 +223,17 @@ function createPowerPoint() {
     };
 
     const defs = [
-      { base: "Plan d'implantation", file: "file1", comment: "comment1" },
+      { base: "Plan d'implantation", file: "file1",  comment: "comment1"  },
       { base: "Plan d'implantation", file: "file1b", comment: "comment1b" },
-      { base: "Places à électrifier", file: "file2", comment: "comment2" },
+      { base: "Places à électrifier", file: "file2",  comment: "comment2"  },
       { base: "Places à électrifier", file: "file2b", comment: "comment2b" },
-      { base: "TGBT + disjoncteur de tête", file: "file3", comment: "comment3" },
+      { base: "TGBT + disjoncteur de tête", file: "file3",  comment: "comment3"  },
       { base: "TGBT + disjoncteur de tête", file: "file3b", comment: "comment3b" },
-      { base: "Cheminement", file: "file4", comment: "comment4" },
+      { base: "Cheminement", file: "file4",  comment: "comment4"  },
       { base: "Cheminement", file: "file4b", comment: "comment4b" },
-      { base: "Plan du site", file: "file5", comment: "comment5" },
+      { base: "Plan du site", file: "file5",  comment: "comment5"  },
       { base: "Plan du site", file: "file5b", comment: "comment5b" },
-      { base: "Éléments complémentaires", file: "file6", comment: "comment6" },
+      { base: "Éléments complémentaires", file: "file6",  comment: "comment6"  },
       { base: "Éléments complémentaires", file: "file6b", comment: "comment6b" }
     ];
 
@@ -236,7 +243,6 @@ function createPowerPoint() {
       const slide = pptx.addSlide();
       const sec = sectionNumber[item.base];
 
-      // TITRE CENTRÉ (correction demandée)
       slide.addText(`${sec}. ${item.base}`, {
         x: 0.5,
         y: 0.3,
@@ -244,7 +250,7 @@ function createPowerPoint() {
         fontSize: 36,
         bold: true,
         color: "0070C0",
-        align: "center"   // <--- TITRE CENTRÉ
+        align: "center"
       });
 
       const commentText = getVal(item.comment) || "—";
@@ -284,7 +290,6 @@ function createPowerPoint() {
     });
   }
 
-  // Lancement
   addCoverSlide();
   addInfoSlide();
   addChecklistSlides();
