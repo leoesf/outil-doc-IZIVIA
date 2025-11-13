@@ -8,11 +8,22 @@
 // - Compatibilité des types de formes (enum OU string) pour toutes les builds PptxGenJS
 // -----------------------------------------------------------
 
+// -----------------------------------------------------------
+// script.js - Génération du PowerPoint (PptxGenJS v3.x)
+// -----------------------------------------------------------
+// Fonctionnalités :
+// - Images à gauche, commentaire à droite
+// - Deux diapositives par rubrique
+// - Overlays :
+//      * Rectangle rouge → TGBT
+//      * Rectangle bleu → Futur borne
+//      * Cercle vert vide → Zone à équiper
+// - Légende automatique sur les diapositives où ils apparaissent
+// -----------------------------------------------------------
+
 document.addEventListener("DOMContentLoaded", () => {
-  const ok = typeof PptxGenJS !== "undefined";
-  console.log("Pptx present ?", ok, "(PptxGenJS:", ok, ")");
-  if (!ok) {
-    alert("❌ PptxGenJS n'est pas chargé. Vérifie que `pptxgen.bundle.js` est bien présent et référencé dans borneelectrique.html.");
+  if (typeof PptxGenJS === "undefined") {
+    alert("❌ PptxGenJS n'est pas chargé.");
   }
   document.getElementById("exportBtn")?.addEventListener("click", createPowerPoint);
 });
@@ -30,218 +41,190 @@ function createPowerPoint() {
   }
 
   const pptx = new PptxGenJS();
-  pptx.layout = "LAYOUT_WIDE"; // 16:9 (10" x 5.625")
+  pptx.layout = "LAYOUT_WIDE";
 
-  // === Types de formes : compat maximum (enum OU string) ===
-  const RECT    = PptxGenJS?.ShapeType?.rect    || "rect";
-  const ELLIPSE = PptxGenJS?.ShapeType?.ellipse || "ellipse";
-  console.log("Shapes used => RECT:", RECT, "ELLIPSE:", ELLIPSE);
+  const RECT    = PptxGenJS.ShapeType?.rect    || "rect";
+  const ELLIPSE = PptxGenJS.ShapeType?.ellipse || "ellipse";
 
-  // --- util ---
+  // Récupération valeurs
   const getVal = (id) => document.getElementById(id)?.value || "";
+  const clientName = getVal("clientName");
+  const raeClient  = getVal("raeClient");
 
-  // --- champs / infos ---
-  const clientName    = getVal("clientName");
-  const rae           = getVal("rae");
-  const power         = getVal("power");
-  const commercial    = getVal("commercial");
-  const raeClient     = getVal("raeClient");
-
-  const clientAddress = getVal("clientAddress");
-  const siret         = getVal("siret");
-  const oppoNumber    = getVal("oppoNumber");
-  const nbBornes      = getVal("nbBornes");
-  const bornesPower   = getVal("bornesPower");
-
-  // ---------------- Couverture ----------------
+  // ---------------- Slides Informations ----------------
   function addCoverSlide() {
     const slide = pptx.addSlide();
     slide.background = { fill: "363636" };
-
-    const lines = [];
-    if (clientName)    lines.push({ text: `Client : ${clientName}\n`,      options: { fontSize: 20, color: "FFFFFF", bold: true } });
-    if (rae)           lines.push({ text: `RAE : ${rae}\n`,                options: { fontSize: 16, color: "FFFFFF" } });
-    if (power)         lines.push({ text: `Puissance : ${power}\n`,        options: { fontSize: 16, color: "FFFFFF" } });
-    if (commercial)    lines.push({ text: `Commercial : ${commercial}\n`,  options: { fontSize: 16, color: "FFFFFF" } });
-    if (clientAddress) lines.push({ text: `Adresse : ${clientAddress}\n`,  options: { fontSize: 16, color: "FFFFFF" } });
-    if (siret)         lines.push({ text: `SIRET : ${siret}\n`,            options: { fontSize: 16, color: "FFFFFF" } });
-    if (oppoNumber)    lines.push({ text: `Numéro Oppo : ${oppoNumber}\n`, options: { fontSize: 16, color: "FFFFFF" } });
-    if (nbBornes)      lines.push({ text: `Nombre de bornes : ${nbBornes}\n`, options: { fontSize: 16, color: "FFFFFF" } });
-    if (bornesPower)   lines.push({ text: `Puissance des bornes : ${bornesPower}\n`, options: { fontSize: 16, color: "FFFFFF" } });
-    lines.push({
-      text: "Projet d’infrastructure de recharge pour véhicules électriques",
-      options: { fontSize: 14, color: "FFFFFF", italic: true, breakLine: true }
-    });
-
-    slide.addText(lines, { x: 0.5, y: 0.5, w: 5.8, h: 6.2 });
+    slide.addText(`Client : ${clientName}`, { x:0.5, y:0.5, fontSize:30, color:"FFFFFF", bold:true });
+    slide.addText("Projet d’infrastructure de recharge", { x:0.5, y:1.3, fontSize:20, color:"FFFFFF" });
   }
 
-  // ---------------- Diapo Compléments d'informations ----------------
   function addInfoSlide() {
     const slide = pptx.addSlide();
-    slide.addText("Compléments d’informations", { x: 0.5, y: 0.5, fontSize: 24, bold: true });
+    slide.addText("Compléments d’informations", { x:0.5, y:0.5, fontSize:24, bold:true });
     slide.addText(raeClient || "—", {
-      x: 0.5, y: 1.5, w: "90%", h: "70%",
-      fontSize: 18, color: "363636",
-      fill: { color: "FFFFFF" }, line: { color: "DDDDDD" },
-      margin: 0.12, valign: "top"
+      x:0.5, y:1.3, w:"90%", h:"70%", fontSize:18,
+      fill:{color:"FFFFFF"}, line:{color:"CCCCCC"}
     });
   }
 
-  // ---------------- Mise en page standard (image gauche / texte droite) ----------------
+  // ---------------- Mise en page standard ----------------
   const SLIDE_W = 10.0;
   const SLIDE_H = 5.625;
   const MARGIN  = 0.5;
 
-  // Image à gauche
-  const IMG = { x: MARGIN, y: 1.1, w: 6.1, h: 4.6 };
-  // Commentaire à droite
-  const BOX = { x: 6.7, y: 1.1, w: SLIDE_W - 6.7 - MARGIN, h: 4.6 };
+  const IMG = { x:MARGIN, y:1.1, w:6.1, h:4.6 };
+  const BOX = { x:6.7, y:1.1, w:SLIDE_W - 6.7 - MARGIN, h:4.6 };
 
-  // ---------------- Paramètres des overlays ----------------
-  const TGBT_RECT  = { w: 1.6, h: 1.1, dx: 0.8, dy: 0.6 }; // rouge sur plan d'implantation
-  const BORNE_RECT = { w: 1.6, h: 1.1, dx: 2.0, dy: 1.8 }; // bleu sur places à électrifier
+  // ---------------- Formes (overlays) ----------------
+  const TGBT_RECT = { w:1.6, h:1.1, dx:0.8, dy:0.6 };
+  const BORNE_RECT = { w:1.6, h:1.1, dx:2.0, dy:1.8 };
 
-  // Cercle vert VIDE (contour 3pt) — demandé : sous le commentaire
+  // Cercle vert V I D E sous le commentaire
   const GREEN_CIRCLE = {
-    w: 1.8,
-    h: 1.8,
-    stroke: "00FF00",
-    strokeWidth: 3,
-    // La position est calculée dynamiquement pour être "sous le commentaire"
-    // tout en restant visible dans la diapo (contrainte aux marges).
-    x: BOX.x,                             // aligné sur le bloc texte
-    y: Math.min(BOX.y + BOX.h + 0.2, SLIDE_H - MARGIN - 1.8) // sous la zone texte, mais borné
+    w:1.8, h:1.8,
+    stroke:"00FF00", strokeWidth:3,
+    x: BOX.x,
+    y: Math.min(BOX.y + BOX.h + 0.2, SLIDE_H - MARGIN - 1.8)
   };
 
+  // ---------------- Ajout de légende ----------------
+  function addLegend(slide, texts = []) {
+    if (texts.length === 0) return;
+
+    slide.addShape(RECT, {
+      x: SLIDE_W - 3.8,
+      y: SLIDE_H - 1.3,
+      w: 3.3,
+      h: 1.0,
+      fill: { color: "FFFFFF" },
+      line: { color: "000000", width: 1 }
+    });
+
+    slide.addText(texts.join("\n"), {
+      x: SLIDE_W - 3.7,
+      y: SLIDE_H - 1.25,
+      w: 3.1,
+      h: 1.0,
+      fontSize: 12,
+      color: "000000",
+      valign: "top"
+    });
+  }
+
+  // ---------------- Placement image + formes ----------------
   function placeImageAndShapes(slide, title, imgBox, dataUrl) {
-    // Image
     if (dataUrl) {
       slide.addImage({
         data: dataUrl,
-        x: imgBox.x, y: imgBox.y, w: imgBox.w, h: imgBox.h,
-        sizing: { type: "contain", w: imgBox.w, h: imgBox.h }
+        x: imgBox.x, y: imgBox.y,
+        w: imgBox.w, h: imgBox.h,
+        sizing: { type: "contain" }
       });
     }
 
     const lower = title.toLowerCase();
+    let legendText = [];
 
+    // --- Rectangle rouge + cercle vert (Plan implantation)
     if (lower.includes("implantation")) {
-      // Rectangle ROUGE : TGBT
       slide.addShape(RECT, {
         x: IMG.x + TGBT_RECT.dx, y: IMG.y + TGBT_RECT.dy,
         w: TGBT_RECT.w, h: TGBT_RECT.h,
-        fill: { color: "FF0000" },
-        line: { color: "880000", width: 1 }
+        fill:{color:"FF0000"}, line:{color:"880000"}
       });
 
-      // Cercle VERT VIDE (contour 3pt) sous le commentaire
       slide.addShape(ELLIPSE, {
-        x: GREEN_CIRCLE.x,
-        y: GREEN_CIRCLE.y,
-        w: GREEN_CIRCLE.w,
-        h: GREEN_CIRCLE.h,
-        fill: null, // vide
-        line: { color: GREEN_CIRCLE.stroke, width: GREEN_CIRCLE.strokeWidth }
+        x: GREEN_CIRCLE.x, y: GREEN_CIRCLE.y,
+        w: GREEN_CIRCLE.w, h: GREEN_CIRCLE.h,
+        fill:null,
+        line:{color:GREEN_CIRCLE.stroke, width:GREEN_CIRCLE.strokeWidth}
       });
+
+      legendText.push("■ Rectangle rouge = TGBT");
+      legendText.push("○ Cercle vert = Place à équiper");
     }
 
-    if (
-      lower.includes("places à électrifier") ||
-      lower.includes("places a electrifier") ||
-      lower.includes("place à electrifier") ||
-      lower.includes("places elect")
-    ) {
-      // Rectangle BLEU : bornes
+    // --- Rectangle bleu (Places à électrifier)
+    if (lower.includes("places à électrifier") || lower.includes("places a electrifier")) {
       slide.addShape(RECT, {
         x: IMG.x + BORNE_RECT.dx, y: IMG.y + BORNE_RECT.dy,
         w: BORNE_RECT.w, h: BORNE_RECT.h,
-        fill: { color: "0070C0" },
-        line: { color: "004A87", width: 1 }
+        fill:{color:"0070C0"}, line:{color:"003A70"}
       });
+
+      legendText.push("■ Rectangle bleu = Futur borne");
     }
+
+    // Ajout légende si nécessaire
+    addLegend(slide, legendText);
   }
 
-  // ---------------- Slides de checklist (doublées) ----------------
+  // ---------------- Slides checklist ----------------
   function addChecklistSlides() {
     const items = [
-      { title: "Plan d'implantation #1",        file: "file1",  comment: "comment1"  },
-      { title: "Plan d'implantation #2",        file: "file1b", comment: "comment1b" },
+      { title:"Plan d'implantation #1", file:"file1", comment:"comment1" },
+      { title:"Plan d'implantation #2", file:"file1b", comment:"comment1b" },
 
-      { title: "Places à électrifier #1",       file: "file2",  comment: "comment2"  },
-      { title: "Places à électrifier #2",       file: "file2b", comment: "comment2b" },
+      { title:"Places à électrifier #1", file:"file2", comment:"comment2" },
+      { title:"Places à électrifier #2", file:"file2b", comment:"comment2b" },
 
-      { title: "TGBT + disjoncteur de tête #1", file: "file3",  comment: "comment3"  },
-      { title: "TGBT + disjoncteur de tête #2", file: "file3b", comment: "comment3b" },
+      { title:"TGBT + disjoncteur de tête #1", file:"file3", comment:"comment3" },
+      { title:"TGBT + disjoncteur de tête #2", file:"file3b", comment:"comment3b" },
 
-      { title: "Cheminement #1",                file: "file4",  comment: "comment4"  },
-      { title: "Cheminement #2",                file: "file4b", comment: "comment4b" },
+      { title:"Cheminement #1", file:"file4", comment:"comment4" },
+      { title:"Cheminement #2", file:"file4b", comment:"comment4b" },
 
-      { title: "Plan du site #1",               file: "file5",  comment: "comment5"  },
-      { title: "Plan du site #2",               file: "file5b", comment: "comment5b" },
+      { title:"Plan du site #1", file:"file5", comment:"comment5" },
+      { title:"Plan du site #2", file:"file5b", comment:"comment5b" },
 
-      { title: "Éléments complémentaires #1",   file: "file6",  comment: "comment6"  },
-      { title: "Éléments complémentaires #2",   file: "file6b", comment: "comment6b" },
+      { title:"Éléments complémentaires #1", file:"file6", comment:"comment6" },
+      { title:"Éléments complémentaires #2", file:"file6b", comment:"comment6b" }
     ];
 
     let done = 0;
-    const total = items.length;
 
-    items.forEach((item) => {
-      const fileInput = document.getElementById(item.file);
-      const comment   = document.getElementById(item.comment)?.value || "—";
-      const slide     = pptx.addSlide();
+    items.forEach(item => {
+      const slide = pptx.addSlide();
 
-      // Titre
-      slide.addText(item.title, { x: MARGIN, y: 0.5, fontSize: 24, bold: true });
+      slide.addText(item.title, { x:MARGIN, y:0.5, fontSize:24, bold:true });
 
-      // Zone commentaire (à DROITE) — bloc déplaçable
+      const comment = document.getElementById(item.comment)?.value || "—";
       slide.addText(comment, {
-        x: BOX.x, y: BOX.y, w: BOX.w, h: BOX.h,
-        fill: { color: "FFFFFF" },
-        line: { color: "AAAAAA" },
-        margin: 0.12,
-        fontSize: 18,
-        color: "111111",
-        align: "left",
-        valign: "top",
-        bullet: false,
-        paraSpaceAfter: 6
+        x: BOX.x, y: BOX.y,
+        w: BOX.w, h: BOX.h,
+        fill:{color:"FFFFFF"},
+        line:{color:"AAAAAA"},
+        fontSize:18,
+        valign:"top",
+        margin:0.1
       });
 
-      // Image (à GAUCHE) puis formes
-      const inject = (dataUrl) => {
+      const fileInput = document.getElementById(item.file);
+
+      const apply = (dataUrl) => {
         placeImageAndShapes(slide, item.title, IMG, dataUrl);
-        checkDone();
+        done++;
+        if (done === items.length) {
+          pptx.writeFile({ fileName:`Borne_Electrique_${clientName || "Projet"}.pptx` })
+            .finally(() => {
+              btn.removeAttribute("disabled");
+              btn.removeAttribute("aria-busy");
+            });
+        }
       };
 
-      if (fileInput?.files?.length > 0) {
+      if (fileInput?.files.length > 0) {
         const reader = new FileReader();
-        reader.onload = (e) => inject(e.target.result);
+        reader.onload = e => apply(e.target.result);
         reader.readAsDataURL(fileInput.files[0]);
       } else {
-        inject(null);
+        apply(null);
       }
     });
-
-    function checkDone() {
-      done++;
-      if (done === total) {
-        const safeName = (clientName || "Projet")
-          .replace(/[^\p{L}\p{N}_\- ]/gu, "")
-          .trim()
-          .replace(/\s+/g, "_");
-
-        pptx.writeFile({ fileName: `Borne_Electrique_${safeName}.pptx` })
-          .finally(() => {
-            btn?.removeAttribute("aria-busy");
-            btn?.removeAttribute("disabled");
-          });
-      }
-    }
   }
 
-  // ---------------- Séquence ----------------
+  // ---------------- Lancement ----------------
   addCoverSlide();
   addInfoSlide();
   addChecklistSlides();
