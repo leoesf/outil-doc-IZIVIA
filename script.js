@@ -4,7 +4,7 @@
 // - Slide "Compléments d'informations"
 // - 3 diapositives par rubrique de checklist
 // - Rectangles rouge/bleu + cercle vert + légende
-// - Logo EDF en bas à gauche de chaque slide (EDF.png)
+// - Logo EDF en bas à droite de chaque slide (EDF.png)
 // -----------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -79,13 +79,13 @@ function createPowerPoint() {
   };
 
   // -----------------------------------------------------------
-  // Logo  en bas à gauche
+  // Logo EDF en bas à droite
   // -----------------------------------------------------------
-  function addLogo(slide) {
+  function addEDFLogo(slide) {
     slide.addImage({
-      path: "EDF.png", // le fichier doit être présent à la racine du projet
-      x: 0.1,
-      y: 0.1, // bas de slide
+      path: "EDF.png",               // le fichier doit être présent à la racine du projet
+      x: SLIDE_W - 1.4,              // 10 - (1.2 + 0.2 de marge)
+      y: SLIDE_H - 0.75,             // 5.625 - (0.55 + 0.2 de marge)
       w: 1.2,
       h: 0.55
     });
@@ -122,10 +122,10 @@ function createPowerPoint() {
     // Bloc d'infos décalé légèrement vers la droite
     const lines = [];
 
-    if (oppoNumber)   lines.push(`Oppo : ${oppoNumber}`);
-    if (clientName)   lines.push(`Client : ${clientName}`);
+    if (oppoNumber)    lines.push(`Oppo : ${oppoNumber}`);
+    if (clientName)    lines.push(`Client : ${clientName}`);
     if (clientAddress) lines.push(`Adresse : ${clientAddress}`);
-    if (siret)        lines.push(`Siret : ${siret}`);
+    if (siret)         lines.push(`Siret : ${siret}`);
     lines.push(""); // ligne vide
 
     if (rae)              lines.push(`Rae : ${rae}`);
@@ -279,29 +279,29 @@ function createPowerPoint() {
     };
 
     const defs = [
-      { base: "Plan d'implantation", file: "file1",  comment: "comment1" },
-      { base: "Plan d'implantation", file: "file1b", comment: "comment1b" },
-      { base: "Plan d'implantation", file: "file1c", comment: "comment1c" },
+      { base: "Plan d'implantation",           file: "file1",  comment: "comment1" },
+      { base: "Plan d'implantation",           file: "file1b", comment: "comment1b" },
+      { base: "Plan d'implantation",           file: "file1c", comment: "comment1c" },
 
-      { base: "Places à électrifier", file: "file2",  comment: "comment2" },
-      { base: "Places à électrifier", file: "file2b", comment: "comment2b" },
-      { base: "Places à électrifier", file: "file2c", comment: "comment2c" },
+      { base: "Places à électrifier",          file: "file2",  comment: "comment2" },
+      { base: "Places à électrifier",          file: "file2b", comment: "comment2b" },
+      { base: "Places à électrifier",          file: "file2c", comment: "comment2c" },
 
-      { base: "TGBT + disjoncteur de tête", file: "file3",  comment: "comment3" },
-      { base: "TGBT + disjoncteur de tête", file: "file3b", comment: "comment3b" },
-      { base: "TGBT + disjoncteur de tête", file: "file3c", comment: "comment3c" },
+      { base: "TGBT + disjoncteur de tête",    file: "file3",  comment: "comment3" },
+      { base: "TGBT + disjoncteur de tête",    file: "file3b", comment: "comment3b" },
+      { base: "TGBT + disjoncteur de tête",    file: "file3c", comment: "comment3c" },
 
-      { base: "Cheminement", file: "file4",  comment: "comment4" },
-      { base: "Cheminement", file: "file4b", comment: "comment4b" },
-      { base: "Cheminement", file: "file4c", comment: "comment4c" },
+      { base: "Cheminement",                   file: "file4",  comment: "comment4" },
+      { base: "Cheminement",                   file: "file4b", comment: "comment4b" },
+      { base: "Cheminement",                   file: "file4c", comment: "comment4c" },
 
-      { base: "Plan du site", file: "file5",  comment: "comment5" },
-      { base: "Plan du site", file: "file5b", comment: "comment5b" },
-      { base: "Plan du site", file: "file5c", comment: "comment5c" },
+      { base: "Plan du site",                  file: "file5",  comment: "comment5" },
+      { base: "Plan du site",                  file: "file5b", comment: "comment5b" },
+      { base: "Plan du site",                  file: "file5c", comment: "comment5c" },
 
-      { base: "Éléments complémentaires", file: "file6",  comment: "comment6" },
-      { base: "Éléments complémentaires", file: "file6b", comment: "comment6b" },
-      { base: "Éléments complémentaires", file: "file6c", comment: "comment6c" }
+      { base: "Éléments complémentaires",      file: "file6",  comment: "comment6" },
+      { base: "Éléments complémentaires",      file: "file6b", comment: "comment6b" },
+      { base: "Éléments complémentaires",      file: "file6c", comment: "comment6c" }
     ];
 
     let remaining = defs.length;
@@ -365,7 +365,3 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
-
-
-
-
