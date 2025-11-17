@@ -65,7 +65,6 @@ function createPowerPoint() {
   const IMG = { x: MARGIN, y: 1.4, w: 5.8, h: 3.8 };
 
   // ✅ Zone commentaire décalée vers la droite (~3 cm)
-  // (x augmenté, w légèrement réduit pour rester dans la diapo)
   const BOX = { x: 7.8, y: 1.4, w: 2.2, h: 3.8 };
 
   // Positions relatives des formes (sur l'image)
@@ -86,7 +85,7 @@ function createPowerPoint() {
   // Logo EDF en bas à gauche
   // -----------------------------------------------------------
   function addEDFLogo(slide) {
-    slide.({
+    slide.addImage({
       path: "EDF.png",  // le fichier doit être présent à la racine du projet
       x: 0.001,
       y: 6.9, // proche du bas
@@ -157,13 +156,13 @@ function createPowerPoint() {
       align: "left"
     });
 
-    // 🖼️ Image IZIVIA à droite (tu dois avoir IZIVIA.jpg à la racine du projet)
+    // 🖼️ Image IZIVIA à droite (IZIVIA.jpg à la racine du projet)
     slide.addImage({
       path: "IZIVIA.jpg",
       x: 5.8,
       y: 2.5,
-      w: 7.52,
-      h: 5.77
+      w: 3.8,
+      h: 2.8,
       sizing: { type: "contain" }
     });
 
@@ -242,16 +241,15 @@ function createPowerPoint() {
       );
     }
 
-    // ✅ Une seule zone de texte, FOND TRANSPARENT (pas de fill, pas de bordure)
+    // Une seule zone de texte, FOND TRANSPARENT
     slide.addText(richText, {
-      x: 11.5,
-      y: 6.9,
-      w: 3.5,
+      x: 6.8,
+      y: 5.0,
+      w: 3.0,
       h: 1.5,
       fontSize: 12,
       color: "000000",
       valign: "top"
-      // pas de fill / line => transparent
     });
   }
 
@@ -385,7 +383,7 @@ function createPowerPoint() {
         align: "center"
       });
 
-      // Zone commentaire à droite (avec BOX modifié)
+      // Zone commentaire à droite
       slide.addText(getVal(item.comment) || "—", {
         x: BOX.x,
         y: BOX.y,
@@ -429,8 +427,3 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
-
-
-
-
-
