@@ -79,13 +79,13 @@ function createPowerPoint() {
   };
 
   // -----------------------------------------------------------
-  // Logo EDF en bas à gauche
+  // Logo  en bas à gauche
   // -----------------------------------------------------------
   function addEDFLogo(slide) {
     slide.addImage({
       path: "EDF.png", // le fichier doit être présent à la racine du projet
       x: 0.1,
-      y: SLIDE_H - 0.8, // bas de slide
+      y: SLIDE_H - 1.8, // bas de slide
       w: 1.2,
       h: 0.55
     });
@@ -365,3 +365,4 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
+
