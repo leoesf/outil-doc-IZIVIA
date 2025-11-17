@@ -190,8 +190,8 @@ function createPowerPoint() {
   // Légende générale (bloc unique, bas droite)
   // -----------------------------------------------------------
   function addLegend(slide) {
-    const x = 11.5;
-    const y = 6.9;
+    const x = 11.3;
+    const y = 6.4;
 
     const legendText = [
       { text: "■ ", options: { fontSize: 14, color: "FF0000", bold: true } },
@@ -391,4 +391,5 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
+
 
