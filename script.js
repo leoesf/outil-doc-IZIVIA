@@ -86,7 +86,7 @@ function createPowerPoint() {
     slide.addImage({
       path: "EDF.png",  // le fichier doit être présent à la racine du projet
       x: 0.001,
-      y: SLIDE_H - 0.75, // proche du bas
+      y: 6.9, // proche du bas
       w: 1.2,
       h: 0.55
     });
@@ -231,8 +231,8 @@ function createPowerPoint() {
 
     // Une seule zone de texte pour TOUTE la légende
     slide.addText(richText, {
-      x: SLIDE_W - 3.7,
-      y: SLIDE_H - 1.6,
+      x: 11.5,
+      y: 6.9,
       w: 3.5,
       h: 1.5,
       fontSize: 12,
@@ -417,3 +417,4 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
+
