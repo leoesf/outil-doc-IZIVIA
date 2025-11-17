@@ -160,7 +160,7 @@ function createPowerPoint() {
     slide.addImage({
       path: "IZIVIA.jpg",
       x: 7.23,
-      y: 1.73,
+      y: 1.72,
       w: 6.1,
       h: 5.8,
       sizing: { type: "contain" }
@@ -427,6 +427,7 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
+
 
 
 
