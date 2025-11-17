@@ -17,29 +17,29 @@
   <input type="number" id="powerMax" placeholder="Puissance max (kVA)" />
   <input type="text" id="commercial" placeholder="Nom du commercial" />
 
-  <!-- 🌟 NOUVEAUX CHAMPS COMMERCIAL -->
+  <!-- Champs commercial -->
   <input type="text" id="commercialPhone" placeholder="Numéro du commercial" />
   <input type="email" id="commercialEmail" placeholder="Mail du commercial" />
 
-  <!-- 🌟 NOUVEAUX CHAMPS INTERLOCUTEUR -->
+  <!-- Champs interlocuteur client -->
   <input type="text" id="contactName" placeholder="Nom et prénom de l'interlocuteur" />
   <input type="text" id="contactPhone" placeholder="Numéro de l'interlocuteur" />
   <input type="email" id="contactEmail" placeholder="Mail de l'interlocuteur" />
 
-  <!-- Champs existants supplémentaires -->
+  <!-- Champs supplémentaires -->
   <input type="text" id="clientAddress" placeholder="Adresse du client" />
   <input type="text" id="siret" placeholder="SIRET" />
   <input type="text" id="oppoNumber" placeholder="Numéro Oppo" />
   <input type="number" id="nbBornes" placeholder="Nombre de bornes" min="0" />
   <input type="text" id="bornesPower" placeholder="Puissance des bornes (ex: 2 x 22 kW)" />
 
-  <h2>Compléments d'informations (ex-RAE du client)</h2>
+  <h2>Compléments d'informations</h2>
   <textarea id="raeClient" placeholder="Saisir les compléments d'informations ici..."></textarea>
 
   <div id="checklist">
     <h2>Checklist</h2>
     <ul>
-      <!-- 1. Plan d'implantation (2 photos + 2 commentaires) -->
+      <!-- 1. Plan d'implantation (3 photos + 3 commentaires) -->
       <li>
         <label>Plan d'implantation</label>
         <input type="file" accept="image/*" id="file1" />
@@ -47,6 +47,9 @@
 
         <input type="file" accept="image/*" id="file1b" />
         <textarea id="comment1b" placeholder="Commentaire 2"></textarea>
+
+        <input type="file" accept="image/*" id="file1c" />
+        <textarea id="comment1c" placeholder="Commentaire 3"></textarea>
       </li>
 
       <!-- 2. Places à électrifier -->
@@ -57,6 +60,9 @@
 
         <input type="file" accept="image/*" id="file2b" />
         <textarea id="comment2b" placeholder="Commentaire 2"></textarea>
+
+        <input type="file" accept="image/*" id="file2c" />
+        <textarea id="comment2c" placeholder="Commentaire 3"></textarea>
       </li>
 
       <!-- 3. TGBT + disjoncteur de tête -->
@@ -67,6 +73,9 @@
 
         <input type="file" accept="image/*" id="file3b" />
         <textarea id="comment3b" placeholder="Commentaire 2"></textarea>
+
+        <input type="file" accept="image/*" id="file3c" />
+        <textarea id="comment3c" placeholder="Commentaire 3"></textarea>
       </li>
 
       <!-- 4. Cheminement -->
@@ -77,6 +86,9 @@
 
         <input type="file" accept="image/*" id="file4b" />
         <textarea id="comment4b" placeholder="Commentaire 2"></textarea>
+
+        <input type="file" accept="image/*" id="file4c" />
+        <textarea id="comment4c" placeholder="Commentaire 3"></textarea>
       </li>
 
       <!-- 5. Plan du site -->
@@ -87,6 +99,9 @@
 
         <input type="file" accept="image/*" id="file5b" />
         <textarea id="comment5b" placeholder="Commentaire 2"></textarea>
+
+        <input type="file" accept="image/*" id="file5c" />
+        <textarea id="comment5c" placeholder="Commentaire 3"></textarea>
       </li>
 
       <!-- 6. Éléments complémentaires -->
@@ -97,13 +112,16 @@
 
         <input type="file" accept="image/*" id="file6b" />
         <textarea id="comment6b" placeholder="Commentaire 2"></textarea>
+
+        <input type="file" accept="image/*" id="file6c" />
+        <textarea id="comment6c" placeholder="Commentaire 3"></textarea>
       </li>
     </ul>
 
     <button id="exportBtn">Exporter</button>
   </div>
 
-  <!-- Librairie PPTX local + script -->
+  <!-- Librairie PPTX locale + script -->
   <script src="pptxgen.bundle.js"></script>
   <script src="script.js"></script>
 </body>
