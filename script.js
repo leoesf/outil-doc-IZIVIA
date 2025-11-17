@@ -190,8 +190,8 @@ function createPowerPoint() {
   // -----------------------------------------------------------
   function addLegend(slide) {
   // Position en bas à droite
-  const x = 6.9;
-  const y = 6.9;
+  const x = 5.0;
+  const y = 6.5;
 
   const legendText = [
     // Ligne 1 : carré rouge = TGBT
@@ -377,5 +377,6 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
+
 
 
