@@ -159,8 +159,8 @@ function createPowerPoint() {
     // 🖼️ Image IZIVIA à droite (IZIVIA.jpg à la racine du projet)
     slide.addImage({
       path: "IZIVIA.jpg",
-      x: 6.8,
-      y: 3.5,
+      x: 6.9,
+      y: 3.2,
       w: 6.1,
       h: 5.8,
       sizing: { type: "contain" }
@@ -427,6 +427,7 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
+
 
 
 
