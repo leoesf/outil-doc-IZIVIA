@@ -163,7 +163,7 @@ function createPowerPoint() {
       x: 5.8,
       y: 2.5,
       w: 7.52,
-      h: 5.77,
+      h: 5.77
       sizing: { type: "contain" }
     });
 
@@ -429,6 +429,7 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
+
 
 
 
