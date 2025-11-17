@@ -83,9 +83,9 @@ function createPowerPoint() {
   // -----------------------------------------------------------
   function addEDFLogo(slide) {
     slide.addImage({
-      path: "EDF.png",               // le fichier doit être présent à la racine du projet
-      x: 0.001,              // 10 - (1.2 + 0.2 de marge)
-      y: 6.95,             // 5.625 - (0.55 + 0.2 de marge)
+      path: "EDF.png",   // le fichier doit être présent à la racine du projet
+      x: 0.001,
+      y: 6.95,
       w: 1.2,
       h: 0.55
     });
@@ -186,20 +186,25 @@ function createPowerPoint() {
   }
 
   // -----------------------------------------------------------
-  // Légende en bas à droite
+  // Légende en bas à droite (fixe, quand il y a des formes)
   // -----------------------------------------------------------
-  function addLegend(slide, items) {
-    if (!items.length) return;
-
-    slide.addText(items.join("\n"), {
-      x: SLIDE_W - 3.7,
-      y: SLIDE_H - 1.2,
-      w: 3.5,
-      h: 1.2,
-      fontSize: 12,
-      color: "000000",
-      valign: "top"
-    });
+  function addLegend(slide) {
+    slide.addText(
+      [
+        "Rectangle rouge = TGBT",
+        "Rectangle bleu = borne",
+        "Cercle vert = zone à électrifier"
+      ].join("\n"),
+      {
+        x: SLIDE_W - 3.7,
+        y: SLIDE_H - 1.2,
+        w: 3.5,
+        h: 1.2,
+        fontSize: 12,
+        color: "000000",
+        valign: "top"
+      }
+    );
   }
 
   // -----------------------------------------------------------
@@ -218,9 +223,9 @@ function createPowerPoint() {
     }
 
     const low = title.toLowerCase();
-    const legend = [];
+    let hasShapes = false;
 
-    // Plan d'implantation : rectangle rouge + cercle vert + légende complète
+    // Plan d'implantation : rectangle rouge + cercle vert
     if (low.includes("implantation")) {
       slide.addShape(RECT, {
         x: IMG.x + TGBT_RECT.dx,
@@ -240,11 +245,7 @@ function createPowerPoint() {
         line: { color: GREEN_CIRCLE.stroke, width: GREEN_CIRCLE.strokeWidth }
       });
 
-      legend.push(
-        "Rectangle rouge = TGBT",
-        "Cercle vert = place à équiper",
-        "Rectangle bleu = future borne"
-      );
+      hasShapes = true;
     }
 
     // Places à électrifier : rectangle bleu
@@ -258,10 +259,14 @@ function createPowerPoint() {
         line: { color: "003A70" }
       });
 
-      legend.push("Rectangle bleu = future borne");
+      hasShapes = true;
     }
 
-    addLegend(slide, legend);
+    // Si au moins une forme a été ajoutée, on ajoute la légende générale
+    if (hasShapes) {
+      addLegend(slide);
+    }
+
     addEDFLogo(slide);
   }
 
@@ -365,7 +370,3 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
-
-
-
-
