@@ -53,7 +53,7 @@ function createPowerPoint() {
   // -----------------------------------------------------------
   function addEDFLogo(slide) {
     slide.addImage({
-      path: "edf.png",   // ⚠️ Mets ce fichier dans ton GitHub !
+      path: "EDF.png",   // ⚠️ Mets ce fichier dans ton GitHub !
       x: 0.2,            // coin bas-gauche
       y: 5.1,            // très bas mais visible
       w: 1.2,            // petit logo
@@ -305,3 +305,4 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
+
