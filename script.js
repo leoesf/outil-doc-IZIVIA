@@ -3,8 +3,8 @@
 // - Couverture avec infos client
 // - Slide "Compléments d'informations"
 // - 3 diapositives par rubrique de checklist
-// - Rectangles rouge/bleu + cercle vert + légende
-// - Logo EDF en bas à droite de chaque slide (EDF.png)
+// - Rectangles rouge/bleu + cercle vert + trait rouge + légende
+// - Logo EDF sur chaque slide (EDF.png)
 // -----------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -28,8 +28,9 @@ function createPowerPoint() {
   const pptx = new PptxGenJS();
   pptx.layout = "LAYOUT_WIDE"; // 10 x 5.625
 
-  const RECT = pptx.shapes.RECTANGLE;
+  const RECT    = pptx.shapes.RECTANGLE;
   const ELLIPSE = pptx.shapes.OVAL;
+  const LINE    = pptx.shapes.LINE;
 
   const getVal = (id) => document.getElementById(id)?.value || "";
 
@@ -79,11 +80,11 @@ function createPowerPoint() {
   };
 
   // -----------------------------------------------------------
-  // Logo EDF en bas à droite
+  // Logo EDF (tu as déjà validé ces coordonnées)
   // -----------------------------------------------------------
   function addEDFLogo(slide) {
     slide.addImage({
-      path: "EDF.png",   // le fichier doit être présent à la racine du projet
+      path: "EDF.png",      // le fichier doit être présent à la racine du projet
       x: 0.001,
       y: 6.95,
       w: 1.2,
@@ -119,14 +120,14 @@ function createPowerPoint() {
       align: "center"
     });
 
-    // Bloc d'infos décalé légèrement vers la droite
+    // Bloc d'infos
     const lines = [];
 
     if (oppoNumber)    lines.push(`Oppo : ${oppoNumber}`);
     if (clientName)    lines.push(`Client : ${clientName}`);
     if (clientAddress) lines.push(`Adresse : ${clientAddress}`);
     if (siret)         lines.push(`Siret : ${siret}`);
-    lines.push(""); // ligne vide
+    lines.push("");
 
     if (rae)              lines.push(`Rae : ${rae}`);
     if (powerSubscribed)  lines.push(`Puissance souscrite : ${powerSubscribed} kVA`);
@@ -145,7 +146,7 @@ function createPowerPoint() {
     if (commercialEmail) lines.push(`Mail EDF : ${commercialEmail}`);
 
     slide.addText(lines.join("\n"), {
-      x: 1.0,       // léger déplacement à droite
+      x: 1.0,
       y: 2.0,
       w: 8,
       fontSize: 16,
@@ -186,37 +187,38 @@ function createPowerPoint() {
   }
 
   // -----------------------------------------------------------
-  // Légende en bas à droite (fixe, quand il y a des formes)
+  // Légende générale (bloc unique, bas droite)
   // -----------------------------------------------------------
   function addLegend(slide) {
-  // Position en bas à droite
-  const x = 11.5;
-  const y = 6.5;
+    const x = SLIDE_W - 3.7;
+    const y = SLIDE_H - 1.2;
 
-  const legendText = [
-    // Ligne 1 : carré rouge = TGBT
-    { text: "■ ", options: { fontSize: 14, color: "FF0000", bold: true } },
-    { text: "= TGBT\n", options: { fontSize: 12, color: "000000" } },
+    const legendText = [
+      { text: "■ ", options: { fontSize: 14, color: "FF0000", bold: true } },
+      { text: "= TGBT\n", options: { fontSize: 12, color: "000000" } },
 
-    // Ligne 2 : carré bleu = Borne
-    { text: "■ ", options: { fontSize: 14, color: "0070C0", bold: true } },
-    { text: "= Borne\n", options: { fontSize: 12, color: "000000" } },
+      { text: "■ ", options: { fontSize: 14, color: "0070C0", bold: true } },
+      { text: "= Borne\n", options: { fontSize: 12, color: "000000" } },
 
-    // Ligne 3 : rond vert = Zone à équiper
-    { text: "● ", options: { fontSize: 14, color: "00AA00", bold: true } },
-    { text: "= Zone à équiper", options: { fontSize: 12, color: "000000" } }
-  ];
+      { text: "● ", options: { fontSize: 14, color: "00AA00", bold: true } },
+      { text: "= Zone à équiper\n", options: { fontSize: 12, color: "000000" } },
 
-  slide.addText(legendText, {
-    x,
-    y,
-    w: 3.5,
-    h: 1.2,
-    valign: "top"
-    // pas de bordure, pas de fond -> zone de texte seule, facile à déplacer
-  });
-}
+      { text: "— ", options: { fontSize: 16, color: "FF0000", bold: true } },
+      { text: "= Chemin de câble", options: { fontSize: 12, color: "000000" } }
+    ];
 
+    slide.addText(legendText, {
+      x,
+      y,
+      w: 3.5,
+      h: 1.2,
+      valign: "top"
+    });
+  }
+
+  // -----------------------------------------------------------
+  // Ajout image + formes (selon le type de slide)
+  // -----------------------------------------------------------
   function placeImageAndShapes(slide, title, imgBox, dataUrl) {
     if (dataUrl) {
       slide.addImage({
@@ -230,7 +232,7 @@ function createPowerPoint() {
     }
 
     const low = title.toLowerCase();
-    let hasShapes = false;
+    let hasLegend = false;
 
     // Plan d'implantation : rectangle rouge + cercle vert
     if (low.includes("implantation")) {
@@ -252,7 +254,7 @@ function createPowerPoint() {
         line: { color: GREEN_CIRCLE.stroke, width: GREEN_CIRCLE.strokeWidth }
       });
 
-      hasShapes = true;
+      hasLegend = true;
     }
 
     // Places à électrifier : rectangle bleu
@@ -266,11 +268,23 @@ function createPowerPoint() {
         line: { color: "003A70" }
       });
 
-      hasShapes = true;
+      hasLegend = true;
     }
 
-    // Si au moins une forme a été ajoutée, on ajoute la légende générale
-    if (hasShapes) {
+    // Cheminement : trait rouge (chemin de câble)
+    if (low.includes("cheminement")) {
+      slide.addShape(LINE, {
+        x: IMG.x + 0.5,
+        y: IMG.y + IMG.h - 0.5,
+        w: 0.59, // ≈ 1,5 cm
+        h: 0,
+        line: { color: "FF0000", width: 3 }
+      });
+
+      hasLegend = true;
+    }
+
+    if (hasLegend) {
       addLegend(slide);
     }
 
@@ -377,9 +391,3 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
-
-
-
-
-
-
