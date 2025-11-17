@@ -243,8 +243,8 @@ function createPowerPoint() {
 
     // Une seule zone de texte, FOND TRANSPARENT
     slide.addText(richText, {
-      x: 6.8,
-      y: 5.0,
+      x: 11.5,
+      y: 6.8,
       w: 3.0,
       h: 1.5,
       fontSize: 12,
@@ -427,3 +427,4 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
+
