@@ -69,7 +69,7 @@ function createPowerPoint() {
     slide.background = { fill: "363636" };
 
     // Nom du client
-    slide.addText(clientName || "Client", {
+    slide.addText(`Client : ${clientName || ""}`, {
       x: 0.5, y: 0.4, w: 9,
       fontSize: 44,
       bold: true,
@@ -305,6 +305,7 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
+
 
 
 
