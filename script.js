@@ -1,6 +1,6 @@
 // -----------------------------------------------------------
 // script.js - Génération du PowerPoint (PptxGenJS v3.x)
-// - Couverture avec infos client
+// - Couverture avec infos client + logo EDF + logo IZIVIA
 // - Slide "Compléments d'informations"
 // - 3 diapositives par rubrique de checklist
 // - Rectangles rouge/bleu + cercle vert + trait rouge + légende
@@ -61,9 +61,12 @@ function createPowerPoint() {
   const SLIDE_H = 5.625;
   const MARGIN  = 0.5;
 
-  // Zone image (gauche) et zone commentaire (droite)
+  // Zone image (gauche)
   const IMG = { x: MARGIN, y: 1.4, w: 5.8, h: 3.8 };
-  const BOX = { x: 6.6, y: 1.4, w: 3.0, h: 3.8 };
+
+  // ✅ Zone commentaire décalée vers la droite (~3 cm)
+  // (x augmenté, w légèrement réduit pour rester dans la diapo)
+  const BOX = { x: 7.8, y: 1.4, w: 2.2, h: 3.8 };
 
   // Positions relatives des formes (sur l'image)
   const TGBT_RECT = { w: 1.6, h: 1.1, dx: 1.0, dy: 0.8 };
@@ -120,7 +123,7 @@ function createPowerPoint() {
       align: "center"
     });
 
-    // Bloc d'infos
+    // Bloc d'infos (légèrement à gauche pour laisser la place à l'image IZIVIA à droite)
     const lines = [];
 
     if (oppoNumber)    lines.push(`Oppo : ${oppoNumber}`);
@@ -146,12 +149,22 @@ function createPowerPoint() {
     if (commercialEmail) lines.push(`Mail EDF : ${commercialEmail}`);
 
     slide.addText(lines.join("\n"), {
-      x: 1.0, // léger décalage à droite
+      x: 0.6,      // un peu plus à gauche
       y: 2.0,
-      w: 8,
+      w: 4.8,      // largeur réduite pour laisser une zone libre à droite
       fontSize: 16,
       color: "FFFFFF",
       align: "left"
+    });
+
+    // 🖼️ Image IZIVIA à droite (tu dois avoir IZIVIA.jpg à la racine du projet)
+    slide.addImage({
+      path: "IZIVIA.jpg",
+      x: 5.8,
+      y: 1.8,
+      w: 3.5,
+      h: 3.0,
+      sizing: { type: "contain" }
     });
 
     addEDFLogo(slide);
@@ -187,7 +200,7 @@ function createPowerPoint() {
   }
 
   // -----------------------------------------------------------
-  // Légende : UNE SEULE ZONE DE TEXTE
+  // Légende : UNE SEULE ZONE DE TEXTE (fond transparent)
   // -----------------------------------------------------------
   function addLegend(slide, { showRedRect, showBlueRect, showGreenCircle, showRedLine }) {
     if (!showRedRect && !showBlueRect && !showGreenCircle && !showRedLine) return;
@@ -229,7 +242,7 @@ function createPowerPoint() {
       );
     }
 
-    // Une seule zone de texte pour TOUTE la légende
+    // ✅ Une seule zone de texte, FOND TRANSPARENT (pas de fill, pas de bordure)
     slide.addText(richText, {
       x: 11.5,
       y: 6.9,
@@ -237,9 +250,8 @@ function createPowerPoint() {
       h: 1.5,
       fontSize: 12,
       color: "000000",
-      fill: { color: "FFFFFF" },
-      line: { color: "CCCCCC" },
       valign: "top"
+      // pas de fill / line => transparent
     });
   }
 
@@ -279,7 +291,7 @@ function createPowerPoint() {
 
       slide.addShape(ELLIPSE, {
         x: GREEN_CIRCLE.x,
-       y: GREEN_CIRCLE.y,
+        y: GREEN_CIRCLE.y,
         w: GREEN_CIRCLE.w,
         h: GREEN_CIRCLE.h,
         fill: null,
@@ -373,7 +385,7 @@ function createPowerPoint() {
         align: "center"
       });
 
-      // Zone commentaire à droite
+      // Zone commentaire à droite (avec BOX modifié)
       slide.addText(getVal(item.comment) || "—", {
         x: BOX.x,
         y: BOX.y,
@@ -417,4 +429,3 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
-
