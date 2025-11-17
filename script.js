@@ -80,7 +80,8 @@ function createPowerPoint() {
     const lines = [];
 
     if (rae) lines.push(`RAE : ${rae}`);
-    if (power) lines.push(`Puissance : ${power}`);
+    if (power) lines.push(`Puissance : ${power} kVA`);
+
     if (commercial) lines.push(`Commercial : ${commercial}`);
     if (commercialPhone) lines.push(`Tél. commercial : ${commercialPhone}`);
     if (commercialEmail) lines.push(`Mail commercial : ${commercialEmail}`);
@@ -93,7 +94,7 @@ function createPowerPoint() {
     if (siret) lines.push(`SIRET : ${siret}`);
     if (oppoNumber) lines.push(`Numéro Oppo : ${oppoNumber}`);
     if (nbBornes) lines.push(`Nombre de bornes : ${nbBornes}`);
-    if (bornesPower) lines.push(`Puissance des bornes : ${bornesPower}`);
+    if (bornesPower) lines.push(`Puissance des bornes : ${bornesPower} kW`);
 
     slide.addText(lines.join("\n"), {
       x: 0.8,
@@ -305,6 +306,7 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
+
 
 
 
