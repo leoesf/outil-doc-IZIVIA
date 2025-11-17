@@ -190,7 +190,7 @@ function createPowerPoint() {
   // -----------------------------------------------------------
   function addLegend(slide) {
   // Position en bas à droite
-  const x = 12.0;
+  const x = 11.5;
   const y = 6.5;
 
   const legendText = [
@@ -377,6 +377,7 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
+
 
 
 
