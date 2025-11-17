@@ -27,12 +27,13 @@ function createPowerPoint() {
   const RECT = pptx.shapes.RECTANGLE;
   const ELLIPSE = pptx.shapes.OVAL;
 
-  const getVal = (id) => document.getElementById(id)?.value || "";
+  const  = (id) => document.getElementById(id)?.value || "";
 
   // Champs formulaire
-  const clientName     = getVal("clientName");
-  const rae            = getVal("rae");
-  const power          = getVal("power");
+  const clientName     = ("clientName");
+  const rae            = ("rae");
+  const powerSubscribed = getVal("powerSubscribed");
+  const powerMax = getVal("powerMax");
   const commercial     = getVal("commercial");
   const raeClient      = getVal("raeClient");
   const clientAddress  = getVal("clientAddress");
@@ -80,7 +81,9 @@ function createPowerPoint() {
     const lines = [];
 
     if (rae) lines.push(`RAE : ${rae}`);
-    if (power) lines.push(`Puissance : ${power} kVA`);
+    if (powerSubscribed) lines.push(`Puissance souscrite : ${powerSubscribed} kVA`);
+    if (powerMax) lines.push(`Puissance max : ${powerMax} kVA`);
+
 
     if (commercial) lines.push(`Commercial : ${commercial}`);
     if (commercialPhone) lines.push(`Tél. commercial : ${commercialPhone}`);
@@ -306,6 +309,7 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
+
 
 
 
