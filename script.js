@@ -162,8 +162,8 @@ function createPowerPoint() {
       path: "IZIVIA.jpg",
       x: 6.0,
       y: 3.0,
-      w: 8.52,
-      h: 7.77,
+      w: 7.52,
+      h: 5.77,
       sizing: { type: "contain" }
     });
 
@@ -429,5 +429,6 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
+
 
 
