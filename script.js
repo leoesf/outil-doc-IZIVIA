@@ -90,7 +90,7 @@ function createPowerPoint() {
       align: "center"
     });
 
-    const leftX = 0.8;
+    const leftX = 1.8;
     let y = 1.6;
     const lineH = 0.4;
 
@@ -402,3 +402,4 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
+
