@@ -189,64 +189,32 @@ function createPowerPoint() {
   // Légende en bas à droite (fixe, quand il y a des formes)
   // -----------------------------------------------------------
   function addLegend(slide) {
+  // Position en bas à droite
+  const x = SLIDE_W - 3.7;
+  const y = SLIDE_H - 1.2;
 
-  // Position de départ en bas à droite
-  const startX = SLIDE_W - 3.4;
-  const startY = SLIDE_H - 1.3;
+  const legendText = [
+    // Ligne 1 : carré rouge = TGBT
+    { text: "■ ", options: { fontSize: 14, color: "FF0000", bold: true } },
+    { text: "= TGBT\n", options: { fontSize: 12, color: "000000" } },
 
-  const lineHeight = 0.45;
+    // Ligne 2 : carré bleu = Borne
+    { text: "■ ", options: { fontSize: 14, color: "0070C0", bold: true } },
+    { text: "= Borne\n", options: { fontSize: 12, color: "000000" } },
 
-  // --- Rectangle rouge (TGBT)
-  slide.addShape(pptx.shapes.RECTANGLE, {
-    x: startX,
-    y: startY,
-    w: 0.35,
-    h: 0.25,
-    fill: { color: "FF0000" },
-    line: { color: "880000" }
+    // Ligne 3 : rond vert = Zone à équiper
+    { text: "● ", options: { fontSize: 14, color: "00AA00", bold: true } },
+    { text: "= Zone à équiper", options: { fontSize: 12, color: "000000" } }
+  ];
+
+  slide.addText(legendText, {
+    x,
+    y,
+    w: 3.5,
+    h: 1.2,
+    valign: "top"
+    // pas de bordure, pas de fond -> zone de texte seule, facile à déplacer
   });
-
-  slide.addText("= TGBT", {
-    x: startX + 0.45,
-    y: startY - 0.02,
-    fontSize: 12,
-    color: "000000"
-  });
-
-  // --- Rectangle bleu (borne)
-  slide.addShape(pptx.shapes.RECTANGLE, {
-    x: startX,
-    y: startY + lineHeight,
-    w: 0.35,
-    h: 0.25,
-    fill: { color: "0070C0" },
-    line: { color: "003A70" }
-  });
-
-  slide.addText("= Borne", {
-    x: startX + 0.45,
-    y: startY + lineHeight - 0.02,
-    fontSize: 12,
-    color: "000000"
-  });
-
-  // --- Cercle vert (zone à électrifier)
-  slide.addShape(pptx.shapes.OVAL, {
-    x: startX,
-    y: startY + lineHeight * 2,
-    w: 0.30,
-    h: 0.30,
-    fill: null,
-    line: { color: "00FF00", width: 2 }
-  });
-
-  slide.addText("= Zone à équiper", {
-    x: startX + 0.45,
-    y: startY + lineHeight * 2 - 0.05,
-    fontSize: 12,
-    color: "000000"
-  });
-
 }
 
   function placeImageAndShapes(slide, title, imgBox, dataUrl) {
