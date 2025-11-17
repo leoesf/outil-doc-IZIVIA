@@ -189,27 +189,66 @@ function createPowerPoint() {
   // Légende en bas à droite (fixe, quand il y a des formes)
   // -----------------------------------------------------------
   function addLegend(slide) {
-    slide.addText(
-      [
-        "Rectangle rouge = TGBT",
-        "Rectangle bleu = borne",
-        "Cercle vert = zone à électrifier"
-      ].join("\n"),
-      {
-        x: SLIDE_W - 3.7,
-        y: SLIDE_H - 1.2,
-        w: 3.5,
-        h: 1.2,
-        fontSize: 12,
-        color: "000000",
-        valign: "top"
-      }
-    );
-  }
 
-  // -----------------------------------------------------------
-  // Ajout image + formes (selon le type de slide)
-  // -----------------------------------------------------------
+  // Position de départ en bas à droite
+  const startX = SLIDE_W - 3.4;
+  const startY = SLIDE_H - 1.3;
+
+  const lineHeight = 0.45;
+
+  // --- Rectangle rouge (TGBT)
+  slide.addShape(pptx.shapes.RECTANGLE, {
+    x: startX,
+    y: startY,
+    w: 0.35,
+    h: 0.25,
+    fill: { color: "FF0000" },
+    line: { color: "880000" }
+  });
+
+  slide.addText("= TGBT", {
+    x: startX + 0.45,
+    y: startY - 0.02,
+    fontSize: 12,
+    color: "000000"
+  });
+
+  // --- Rectangle bleu (borne)
+  slide.addShape(pptx.shapes.RECTANGLE, {
+    x: startX,
+    y: startY + lineHeight,
+    w: 0.35,
+    h: 0.25,
+    fill: { color: "0070C0" },
+    line: { color: "003A70" }
+  });
+
+  slide.addText("= Borne", {
+    x: startX + 0.45,
+    y: startY + lineHeight - 0.02,
+    fontSize: 12,
+    color: "000000"
+  });
+
+  // --- Cercle vert (zone à électrifier)
+  slide.addShape(pptx.shapes.OVAL, {
+    x: startX,
+    y: startY + lineHeight * 2,
+    w: 0.30,
+    h: 0.30,
+    fill: null,
+    line: { color: "00FF00", width: 2 }
+  });
+
+  slide.addText("= Zone à équiper", {
+    x: startX + 0.45,
+    y: startY + lineHeight * 2 - 0.05,
+    fontSize: 12,
+    color: "000000"
+  });
+
+}
+
   function placeImageAndShapes(slide, title, imgBox, dataUrl) {
     if (dataUrl) {
       slide.addImage({
@@ -370,3 +409,4 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
+
