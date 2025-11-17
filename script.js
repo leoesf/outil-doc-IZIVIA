@@ -157,10 +157,10 @@ function createPowerPoint() {
     // Logo IZIVIA à droite
     slide.addImage({
       path: "IZIVIA.jpg", // ⚠️ ce fichier doit aussi être à la racine du projet
-      x: 6.3,
-      y: 1.9,
-      w: 3.2,
-      h: 2.4
+      x: 6.5,
+      y: 2.13,
+      w: 7.0,
+      h: 5.5
     });
 
     addEDFLogo(slide);
@@ -498,3 +498,4 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
+
