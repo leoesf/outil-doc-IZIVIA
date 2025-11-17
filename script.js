@@ -85,7 +85,7 @@ function createPowerPoint() {
     slide.addImage({
       path: "EDF.png", // le fichier doit être présent à la racine du projet
       x: 0.1,
-      y: SLIDE_H - 1.8, // bas de slide
+      y: SLIDE_H - 0.2, // bas de slide
       w: 1.2,
       h: 0.55
     });
@@ -365,4 +365,5 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
+
 
