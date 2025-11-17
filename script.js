@@ -1,6 +1,6 @@
 // -----------------------------------------------------------
 // script.js - Génération du PowerPoint (PptxGenJS v3.x)
-// - Couverture avec infos client + logo IZIVIA
+// - Couverture avec infos client
 // - Slide "Compléments d'informations"
 // - 3 diapositives par rubrique de checklist
 // - Rectangles rouge/bleu + cercle vert + trait rouge + légende
@@ -65,7 +65,7 @@ function createPowerPoint() {
   const IMG = { x: MARGIN, y: 1.4, w: 5.8, h: 3.8 };
   const BOX = { x: 6.6, y: 1.4, w: 3.0, h: 3.8 };
 
-  // Positions relatives des formes sur l'image
+  // Positions relatives des formes (sur l'image)
   const TGBT_RECT = { w: 1.6, h: 1.1, dx: 1.0, dy: 0.8 };
   const BORNE_RECT = { w: 1.6, h: 1.1, dx: 3.2, dy: 2.0 };
 
@@ -84,16 +84,16 @@ function createPowerPoint() {
   // -----------------------------------------------------------
   function addEDFLogo(slide) {
     slide.addImage({
-      path: "EDF.png",   // le fichier doit être présent à la racine du projet
+      path: "EDF.png",  // le fichier doit être présent à la racine du projet
       x: 0.001,
-      y: 6.95,           // position que tu avais choisie
+      y: SLIDE_H - 0.75, // proche du bas
       w: 1.2,
       h: 0.55
     });
   }
 
   // -----------------------------------------------------------
-  // SLIDE 1 – COUVERTURE + IZIVIA
+  // SLIDE 1 – COUVERTURE
   // -----------------------------------------------------------
   function addCoverSlide() {
     const slide = pptx.addSlide();
@@ -120,7 +120,7 @@ function createPowerPoint() {
       align: "center"
     });
 
-    // Bloc d'infos (gauche)
+    // Bloc d'infos
     const lines = [];
 
     if (oppoNumber)    lines.push(`Oppo : ${oppoNumber}`);
@@ -146,21 +146,12 @@ function createPowerPoint() {
     if (commercialEmail) lines.push(`Mail EDF : ${commercialEmail}`);
 
     slide.addText(lines.join("\n"), {
-      x: 0.5,
+      x: 1.0, // léger décalage à droite
       y: 2.0,
-      w: 5.5,
+      w: 8,
       fontSize: 16,
       color: "FFFFFF",
       align: "left"
-    });
-
-    // Logo IZIVIA à droite
-    slide.addImage({
-      path: "IZIVIA.jpg", // ⚠️ ce fichier doit aussi être à la racine du projet
-      x: 6.5,
-      y: 2.13,
-      w: 7.0,
-      h: 5.5
     });
 
     addEDFLogo(slide);
@@ -196,129 +187,60 @@ function createPowerPoint() {
   }
 
   // -----------------------------------------------------------
-  // Légende regroupée en bas à droite
+  // Légende : UNE SEULE ZONE DE TEXTE
   // -----------------------------------------------------------
-  function addLegendBox(slide, { redRect, blueRect, greenCircle, redLine }) {
-    if (!redRect && !blueRect && !greenCircle && !redLine) return;
+  function addLegend(slide, { showRedRect, showBlueRect, showGreenCircle, showRedLine }) {
+    if (!showRedRect && !showBlueRect && !showGreenCircle && !showRedLine) return;
 
-    const boxX = SLIDE_W - 3.6;
-    const boxY = SLIDE_H - 1.3;
-    const boxW = 3.4;
-    const boxH = 1.2;
+    const richText = [];
 
-    const elements = [];
-
-    // Fond de la légende
-    const legendBg = slide.addShape(RECT, {
-      x: boxX,
-      y: boxY,
-      w: boxW,
-      h: boxH,
-      fill: { color: "FFFFFF" },
-      line: { color: "AAAAAA" }
+    // Titre "Légende :"
+    richText.push({
+      text: "Légende :",
+      options: { bold: true, fontSize: 12, color: "000000", breakLine: true }
     });
-    elements.push(legendBg);
 
-    let rowY = boxY + 0.15;
-    const iconX = boxX + 0.2;
-    const textX = boxX + 0.6;
-    const rowH = 0.28;
-
-    if (redRect) {
-      const icon = slide.addShape(RECT, {
-        x: iconX,
-        y: rowY,
-        w: 0.3,
-        h: 0.18,
-        fill: { color: "FF0000" },
-        line: { color: "880000" }
-      });
-      const txt = slide.addText("= TGBT", {
-        x: textX,
-        y: rowY - 0.02,
-        w: boxW - (textX - boxX) - 0.1,
-        h: rowH,
-        fontSize: 12,
-        color: "000000",
-        align: "left",
-        valign: "middle"
-      });
-      elements.push(icon, txt);
-      rowY += rowH;
+    // Chaque ligne : symbole coloré + texte, mais tout dans UNE SHAPE
+    if (showRedRect) {
+      richText.push(
+        { text: "■ ", options: { fontSize: 12, color: "FF0000" } },
+        { text: "TGBT", options: { fontSize: 12, color: "000000", breakLine: true } }
+      );
     }
 
-    if (blueRect) {
-      const icon = slide.addShape(RECT, {
-        x: iconX,
-        y: rowY,
-        w: 0.3,
-        h: 0.18,
-        fill: { color: "0070C0" },
-        line: { color: "003A70" }
-      });
-      const txt = slide.addText("= borne", {
-        x: textX,
-        y: rowY - 0.02,
-        w: boxW - (textX - boxX) - 0.1,
-        h: rowH,
-        fontSize: 12,
-        color: "000000",
-        align: "left",
-        valign: "middle"
-      });
-      elements.push(icon, txt);
-      rowY += rowH;
+    if (showBlueRect) {
+      richText.push(
+        { text: "■ ", options: { fontSize: 12, color: "0070C0" } },
+        { text: "Borne / place équipée", options: { fontSize: 12, color: "000000", breakLine: true } }
+      );
     }
 
-    if (greenCircle) {
-      const icon = slide.addShape(ELLIPSE, {
-        x: iconX,
-        y: rowY - 0.02,
-        w: 0.24,
-        h: 0.24,
-        fill: null,
-        line: { color: "00AA00", width: 2 }
-      });
-      const txt = slide.addText("= zone à électrifier", {
-        x: textX,
-        y: rowY - 0.02,
-        w: boxW - (textX - boxX) - 0.1,
-        h: rowH,
-        fontSize: 12,
-        color: "000000",
-        align: "left",
-        valign: "middle"
-      });
-      elements.push(icon, txt);
-      rowY += rowH;
+    if (showGreenCircle) {
+      richText.push(
+        { text: "● ", options: { fontSize: 12, color: "00AA00" } },
+        { text: "Zone à équiper", options: { fontSize: 12, color: "000000", breakLine: true } }
+      );
     }
 
-    if (redLine) {
-      const icon = slide.addShape(LINE, {
-        x: iconX,
-        y: rowY + 0.09,
-        w: 0.35,
-        h: 0,
-        line: { color: "FF0000", width: 2 }
-      });
-      const txt = slide.addText("= chemin de câble", {
-        x: textX,
-        y: rowY - 0.02,
-        w: boxW - (textX - boxX) - 0.1,
-        h: rowH,
-        fontSize: 12,
-        color: "000000",
-        align: "left",
-        valign: "middle"
-      });
-      elements.push(icon, txt);
-      rowY += rowH;
+    if (showRedLine) {
+      richText.push(
+        { text: "― ", options: { fontSize: 12, color: "FF0000" } },
+        { text: "Chemin de câble", options: { fontSize: 12, color: "000000", breakLine: true } }
+      );
     }
 
-    // Regroupe tous les éléments pour que la légende se déplace comme un bloc
-    if (slide.group) {
-      slide.group(elements);
-    }
+    // Une seule zone de texte pour TOUTE la légende
+    slide.addText(richText, {
+      x: SLIDE_W - 3.7,
+      y: SLIDE_H - 1.6,
+      w: 3.5,
+      h: 1.5,
+      fontSize: 12,
+      color: "000000",
+      fill: { color: "FFFFFF" },
+      line: { color: "CCCCCC" },
+      valign: "top"
+    });
   }
 
   // -----------------------------------------------------------
@@ -338,10 +260,10 @@ function createPowerPoint() {
 
     const low = title.toLowerCase();
 
-    let redRect = false;
-    let blueRect = false;
-    let greenCircle = false;
-    let redLine = false;
+    let showRedRect      = false;
+    let showBlueRect     = false;
+    let showGreenCircle  = false;
+    let showRedLine      = false;
 
     // Plan d'implantation : rectangle rouge + cercle vert
     if (low.includes("implantation")) {
@@ -353,23 +275,20 @@ function createPowerPoint() {
         fill: { color: "FF0000" },
         line: { color: "880000" }
       });
-      redRect = true;
+      showRedRect = true;
 
       slide.addShape(ELLIPSE, {
         x: GREEN_CIRCLE.x,
-        y: GREEN_CIRCLE.y,
+       y: GREEN_CIRCLE.y,
         w: GREEN_CIRCLE.w,
         h: GREEN_CIRCLE.h,
         fill: null,
         line: { color: GREEN_CIRCLE.stroke, width: GREEN_CIRCLE.strokeWidth }
       });
-      greenCircle = true;
-
-      // on affiche aussi la borne dans la légende
-      blueRect = true;
+      showGreenCircle = true;
     }
 
-    // Places à électrifier : rectangle bleu sur l'image
+    // Places à électrifier : rectangle bleu
     if (low.includes("places à électrifier")) {
       slide.addShape(RECT, {
         x: IMG.x + BORNE_RECT.dx,
@@ -379,22 +298,22 @@ function createPowerPoint() {
         fill: { color: "0070C0" },
         line: { color: "003A70" }
       });
-      blueRect = true;
+      showBlueRect = true;
     }
 
-    // Cheminement : trait rouge sur l'image
+    // Cheminement : trait rouge (chemin de câble)
     if (low.includes("cheminement")) {
       slide.addShape(LINE, {
-        x: IMG.x + 0.5,
-        y: IMG.y + IMG.h - 0.5,
-        w: 3.0,      // ~1,5 cm en pratique
+        x: IMG.x + 0.3,
+        y: IMG.y + IMG.h - 0.6,
+        w: IMG.w - 0.6,
         h: 0,
         line: { color: "FF0000", width: 3 }
       });
-      redLine = true;
+      showRedLine = true;
     }
 
-    addLegendBox(slide, { redRect, blueRect, greenCircle, redLine });
+    addLegend(slide, { showRedRect, showBlueRect, showGreenCircle, showRedLine });
     addEDFLogo(slide);
   }
 
@@ -412,29 +331,29 @@ function createPowerPoint() {
     };
 
     const defs = [
-      { base: "Plan d'implantation",        file: "file1",  comment: "comment1" },
-      { base: "Plan d'implantation",        file: "file1b", comment: "comment1b" },
-      { base: "Plan d'implantation",        file: "file1c", comment: "comment1c" },
+      { base: "Plan d'implantation",           file: "file1",  comment: "comment1" },
+      { base: "Plan d'implantation",           file: "file1b", comment: "comment1b" },
+      { base: "Plan d'implantation",           file: "file1c", comment: "comment1c" },
 
-      { base: "Places à électrifier",       file: "file2",  comment: "comment2" },
-      { base: "Places à électrifier",       file: "file2b", comment: "comment2b" },
-      { base: "Places à électrifier",       file: "file2c", comment: "comment2c" },
+      { base: "Places à électrifier",          file: "file2",  comment: "comment2" },
+      { base: "Places à électrifier",          file: "file2b", comment: "comment2b" },
+      { base: "Places à électrifier",          file: "file2c", comment: "comment2c" },
 
-      { base: "TGBT + disjoncteur de tête", file: "file3",  comment: "comment3" },
-      { base: "TGBT + disjoncteur de tête", file: "file3b", comment: "comment3b" },
-      { base: "TGBT + disjoncteur de tête", file: "file3c", comment: "comment3c" },
+      { base: "TGBT + disjoncteur de tête",    file: "file3",  comment: "comment3" },
+      { base: "TGBT + disjoncteur de tête",    file: "file3b", comment: "comment3b" },
+      { base: "TGBT + disjoncteur de tête",    file: "file3c", comment: "comment3c" },
 
-      { base: "Cheminement",                file: "file4",  comment: "comment4" },
-      { base: "Cheminement",                file: "file4b", comment: "comment4b" },
-      { base: "Cheminement",                file: "file4c", comment: "comment4c" },
+      { base: "Cheminement",                   file: "file4",  comment: "comment4" },
+      { base: "Cheminement",                   file: "file4b", comment: "comment4b" },
+      { base: "Cheminement",                   file: "file4c", comment: "comment4c" },
 
-      { base: "Plan du site",               file: "file5",  comment: "comment5" },
-      { base: "Plan du site",               file: "file5b", comment: "comment5b" },
-      { base: "Plan du site",               file: "file5c", comment: "comment5c" },
+      { base: "Plan du site",                  file: "file5",  comment: "comment5" },
+      { base: "Plan du site",                  file: "file5b", comment: "comment5b" },
+      { base: "Plan du site",                  file: "file5c", comment: "comment5c" },
 
-      { base: "Éléments complémentaires",   file: "file6",  comment: "comment6" },
-      { base: "Éléments complémentaires",   file: "file6b", comment: "comment6b" },
-      { base: "Éléments complémentaires",   file: "file6c", comment: "comment6c" }
+      { base: "Éléments complémentaires",      file: "file6",  comment: "comment6" },
+      { base: "Éléments complémentaires",      file: "file6b", comment: "comment6b" },
+      { base: "Éléments complémentaires",      file: "file6c", comment: "comment6c" }
     ];
 
     let remaining = defs.length;
@@ -498,4 +417,3 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
-
