@@ -86,7 +86,7 @@ function createPowerPoint() {
   // Logo EDF en bas à gauche
   // -----------------------------------------------------------
   function addEDFLogo(slide) {
-    slide.addImage({
+    slide.({
       path: "EDF.png",  // le fichier doit être présent à la racine du projet
       x: 0.001,
       y: 6.9, // proche du bas
@@ -160,8 +160,8 @@ function createPowerPoint() {
     // 🖼️ Image IZIVIA à droite (tu dois avoir IZIVIA.jpg à la racine du projet)
     slide.addImage({
       path: "IZIVIA.jpg",
-      x: 6.0,
-      y: 3.0,
+      x: 5.8,
+      y: 2.5,
       w: 7.52,
       h: 5.77,
       sizing: { type: "contain" }
@@ -429,6 +429,7 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
+
 
 
 
