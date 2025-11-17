@@ -81,11 +81,11 @@ function createPowerPoint() {
   // -----------------------------------------------------------
   // Logo  en bas à gauche
   // -----------------------------------------------------------
-  function addEDFLogo(slide) {
+  function addLogo(slide) {
     slide.addImage({
       path: "EDF.png", // le fichier doit être présent à la racine du projet
       x: 0.1,
-      y: SLIDE_H - 7.1, // bas de slide
+      y: 0.1, // bas de slide
       w: 1.2,
       h: 0.55
     });
@@ -365,6 +365,7 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
+
 
 
 
