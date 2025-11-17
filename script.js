@@ -1,6 +1,6 @@
 // -----------------------------------------------------------
 // script.js - Génération du PowerPoint (PptxGenJS v3.x)
-// Ajout : Logo EDF sur chaque diapositive
+// Logo EDF + formes + mise en page couverture
 // -----------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -22,26 +22,25 @@ function createPowerPoint() {
   }
 
   const pptx = new PptxGenJS();
-  pptx.layout = "LAYOUT_WIDE";
+  pptx.layout = "LAYOUT_WIDE"; // 16:9
 
   const RECT = pptx.shapes.RECTANGLE;
   const ELLIPSE = pptx.shapes.OVAL;
 
-  // Petite fonction utilitaire pour récupérer la valeur d'un champ
   const getVal = (id) => document.getElementById(id)?.value || "";
 
-  // Champs formulaire
+  // --------- Champs formulaire ---------
   const clientName      = getVal("clientName");
   const rae             = getVal("rae");
-  const powerSubscribed = getVal("powerSubscribed"); // kVA
-  const powerMax        = getVal("powerMax");        // kVA
+  const powerSubscribed = getVal("powerSubscribed");
+  const powerMax        = getVal("powerMax");
   const commercial      = getVal("commercial");
   const raeClient       = getVal("raeClient");
   const clientAddress   = getVal("clientAddress");
   const siret           = getVal("siret");
   const oppoNumber      = getVal("oppoNumber");
   const nbBornes        = getVal("nbBornes");
-  const bornesPower     = getVal("bornesPower");     // kW
+  const bornesPower     = getVal("bornesPower");
 
   const commercialPhone = getVal("commercialPhone");
   const commercialEmail = getVal("commercialEmail");
@@ -51,60 +50,145 @@ function createPowerPoint() {
   const contactEmail    = getVal("contactEmail");
 
   // -----------------------------------------------------------
-  // Fonction ajout du logo EDF (appelée pour chaque slide)
+  // Logo EDF sur chaque diapo
   // -----------------------------------------------------------
   function addEDFLogo(slide) {
     slide.addImage({
-      path: "EDF.png",   // ⚠️ Fichier à mettre à la racine du projet (même dossier que borneelectrique.html)
-      x: 0.1,            // coin bas-gauche
-      y: 6.8,            // très bas mais visible (sur un slide 10" x 5.625", ça reste dans la zone)
-      w: 1.2,            // petit logo
+      path: "EDF.png",   // fichier à avoir dans le repo
+      x: 0.1,
+      y: 6.8,
+      w: 1.2,
       h: 0.55
     });
   }
 
   // -----------------------------------------------------------
-  // SLIDE 1 – COUVERTURE
+  // SLIDE 1 – COUVERTURE (mise en forme façon exemple photo)
   // -----------------------------------------------------------
   function addCoverSlide() {
     const slide = pptx.addSlide();
     slide.background = { fill: "363636" };
 
-    // Nom du client en gros, centré
+    // Titre principal
     slide.addText(`Client : ${clientName || ""}`, {
-      x: 0.5, y: 0.4, w: 9,
+      x: 0.5,
+      y: 0.4,
+      w: 9,
       fontSize: 44,
       bold: true,
       color: "FFFFFF",
       align: "center"
     });
 
-    const lines = [];
-
-    if (rae)             lines.push(`RAE : ${rae}`);
-    if (powerSubscribed) lines.push(`Puissance souscrite : ${powerSubscribed} kVA`);
-    if (powerMax)        lines.push(`Puissance max : ${powerMax} kVA`);
-
-    if (commercial)      lines.push(`Commercial : ${commercial}`);
-    if (commercialPhone) lines.push(`Tél. commercial : ${commercialPhone}`);
-    if (commercialEmail) lines.push(`Mail commercial : ${commercialEmail}`);
-
-    if (contactName)     lines.push(`Interlocuteur : ${contactName}`);
-    if (contactPhone)    lines.push(`Tél. interlocuteur : ${contactPhone}`);
-    if (contactEmail)    lines.push(`Mail interlocuteur : ${contactEmail}`);
-
-    if (clientAddress)   lines.push(`Adresse : ${clientAddress}`);
-    if (siret)           lines.push(`SIRET : ${siret}`);
-    if (oppoNumber)      lines.push(`Numéro Oppo : ${oppoNumber}`);
-    if (nbBornes)        lines.push(`Nombre de bornes : ${nbBornes}`);
-    if (bornesPower)     lines.push(`Puissance des bornes : ${bornesPower} kW`);
-
-    slide.addText(lines.join("\n"), {
-      x: 0.8,
-      y: 2.1,
-      fontSize: 18,
-      color: "FFFFFF"
+    // Sous-titre
+    slide.addText("Projet d’infrastructure de recharge", {
+      x: 0.5,
+      y: 1.0,
+      w: 9,
+      fontSize: 24,
+      color: "FFFFFF",
+      align: "center"
     });
+
+    const leftX = 0.8;
+    let y = 1.6;
+    const lineH = 0.4;
+
+    const addLabelValue = (label, value) => {
+      if (!value) return;
+      slide.addText(
+        [
+          { text: `${label} : `, options: { bold: true } },
+          { text: value }
+        ],
+        {
+          x: leftX,
+          y,
+          fontSize: 18,
+          color: "FFFFFF"
+        }
+      );
+      y += lineH;
+    };
+
+    // Bloc infos générales (comme sur la photo)
+    addLabelValue("Oppo", oppoNumber);
+    addLabelValue("Client", clientName);
+    addLabelValue("Adresse", clientAddress);
+    addLabelValue("Siret", siret);
+    addLabelValue("Rae", rae);
+    addLabelValue("Puissance souscrite", powerSubscribed ? `${powerSubscribed} kVA` : "");
+    addLabelValue("Puissance max", powerMax ? `${powerMax} kVA` : "");
+    addLabelValue(
+      "Bornes",
+      nbBornes || bornesPower
+        ? `${nbBornes || "—"} borne(s) de ${bornesPower || "—"} kW`
+        : ""
+    );
+
+    // Petit espace avant les blocs interlocuteurs
+    y += 0.3;
+
+    // Interlocuteur client
+    if (contactName || contactPhone || contactEmail) {
+      slide.addText(`Interlocuteur client : ${contactName || ""}`, {
+        x: leftX,
+        y,
+        fontSize: 18,
+        bold: true,
+        color: "FFFFFF"
+      });
+      y += lineH;
+      if (contactPhone) {
+        slide.addText(`Mobile : ${contactPhone}`, {
+          x: leftX,
+          y,
+          fontSize: 18,
+          color: "FFFFFF"
+        });
+        y += lineH;
+      }
+      if (contactEmail) {
+        slide.addText(`Adresse électronique : ${contactEmail}`, {
+          x: leftX,
+          y,
+          fontSize: 18,
+          color: "FFFFFF"
+        });
+        y += lineH;
+      }
+      y += 0.2;
+    }
+
+    // Interlocuteur EDF (Commercial)
+    if (commercial || commercialPhone || commercialEmail) {
+      slide.addText(`Interlocuteur EDF : ${commercial || ""}`, {
+        x: leftX,
+        y,
+        fontSize: 18,
+        bold: true,
+        color: "FFFFFF"
+      });
+      y += lineH;
+      if (commercialPhone) {
+        slide.addText(`Mobile : ${commercialPhone}`, {
+          x: leftX,
+          y,
+          fontSize: 18,
+          color: "FFFFFF"
+        });
+        y += lineH;
+      }
+      if (commercialEmail) {
+        slide.addText(`Adresse électronique : ${commercialEmail}`, {
+          x: leftX,
+          y,
+          fontSize: 18,
+          color: "FFFFFF"
+        });
+        y += lineH;
+      }
+    }
 
     addEDFLogo(slide);
   }
@@ -116,7 +200,9 @@ function createPowerPoint() {
     const slide = pptx.addSlide();
 
     slide.addText("Compléments d’informations", {
-      x: 0.5, y: 0.4, w: 9,
+      x: 0.5,
+      y: 0.4,
+      w: 9,
       fontSize: 36,
       bold: true,
       color: "0070C0",
@@ -137,18 +223,15 @@ function createPowerPoint() {
   }
 
   // -----------------------------------------------------------
-  // Mise en page des slides checklist
+  // Mise en page commune des slides checklist
   // -----------------------------------------------------------
   const SLIDE_W = 10.0;
   const SLIDE_H = 5.625;
   const MARGIN  = 0.5;
 
-  // Image à gauche
   const IMG = { x: MARGIN, y: 1.4, w: 5.8, h: 3.8 };
-  // Texte à droite
   const BOX = { x: 6.6, y: 1.4, w: 3.0, h: 3.8 };
 
-  // Rectangles & cercle (positions relatives)
   const TGBT_RECT = { w: 1.6, h: 1.1, dx: 1.0, dy: 0.8 };
   const BORNE_RECT = { w: 1.6, h: 1.1, dx: 3.2, dy: 2.0 };
 
@@ -161,15 +244,12 @@ function createPowerPoint() {
     strokeWidth: 3
   };
 
-  // -----------------------------------------------------------
-  // Légende en bas à droite
-  // -----------------------------------------------------------
   function addLegend(slide, items) {
     if (!items.length) return;
 
     slide.addText(items.join("\n"), {
-      x: SLIDE_W - 3.7,   // ~6.3"
-      y: SLIDE_H - 1.2,   // ~4.4" => coin bas droit
+      x: SLIDE_W - 3.7,
+      y: SLIDE_H - 1.2,
       w: 3.5,
       h: 1.2,
       fontSize: 12,
@@ -178,9 +258,6 @@ function createPowerPoint() {
     });
   }
 
-  // -----------------------------------------------------------
-  // Placement image + formes (TGBT, borne, cercle vert)
-  // -----------------------------------------------------------
   function placeImageAndShapes(slide, title, imgBox, dataUrl) {
     if (dataUrl) {
       slide.addImage({
@@ -196,7 +273,6 @@ function createPowerPoint() {
     const low = title.toLowerCase();
     const legend = [];
 
-    // Plan d'implantation -> rectangle rouge + cercle vert + légende complète
     if (low.includes("implantation")) {
       slide.addShape(RECT, {
         x: IMG.x + TGBT_RECT.dx,
@@ -223,8 +299,7 @@ function createPowerPoint() {
       );
     }
 
-    // Places à électrifier / plans -> rectangle bleu
-    if (low.includes("places à électrifier") || low.includes("places a electrifier")) {
+    if (low.includes("plans") || low.includes("places à électrifier")) {
       slide.addShape(RECT, {
         x: IMG.x + BORNE_RECT.dx,
         y: IMG.y + BORNE_RECT.dy,
@@ -234,10 +309,7 @@ function createPowerPoint() {
         line: { color: "003A70" }
       });
 
-      // On n'ajoute la légende "rectangle bleu" que si elle n'est pas déjà dans la liste
-      if (!legend.some((l) => l.includes("Rectangle bleu"))) {
-        legend.push("Rectangle bleu = future borne");
-      }
+      legend.push("Rectangle bleu = future borne");
     }
 
     addLegend(slide, legend);
@@ -245,7 +317,7 @@ function createPowerPoint() {
   }
 
   // -----------------------------------------------------------
-  // Slides checklist (2 photos / rubrique)
+  // Slides checklist
   // -----------------------------------------------------------
   function addChecklistSlides() {
     const sectionNumber = {
@@ -278,7 +350,6 @@ function createPowerPoint() {
       const slide = pptx.addSlide();
       const sec = sectionNumber[item.base];
 
-      // Titre centré, bleu, taille 36, avec numéro
       slide.addText(`${sec}. ${item.base}`, {
         x: 0.5,
         y: 0.3,
@@ -289,7 +360,6 @@ function createPowerPoint() {
         align: "center"
       });
 
-      // Commentaire à droite
       slide.addText(getVal(item.comment) || "—", {
         x: BOX.x,
         y: BOX.y,
@@ -307,8 +377,7 @@ function createPowerPoint() {
         placeImageAndShapes(slide, item.base, IMG, dataUrl);
         remaining--;
         if (remaining === 0) {
-          pptx
-            .writeFile({ fileName: "Borne_Electrique_Projet.pptx" })
+          pptx.writeFile({ fileName: "Borne_Electrique_Projet.pptx" })
             .finally(() => {
               btn?.removeAttribute("aria-busy");
               btn?.removeAttribute("disabled");
