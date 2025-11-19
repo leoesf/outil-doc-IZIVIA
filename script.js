@@ -65,7 +65,7 @@ function createPowerPoint() {
   const IMG = { x: MARGIN, y: 1.4, w: 5.8, h: 3.8 };
 
   // ✅ Zone commentaire décalée vers la droite (~3 cm)
-  const BOX = { x: 7.8, y: 1.4, w: 2.2, h: 3.8 };
+  const BOX = { x: 9.0, y: 1.4, w: 2.2, h: 3.8 };
 
   // Positions relatives des formes (sur l'image)
   const TGBT_RECT = { w: 1.6, h: 1.1, dx: 1.0, dy: 0.8 };
@@ -149,7 +149,7 @@ function createPowerPoint() {
 
     slide.addText(lines.join("\n"), {
       x: 0.6,      // un peu plus à gauche
-      y: 2.0,
+      y: 3.0,
       w: 4.8,      // largeur réduite pour laisser une zone libre à droite
       fontSize: 16,
       color: "FFFFFF",
@@ -427,6 +427,7 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
+
 
 
 
