@@ -375,7 +375,7 @@ function createPowerPoint() {
 
       // Titre centré, bleu, taille 36, avec numéro
       slide.addText(`${sec}. ${item.base}`, {
-        x: 0.5,
+        x: -1.5,
         y: 0.3,
         w: SLIDE_W - 1,
         fontSize: 36,
@@ -456,3 +456,4 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
+
