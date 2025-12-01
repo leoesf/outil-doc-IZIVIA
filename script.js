@@ -158,13 +158,16 @@ function createPowerPoint() {
     });
 
     // Image IZIVIA à droite (IZIVIA.jpg à la racine du projet)
-    slide.addImage({
-      path: "IZIVIA.jpg",
+    slide.addText("IZIVIA", {
       x: 7.23,
       y: 1.72,
       w: 6.1,
       h: 5.8,
-      sizing: { type: "contain" }
+      fontSize: 28,
+      bold: true,
+      color: "FFFFFF",
+      align: "center",
+      valign: "middle"
     });
 
     addEDFLogo(slide);
@@ -384,6 +387,18 @@ function createPowerPoint() {
         align: "center"
       });
 
+      // Titre "Commentaire :" au-dessus de la zone de texte
+      slide.addText("Commentaire :", {
+        x: BOX.x,
+        y: BOX.y - 0.4,
+        w: BOX.w,
+        h: 0.4,
+        fontSize: 14,
+        bold: true,
+        color: "000000",
+        align: "left"
+      });
+
       // Zone commentaire à droite
       slide.addText(getVal(item.comment) || "—", {
         x: BOX.x,
@@ -456,4 +471,3 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
-
