@@ -177,7 +177,7 @@ function createPowerPoint() {
     const slide = pptx.addSlide();
 
     slide.addText("Compléments d’informations", {
-      x: 0.5,
+      x: 2.5,
       y: 0.4,
       w: 9,
       fontSize: 36,
@@ -456,4 +456,5 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
+
 
