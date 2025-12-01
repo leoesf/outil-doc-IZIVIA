@@ -5,6 +5,7 @@
 // - 3 diapositives par rubrique de checklist
 // - Rectangles rouge/bleu + cercle vert + trait rouge + légende
 // - Logo EDF en bas à gauche de chaque slide (EDF.png)
+// - Slide finale d'avertissement
 // -----------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -64,7 +65,7 @@ function createPowerPoint() {
   // Zone image (gauche)
   const IMG = { x: MARGIN, y: 1.4, w: 5.8, h: 3.8 };
 
-  // ✅ Zone commentaire décalée vers la droite (~3 cm)
+  // Zone commentaire (actuellement très à droite, comme ta version)
   const BOX = { x: 10.2, y: 1.4, w: 2.2, h: 3.8 };
 
   // Positions relatives des formes (sur l'image)
@@ -156,7 +157,7 @@ function createPowerPoint() {
       align: "left"
     });
 
-    // 🖼️ Image IZIVIA à droite (IZIVIA.jpg à la racine du projet)
+    // Image IZIVIA à droite (IZIVIA.jpg à la racine du projet)
     slide.addImage({
       path: "IZIVIA.jpg",
       x: 7.23,
@@ -401,6 +402,9 @@ function createPowerPoint() {
         placeImageAndShapes(slide, item.base, IMG, dataUrl);
         remaining--;
         if (remaining === 0) {
+          // Quand toutes les slides checklist sont générées,
+          // on ajoute la slide finale puis on enregistre.
+          addFinalSlide();
           pptx
             .writeFile({ fileName: "Borne_Electrique_Projet.pptx" })
             .finally(() => {
@@ -421,23 +425,34 @@ function createPowerPoint() {
   }
 
   // -----------------------------------------------------------
+  // SLIDE FINALE – Avertissement
+  // -----------------------------------------------------------
+  function addFinalSlide() {
+    const slide = pptx.addSlide();
+    slide.background = { fill: "363636" }; // même fond que la couverture
+
+    const message =
+      "Ce document ne se substitue aucunement à la fiche de qualification. " +
+      "Il apporte un support permettant de standardiser la qualification des projets.\n" +
+      "Il est à joindre à la Bal générique lors de l’apport de l’affaire.";
+
+    slide.addText(message, {
+      x: 0.5,
+      y: 2.0,
+      w: 9,
+      fontSize: 20,
+      color: "FFFFFF",
+      italic: true,
+      align: "center"
+    });
+
+    addEDFLogo(slide);
+  }
+
+  // -----------------------------------------------------------
   // Génération finale
   // -----------------------------------------------------------
   addCoverSlide();
   addInfoSlide();
   addChecklistSlides();
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
