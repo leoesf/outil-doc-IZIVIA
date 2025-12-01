@@ -452,7 +452,7 @@ function createPowerPoint() {
       "Il est à joindre à la Bal générique lors de l’apport de l’affaire.";
 
     slide.addText(message, {
-      x: 2.5,
+      x: 2.1,
       y: 2.0,
       w: 9,
       fontSize: 20,
@@ -471,4 +471,5 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
+
 
