@@ -177,7 +177,7 @@ function createPowerPoint() {
     const slide = pptx.addSlide();
 
     slide.addText("Compléments d’informations", {
-      x: 2.5,
+      x: 1.5,
       y: 0.4,
       w: 9,
       fontSize: 36,
@@ -186,15 +186,7 @@ function createPowerPoint() {
       align: "center"
     });
 
-    slide.addText(raeClient || "—", {
-      x: 0.5,
-      y: 1.5,
-      w: "90%",
-      h: "70%",
-      fontSize: 18,
-      fill: { color: "FFFFFF" },
-      line: { color: "CCCCCC" }
-    });
+
 
     addEDFLogo(slide);
   }
@@ -456,5 +448,6 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
+
 
 
