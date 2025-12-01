@@ -6,6 +6,30 @@
   <title>Borne Électrique</title>
 
   <link rel="stylesheet" href="styles.css" />
+
+  <style>
+    /* AJOUT : style pour renforcer les titres des sections */
+    h2 {
+      font-weight: bold;
+      font-size: 1.8em; /* +3 niveaux environ */
+      margin-top: 25px;
+    }
+
+    label {
+      font-size: 1.4em; /* titres des catégories checklist */
+      font-weight: bold;
+      display: block;
+      margin-top: 20px;
+    }
+
+    .instruction {
+      font-size: 0.95em;
+      color: #555;
+      margin-bottom: 10px;
+      max-width: 800px;
+      line-height: 1.4;
+    }
+  </style>
 </head>
 <body>
   <h1>Borne Électrique</h1>
@@ -39,6 +63,7 @@
   <div id="checklist">
     <h2>Checklist</h2>
     <ul>
+
       <!-- 1. Plan d'implantation (3 photos + 3 commentaires) -->
       <li>
         <label>Plan d'implantation</label>
@@ -76,8 +101,8 @@
       <li>
         <label>TGBT + disjoncteur de tête</label>
         <p class="instruction">
-          Une photo du TGBT/PDL ouvert afin de déterminer si celui-ci est suffisamment
-          dimensionné pour l’installation, accompagnée d’une photo du disjoncteur de tête.
+          Une photo du TGBT/PDL ouvert afin de déterminer si celui-ci est suffisamment dimensionné
+          pour l’installation, accompagnée d’une photo du disjoncteur de tête.
         </p>
         <input type="file" accept="image/*" id="file3" />
         <textarea id="comment3" placeholder="Commentaire 1"></textarea>
@@ -137,6 +162,7 @@
         <input type="file" accept="image/*" id="file6c" />
         <textarea id="comment6c" placeholder="Commentaire 3"></textarea>
       </li>
+
     </ul>
 
     <button id="exportBtn">Exporter</button>
