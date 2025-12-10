@@ -1,4 +1,4 @@
-// -----------------------------------------------------------
+// ----------------------------------------------------------- 
 // script.js - Génération du PowerPoint (PptxGenJS v3.x)
 // - Couverture avec infos client + logo EDF + logo IZIVIA
 // - Slide "Compléments d'informations"
@@ -164,7 +164,11 @@ function createPowerPoint() {
       y: 1.72,
       w: 6.1,
       h: 5.8,
-      sizing: { type: "contain" }
+      fontSize: 28,
+      bold: true,
+      color: "FFFFFF",
+      align: "center",
+      valign: "middle"
     });
 
     addEDFLogo(slide);
@@ -373,15 +377,28 @@ function createPowerPoint() {
       const slide = pptx.addSlide();
       const sec = sectionNumber[item.base];
 
-      // Titre centré en bleu, taille 36, même décalage gauche pour toutes les parties
+      // Titre centré, bleu, taille 36, avec numéro
+      // ✅ même décalage pour toutes les parties
       slide.addText(`${sec}. ${item.base}`, {
-        x: 0.2,                 // ✅ même décalage pour 1 à 6
+        x: 0.2,
         y: 0.3,
         w: SLIDE_W - 1,
         fontSize: 36,
         bold: true,
         color: "0070C0",
         align: "center"
+      });
+
+      // Titre "Commentaire :" au-dessus de la zone de texte
+      slide.addText("Commentaire :", {
+        x: BOX.x,
+        y: BOX.y - 0.4,
+        w: BOX.w,
+        h: 0.4,
+        fontSize: 14,
+        bold: true,
+        color: "000000",
+        align: "left"
       });
 
       // Zone commentaire à droite
@@ -437,7 +454,7 @@ function createPowerPoint() {
       "Il est à joindre à la Bal générique lors de l’apport de l’affaire.";
 
     slide.addText(message, {
-      x: 0.5,
+      x: 2.1,
       y: 2.0,
       w: 9,
       fontSize: 20,
