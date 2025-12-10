@@ -158,17 +158,13 @@ function createPowerPoint() {
     });
 
     // Image IZIVIA à droite (IZIVIA.jpg à la racine du projet)
-    slide.addImage({ path: "IZIVIA.jpg",
-      
+    slide.addImage({
+      path: "IZIVIA.jpg",
       x: 7.23,
       y: 1.72,
       w: 6.1,
       h: 5.8,
-      fontSize: 28,
-      bold: true,
-      color: "FFFFFF",
-      align: "center",
-      valign: "middle"
+      sizing: { type: "contain" }
     });
 
     addEDFLogo(slide);
@@ -377,27 +373,15 @@ function createPowerPoint() {
       const slide = pptx.addSlide();
       const sec = sectionNumber[item.base];
 
-      // Titre centré, bleu, taille 36, avec numéro
+      // Titre centré en bleu, taille 36, même décalage gauche pour toutes les parties
       slide.addText(`${sec}. ${item.base}`, {
-        x: -1.5,
+        x: 0.2,                 // ✅ même décalage pour 1 à 6
         y: 0.3,
         w: SLIDE_W - 1,
         fontSize: 36,
         bold: true,
         color: "0070C0",
         align: "center"
-      });
-
-      // Titre "Commentaire :" au-dessus de la zone de texte
-      slide.addText("Commentaire :", {
-        x: BOX.x,
-        y: BOX.y - 0.4,
-        w: BOX.w,
-        h: 0.4,
-        fontSize: 14,
-        bold: true,
-        color: "000000",
-        align: "left"
       });
 
       // Zone commentaire à droite
@@ -453,7 +437,7 @@ function createPowerPoint() {
       "Il est à joindre à la Bal générique lors de l’apport de l’affaire.";
 
     slide.addText(message, {
-      x: 2.1,
+      x: 0.5,
       y: 2.0,
       w: 9,
       fontSize: 20,
@@ -472,6 +456,3 @@ function createPowerPoint() {
   addInfoSlide();
   addChecklistSlides();
 }
-
-
-
